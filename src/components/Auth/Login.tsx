@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import { TextField, Button, Container, Typography, Box, Snackbar, Alert } from '@mui/material';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import * as Yup from 'yup';
 import { login } from '../../reducers/auth/authSlice';
 import { useAppDispatch } from '../../store/hooks';
@@ -11,7 +11,7 @@ const Login: React.FC = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
-    const navigate = useNavigate();
+    const history = useHistory();
 
     const handleSnackbarClose = () => {
         setSnackbarOpen(false);
@@ -35,7 +35,7 @@ const Login: React.FC = () => {
                 setSnackbarMessage(message);
                 setSnackbarSeverity('success');
                 setSnackbarOpen(true);
-                navigate('/');
+                history.push('/');
             } catch (error: any) {
                 setSnackbarMessage(error);
                 setSnackbarSeverity('error');

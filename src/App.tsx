@@ -1,6 +1,5 @@
-import React from 'react';
-import { FC, useState } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import React, { FC, useState } from 'react';
+import { BrowserRouter as Router, Switch } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
@@ -15,19 +14,20 @@ const App: FC = () => {
 
   const handleChangeTheme = (name: string) => {
     setThemeName(name);
-  }
+  };
 
   return (
-    <Routes>
-      <Route path="/login" element={<PublicRoute><Login /></PublicRoute>}
-      />
-      <Route path="/register" element={<PublicRoute><Register /></PublicRoute>}
-      />
-      <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>}
-      />
-      <Route path="/" element={<ProtectedRoute><TestDashboard themeName={themeName} onChangeTheme={handleChangeTheme} /></ProtectedRoute>}
-      />
-    </Routes>
+    <Router>
+      <Switch>
+        <PublicRoute path="/login" component={Login} />
+        <PublicRoute path="/register" component={Register} />
+        <PublicRoute path="/forgot-password" component={ForgotPassword} />
+        <ProtectedRoute 
+          path="/" 
+          component={() => <TestDashboard themeName={themeName} onChangeTheme={handleChangeTheme} />}
+        />
+      </Switch>
+    </Router>
   );
 };
 

@@ -1,16 +1,27 @@
 import React from 'react';
+import { Route, Redirect, RouteProps } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Navigate } from 'react-router-dom';
 import { RootState } from '../store/store';
 
-interface ProtectedRouteProps {
-    children: JSX.Element;
+interface ProtectedRouteProps extends RouteProps {
+  component: React.ComponentType<any>;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-    const isAuthenticated = useSelector((state: RootState) => state.auth.token);
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ component: Component, ...rest }) => {
+  const isAuthenticated = useSelector((state: RootState) => state.auth.token);
 
-    return isAuthenticated ? children : <Navigate to="/login" />;
+  return (
+    <Route
+      {...rest}
+      render={props =>
+        isAuthenticated ? (
+          <Component {...props} />
+        ) : (
+          <Redirect to="/login" />
+        )
+      }
+    />
+  );
 };
 
 export default ProtectedRoute;
