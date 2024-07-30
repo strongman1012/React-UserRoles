@@ -1,11 +1,10 @@
 import React from 'react';
 import { FC, useEffect, useState } from 'react';
-import {
-	makeStyles,
-	Theme
-} from '@material-ui/core';
+import { Theme } from "@mui/material/styles";
+import { makeStyles } from '@mui/styles';
 import { Paper, Backdrop, LinearProgress, colors, Grid, Typography, Box, Button } from '@mui/material';
-
+import useTheme from '../../../utills/styles/theme';
+const theme = useTheme;
 interface LoadingOverlayProps {
 	isLoading: boolean;
 	status: string;
@@ -16,43 +15,39 @@ interface LoadingOverlayProps {
 	cancelAction?: () => void;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
 	root: {
 		flexGrow: 1,
 	},
 	progressBar: {
 		width: '100%',
 		'& > * + *': {
-			marginTop: theme.spacing(2),
+			marginTop: 2,
 		},
 		borderRadius: 5
 	},
 	backdrop: {
-		zIndex: theme.zIndex.drawer + 1,
+		zIndex: 20 + 1,
 		color: '#fff'
 	},
 	text: {
 		color: colors.grey[100],
 		fontWeight: 'bold',
-		fontSize: theme.typography.pxToRem(15),
-		marginLeft: theme.spacing(4)
 	},
 	paper: {
-		padding: theme.spacing(3),
 		textAlign: 'center',
-		color: theme.palette.text.primary,
+		color: theme.light.palette?.text?.primary,
 		borderRadius: '5px'
 	},
 	paperComment: {
-		padding: theme.spacing(1),
 		fontStyle: 'italic',
 		fontSize: 12,
 		textAlign: 'center',
-		color: theme.palette.text.secondary,
+		color: theme.light.palette?.text?.primary,
 		borderRadius: 0
 	},
 	dialogCloseBtn: {
-		color: theme.palette.grey[500],
+		color: theme.light.palette?.text?.primary,
 		zIndex: 100,
 	},
 }));

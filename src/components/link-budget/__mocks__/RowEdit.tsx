@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { Row } from '../types/LinkBudgetTypes';
-import { Box, TextField } from '@material-ui/core';
+import { Box, TextField } from '@mui/material';
 
 interface RowEditPop {
     row: Row;

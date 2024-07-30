@@ -4,7 +4,8 @@ import DataGrid from 'devextreme-react/data-grid';
 import HeatMap from './HeatMap';
 import { RowData } from '../types/HeatMapTypes';
 import { orders, color_array } from './data';
-import { makeStyles, Theme } from '@material-ui/core';
+import { Theme } from "@mui/material";
+import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles((theme: Theme) => ({
   slider: {

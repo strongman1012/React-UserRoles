@@ -5,7 +5,8 @@ import { styled } from '@mui/material/styles';
 import { Box, IconButton, Tab, Tabs } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import { CodeEditorProps } from "./CodeEditor";
-import { Theme, makeStyles } from "@material-ui/core";
+import { Theme } from "@mui/material";
+import { makeStyles } from '@mui/styles';
 import Confirm from "./popups/Confirm";
 import { TCode, TFile, TTab, actionTypes } from "../types";
 

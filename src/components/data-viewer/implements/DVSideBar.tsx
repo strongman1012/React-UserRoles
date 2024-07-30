@@ -3,8 +3,8 @@ import { Box, Divider, List, ListItemButton, ListItemIcon, ListItemText } from "
 import { FC, useEffect, useState } from "react";
 import DataObjectIcon from '@mui/icons-material/DataObject';
 import { Query } from "../types/dataViewer";
-import { Tab, Tabs, useTheme } from "@mui/material";
-import { Theme } from "@material-ui/core";
+import { Tab, Tabs } from "@mui/material";
+import useTheme from '../../../utills/styles/theme';
 
 const tabs = [
 	{
@@ -28,7 +28,7 @@ const DVSideBard: FC<SidebarProps> = (props: SidebarProps) => {
 	const [queries, setQueries] = useState<Query[]>([]);
 	const [activeTab, setActiveTab] = useState<number>(1);
 	const [selectedQuery, setSelectedQuery] = useState<Query>();
-	const theme = useTheme<Theme>();
+	const theme = useTheme;
 
 	useEffect(() => {
 		filterQueries(props.queries);
@@ -65,7 +65,7 @@ const DVSideBard: FC<SidebarProps> = (props: SidebarProps) => {
 
 	return (
 		<>
-			<Box sx={{ display: 'flex', flexDirection: 'column' }} style={{ backgroundColor: theme.palette.background.default }}>
+			<Box sx={{ display: 'flex', flexDirection: 'column' }} style={{ backgroundColor: theme.light.palette?.background?.default }}>
 
 				<Box sx={{
 					height: '100%',
@@ -79,7 +79,7 @@ const DVSideBard: FC<SidebarProps> = (props: SidebarProps) => {
 						indicatorColor="primary"
 					>
 						{tabs.map((tab, idx) => {
-							return <Tab key={idx} label={tab.name} value={tab.id} sx={{ color: theme.palette.text.primary, py: 2.5 }} />
+							return <Tab key={idx} label={tab.name} value={tab.id} sx={{ color: theme.light.palette?.text?.primary, py: 2.5 }} />
 						})}
 					</Tabs>
 
@@ -92,9 +92,9 @@ const DVSideBard: FC<SidebarProps> = (props: SidebarProps) => {
 									selected={selectedQuery?.url === query.url}
 									onClick={(e) => handleListItemClick(e, query)}>
 									<ListItemIcon sx={{ minWidth: '36px' }} >
-										<DataObjectIcon style={{ color: theme.palette.text.primary }} />
+										<DataObjectIcon style={{ color: theme.light.palette?.text?.primary }} />
 									</ListItemIcon>
-									<ListItemText data-testid={query.name} primary={query.name} sx={{ color: theme.palette.text.primary }} />
+									<ListItemText data-testid={query.name} primary={query.name} sx={{ color: theme.light.palette?.text?.primary }} />
 								</ListItemButton>
 							)
 						})}

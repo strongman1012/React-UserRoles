@@ -1,10 +1,14 @@
 import React from 'react';
 import { FC, useEffect, useState } from 'react';
 import {
-	Button, makeStyles, Grid, Typography,
-	FormControl, MenuItem, Select, TextField, Theme
-} from '@material-ui/core';
+	Button, Grid, Typography,
+	FormControl, MenuItem, Select, TextField
+} from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import DialogBox from '../../../global/DialogBox';
+import useTheme from '../../../../utills/styles/theme';
+
+const theme = useTheme;
 
 interface ICreateProps {
 	open: boolean;
@@ -13,9 +17,9 @@ interface ICreateProps {
 	onConfirm: (filename: string, ext: string) => void;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
 	select: {
-		background: theme.palette.background.default,
+		background: theme.light.palette?.background?.default,
 		boxShadow: '0px 4px 14px rgba(0, 0, 0, 0.1)',
 		borderRadius: '8px',
 		display: 'flex',
@@ -38,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 		alignItems: 'center',
 		padding: '5px',
 		gap: '1px',
-		background: theme.palette.background.default,
+		background: theme.light.palette?.background?.default,
 		boxShadow: '0px 4px 14px rgba(0, 0, 0, 0.1)',
 		borderRadius: '8px',
 		minHeight: '3vh',

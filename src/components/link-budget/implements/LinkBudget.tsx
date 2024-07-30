@@ -13,7 +13,6 @@ import ConfirmModal from './popups/Confirm';
 import SaveAsModal from './popups/SaveAs';
 import OpenModal from './popups/Open';
 import { UniqueId } from '../../../utills/functions';
-import { Theme, useTheme } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import { THEMES } from '../../../utills/constatnts/general';
 import { calculateRowsData } from '../../../utills/link-budget';
@@ -22,6 +21,7 @@ import { LinkbudgetApi } from '../../../services/link-budget/api-linkbudget';
 import { contextMenuItems, initNewData, initRow, initWidths } from './initData';
 import LinkBudgetList from './LinkBudgetList';
 import LinkBudgetEdit from './LinkBudgetEdit';
+import useTheme from '../../../utills/styles/theme';
 
 const LinkBudget: FC<LinkBudgetParams> = (props: LinkBudgetParams) => {
 
@@ -70,7 +70,7 @@ const LinkBudget: FC<LinkBudgetParams> = (props: LinkBudgetParams) => {
 
     const { enqueueSnackbar } = useSnackbar();
 
-    const theme = useTheme<Theme>();
+    const theme = useTheme;
 
     useEffect(() => {
         calculateAll(rowsData, props.source)();
@@ -651,8 +651,8 @@ const LinkBudget: FC<LinkBudgetParams> = (props: LinkBudgetParams) => {
 
                 <Card
                     style={{
-                        backgroundColor: theme.palette.background.default,
-                        color: theme.palette.text.primary
+                        backgroundColor: theme.light.palette?.background?.default,
+                        color: theme.light.palette?.text?.secondary
                     }}
                 >
                     <CardHeader

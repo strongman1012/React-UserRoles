@@ -1,17 +1,17 @@
 import React from 'react';
 import { FC } from 'react';
-import {
-    makeStyles,
-    FormHelperText,
-    Theme
-} from '@material-ui/core';
-import { Grid, Button, Typography, TextField, Box } from '@mui/material';
+import { Theme } from "@mui/material";
+import { makeStyles } from '@mui/styles';
+import { Grid, Button, Typography, TextField, Box, FormHelperText } from '@mui/material';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogBox from '../../global/DialogBox';
 import { THEMES } from '../../../utills/constatnts/general';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import useTheme from '../../../utills/styles/theme';
+
+const theme = useTheme;
 
 interface Props {
     codingRates: any[];
@@ -20,14 +20,14 @@ interface Props {
     handleCreateCodingRate: (value: any) => void;
 }
 
-const customStyles = makeStyles((theme: Theme) => ({
+const customStyles = makeStyles(() => ({
     popup: {
-        backgroundColor: theme.palette.background.paper,
-        color: theme.palette.text.primary,
+        backgroundColor: theme.light.palette?.background?.paper,
+        color: theme.light.palette?.text?.primary,
         width: '20vw'
     },
     text: {
-        color: `${theme.palette.text.primary} !important`,
+        color: `${theme.light.palette?.text?.primary} !important`,
         fontFamily: 'Roboto',
         fontStyle: 'normal',
         fontSize: '12px',
@@ -35,7 +35,7 @@ const customStyles = makeStyles((theme: Theme) => ({
         letterSpacing: ' 0.05em'
     },
     select: {
-        background: theme.palette.type === THEMES.LIGHT ? '#FFFFFF' : '#4c4c4c',
+        background: theme.light.palette?.mode === THEMES.LIGHT ? '#FFFFFF' : '#4c4c4c',
         boxShadow: '0px 4px 14px rgba(0, 0, 0, 0.1)',
         borderRadius: '8px',
         display: 'flex',
@@ -59,7 +59,7 @@ const customStyles = makeStyles((theme: Theme) => ({
         padding: '5px',
         gap: '1px',
 
-        background: theme.palette.type === THEMES.LIGHT ? '#FFFFFF' : '#4c4c4c',
+        background: theme.light.palette?.mode === THEMES.LIGHT ? '#FFFFFF' : '#4c4c4c',
         boxShadow: '0px 4px 14px rgba(0, 0, 0, 0.1)',
         borderRadius: '8px',
 

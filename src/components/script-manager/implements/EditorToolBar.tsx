@@ -4,7 +4,7 @@ import { Box, Button, styled } from '@mui/material';
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 import { CodeEditorProps } from './CodeEditor';
 import { THEMES } from '../../../utills/constatnts/general';
-import { Theme, useTheme } from '@material-ui/core';
+import { Theme, useTheme } from '@mui/material';
 import Confirm from './popups/Confirm';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
@@ -49,7 +49,7 @@ const EditorToolBar: FC<EditorToolbarProps> = ({
     const currentTheme = useTheme<Theme>();
 
     useEffect(() => {
-        currentTheme.palette.type === THEMES.LIGHT ? setLightMode(true) : setLightMode(false);
+        currentTheme.palette.mode === THEMES.LIGHT ? setLightMode(true) : setLightMode(false);
     }, [currentTheme]);
 
     const handleSave = () => {

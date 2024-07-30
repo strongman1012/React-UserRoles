@@ -1,4 +1,4 @@
-import { ThemeOptions, createTheme } from '@material-ui/core/styles';
+import { ThemeOptions, createTheme } from '@mui/material';
 
 const COSMOS_RED = '#e34747';
 
@@ -7,14 +7,6 @@ function createShadow(px: number) {
 }
 
 const lightTheme: ThemeOptions = createTheme({
-    props: {
-        MuiButtonBase: {
-            disableRipple: true
-        },
-        MuiCardHeader: {
-            titleTypographyProps: { variant: 'h6' }
-        }
-    },
     breakpoints: {
         values: {
             xs: 0,
@@ -139,7 +131,7 @@ const lightTheme: ThemeOptions = createTheme({
         }
     },
     palette: {
-        type: "light",
+        mode: "light",
         primary: {
             main: COSMOS_RED,
             light: '#ffffff',
@@ -151,7 +143,7 @@ const lightTheme: ThemeOptions = createTheme({
         },
         background: {
             default: '#f0f1f3',
-            paper: '#ffffff'
+            paper: 'rgb(25, 118, 210)',
         },
         text: {
             primary: '#737373'
@@ -161,14 +153,6 @@ const lightTheme: ThemeOptions = createTheme({
 
 
 const darkTheme: ThemeOptions = createTheme({
-    props: {
-        MuiButtonBase: {
-            disableRipple: true
-        },
-        MuiCardHeader: {
-            titleTypographyProps: { variant: 'h6' }
-        }
-    },
     breakpoints: {
         values: {
             xs: 0,
@@ -293,7 +277,7 @@ const darkTheme: ThemeOptions = createTheme({
         }
     },
     palette: {
-        type: "dark",
+        mode: "dark",
         primary: {
             main: '#e34748',
             light: '#2d2d2d',

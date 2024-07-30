@@ -8,10 +8,11 @@
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
-    "@material-ui/core": "5.0.0-alpha.34",
-    "@material-ui/icons": "5.0.0-alpha.34",
-    "@mui/icons-material": "^5.16.4",
-    "@mui/material": "^5.16.4",
+    "@mui/icons-material": "^5.10.14",
+    "@mui/material": "^5.10.14",
+    "@mui/styles": "^5.10.14",
+    "@mui/system": "^5.10.14",
+    "@mui/utils": "^5.10.14",
     "@reduxjs/toolkit": "^2.2.6",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -27,6 +28,8 @@
     "@typescript-eslint/eslint-plugin": "^7.17.0",
     "@typescript-eslint/parser": "^7.17.0",
     "@uiw/react-textarea-code-editor": "^3.0.2",
+    "ajv": "^6.12.6",
+    "ajv-keywords": "^3.5.2",
     "axios": "^1.7.2",
     "devextreme": "^24.1.4",
     "devextreme-react": "^24.1.4",
@@ -44,6 +47,7 @@
     "react-router-dom": "^6.25.1",
     "react-scripts": "5.0.1",
     "redux-persist": "^6.0.0",
+    "rrule": "^2.8.1",
     "typescript": "^4.2.4",
     "web-vitals": "^2.1.4",
     "yup": "^1.4.0"
@@ -73,10 +77,6 @@
     ]
   },
   "devDependencies": {
-    "@babel/core": "^7.23.9",
-    "@babel/preset-env": "^7.23.9",
-    "@babel/preset-react": "^7.23.3",
-    "@babel/preset-typescript": "^7.23.3",
     "@types/redux-persist": "^4.3.1"
   }
 }

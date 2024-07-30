@@ -1,67 +1,70 @@
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import { grey } from '@material-ui/core/colors';
+import { grey } from '@mui/material/colors';
+import { makeStyles } from '@mui/styles';
+import useTheme from './theme';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const theme = useTheme;
+
+const useStyles = makeStyles(() => ({
     // Page Layout
     paper: {
-        marginTop: theme.spacing(8),
+        marginTop: 8,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center'
     },
 
     introBody: {
-        minHeight: theme.spacing(130) + '!important',
-        maxHeight: theme.spacing(130) + '!important',
-        marginTop: theme.spacing(10) + '!important',
+        minHeight: 130 + '!important',
+        maxHeight: 130 + '!important',
+        marginTop: 10 + '!important',
         border: '1px solid red'
     },
 
     dialog: {
-        minWidth: theme.spacing(180) + 'px !important',
-        minHeight: theme.spacing(160) + 'px !important',
-        maxWidth: theme.spacing(180) + 'px !important',
-        maxHeight: theme.spacing(160) + 'px !important'
+        minWidth: 180 + 'px !important',
+        minHeight: 160 + 'px !important',
+        maxWidth: 180 + 'px !important',
+        maxHeight: 160 + 'px !important'
     },
     dialogDeep: {
-        minWidth: theme.spacing(160) + 'px !important',
-        minHeight: theme.spacing(175) + 'px !important',
-        maxWidth: theme.spacing(160) + 'px !important',
-        maxHeight: theme.spacing(175) + 'px !important'
+        minWidth: 160 + 'px !important',
+        minHeight: 175 + 'px !important',
+        maxWidth: 160 + 'px !important',
+        maxHeight: 175 + 'px !important'
     },
     dialogTitle: {
-        minHeight: theme.spacing(10) + '!important',
-        maxHeight: theme.spacing(10) + '!important',
+        minHeight: 10 + '!important',
+        maxHeight: 10 + '!important',
         border: '1px solid red'
     },
     dialogCloseBtn: {
         position: 'absolute',
-        right: theme.spacing(1),
-        top: theme.spacing(1),
-        color: theme.palette.grey[500],
+        right: 1,
+        top: 1,
+        color: theme.light.palette?.background?.default,
         zIndex: 100
     },
     dialogWide: {
-        minWidth: theme.spacing(350) + 'px !important',
-        minHeight: theme.spacing(150) + 'px !important',
-        maxWidth: theme.spacing(350) + 'px !important',
-        maxHeight: theme.spacing(150) + 'px !important'
+        minWidth: 350 + 'px !important',
+        minHeight: 150 + 'px !important',
+        maxWidth: 350 + 'px !important',
+        maxHeight: 150 + 'px !important'
     },
 
     visualizer: {
-        minHeight: theme.spacing(125) + '!important',
-        maxHeight: theme.spacing(125) + '!important',
-        minWidth: theme.spacing(290) + '!important',
-        maxWidth: theme.spacing(290) + '!important',
+        minHeight: 125 + '!important',
+        maxHeight: 125 + '!important',
+        minWidth: 290 + '!important',
+        maxWidth: 290 + '!important',
         margin: 'auto'
     },
 
     plotCntlBox: {
-        marginTop: theme.spacing(20)
+        marginTop: 20
     },
 
     iconBtn: {
-        padding: theme.spacing(1)
+        padding: 1
     },
     rankingLabel: {
         width: '20px',
@@ -114,8 +117,8 @@ const useStyles = makeStyles((theme: Theme) => ({
         }
     },
     extendedTab: {
-        paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(1),
+        paddingLeft: 2,
+        paddingRight: 1,
         paddingTop: '0.5rem',
         paddingBottom: '0.5rem',
         borderLeft: '1px solid #fff'
@@ -130,15 +133,15 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     rightTab: {
         position: 'absolute',
-        right: theme.spacing(3),
+        right: 3,
         paddingTop: '0.5rem',
         paddingBottom: '0.5rem'
     },
     rightAccountTab: {
         position: 'absolute',
         right: '6%',
-        paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(2),
+        paddingLeft: 2,
+        paddingRight: 2,
         paddingTop: '0.5rem',
         paddingBottom: '0.5rem',
         borderRight: '1px solid #fff'
@@ -147,7 +150,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         position: 'relative',
         paddingTop: '0.2rem',
         paddingBottom: '0.2rem',
-        paddingRight: theme.spacing(2)
+        paddingRight: 2
     },
     titleLink: {
         color: '#FFF',
@@ -157,7 +160,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         textDecoration: 'none'
     },
     link: {
-        paddingRight: theme.spacing(2),
+        paddingRight: 2,
         color: '#3385ff'
     },
     menuItem: {
@@ -179,31 +182,27 @@ const useStyles = makeStyles((theme: Theme) => ({
 
     // Auth Pages
     singupPaper: {
-        marginTop: theme.spacing(4),
+        marginTop: 4,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center'
     },
     avatar: {
-        margin: theme.spacing(1, 0, 0, 4),
-        backgroundColor: theme.palette.secondary.main
+        backgroundColor: theme.light.palette?.background?.default
     },
     form: {
         width: '100%'
     },
-    submit: {
-        margin: theme.spacing(3, 0, 2)
-    },
     phoneInput: {
-        marginTop: theme.spacing(2),
-        padding: theme.spacing(10)
+        marginTop: 2,
+        padding: 10
     },
     authcard: {
         minWidth: '30vw',
-        padding: theme.spacing(3)
+        padding: 3
     },
     menuButton: {
-        marginRight: theme.spacing(2)
+        marginRight: 2
     },
     cardHeader: {
         textAlign: 'center'
@@ -217,35 +216,33 @@ const useStyles = makeStyles((theme: Theme) => ({
         minHeight: '86vh',
         maxHeight: '86vh',
         backgroundColor: '#595959',
-        color: theme.palette.grey[100]
+        color: theme.light.palette?.background?.default
     },
     paramDisabledCard: {
         width: '3vw',
         height: '86vh',
         backgroundColor: '#595959',
-        color: theme.palette.grey[100],
-        padding: theme.spacing(0, 1, 0)
+        color: theme.light.palette?.background?.default,
     },
     paramPin: {
-        right: theme.spacing(2)
+        right: 2
     },
     paramDivider: {
-        margin: theme.spacing(2, 1, 2, 1),
-        backgroundColor: theme.palette.grey[100]
+        backgroundColor: theme.light.palette?.background?.default
     },
     paramInput: {
-        backgroundColor: theme.palette.grey[100],
-        borderRadius: theme.spacing(1)
+        backgroundColor: theme.light.palette?.background?.default,
+        borderRadius: 1
     },
     paramSelect: {
-        textIndent: theme.spacing(5)
+        textIndent: 5
     },
 
     // Dashboard Panel
     table: {
-        marginRight: theme.spacing(8),
+        marginRight: 8,
         '&:nth-of-type(odd)': {
-            backgroundColor: theme.palette.action.hover
+            backgroundColor: theme.light.palette?.action?.hover
         }
     },
     darkTableCell: {
@@ -253,24 +250,24 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 
     deepDiveInput: {
-        backgroundColor: theme.palette.grey[100],
-        borderRadius: theme.spacing(1),
+        backgroundColor: theme.light.palette?.background?.default,
+        borderRadius: 1,
         border: '1px solid #000'
     },
 
     // Chart Panel Dialog
     fab: {
-        top: theme.spacing(2)
+        top: 2
     },
     fabClose: {
         position: 'fixed',
-        top: theme.spacing(14),
-        right: theme.spacing(86),
+        top: 14,
+        right: 86,
         zIndex: 10
     },
     cancelButton: {
         position: 'absolute',
-        left: theme.spacing(3)
+        left: 3
     },
     chartBar: {
         position: 'fixed',
@@ -289,24 +286,24 @@ const useStyles = makeStyles((theme: Theme) => ({
         margin: '0 auto'
     },
     chartDialog: {
-        width: theme.spacing(90) + '!important',
+        width: 90 + '!important',
         margin: 0,
-        backgroundColor: theme.palette.background.default,
+        backgroundColor: theme.light.palette?.background?.default,
         right: 0,
         top: 0
     },
     subChartDialog: {
-        width: theme.spacing(100) + '!important',
+        width: 100 + '!important',
         height: '63vh !important'
     },
 
     // Explore Summary Panel
     cover: {
         width: '100%',
-        borderRadius: theme.spacing(1)
+        borderRadius: 1
     },
     coverCard: {
-        marginLeft: theme.spacing(2),
+        marginLeft: 2,
         padding: 0,
         textAlign: 'center'
     },
@@ -324,15 +321,11 @@ const useStyles = makeStyles((theme: Theme) => ({
         justifyContent: 'space-between'
     },
 
-    // Search Section
-    searchCard: {
-        backgroundColor: grey[100]
-    },
     searchSelect: {
         textAlignLast: 'center'
     },
     searchYearInput: {
-        marginLeft: theme.spacing(2)
+        marginLeft: 2
     },
     chartPinBar: {
         writingMode: 'vertical-rl',
@@ -362,9 +355,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     closeButton: {
         position: 'absolute',
-        right: theme.spacing(1),
-        top: theme.spacing(1),
-        color: theme.palette.grey[500],
+        right: 1,
+        top: 1,
+        color: theme.light.palette?.background?.default,
         zIndex: 100
     },
     introItem: {
@@ -373,7 +366,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     introContent: {
         height: '87%',
-        padding: theme.spacing(3, 8, 3, 8)
     },
 
     // Analyze Result Page
@@ -392,7 +384,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         //width: "28vw",
         height: '86vh',
         backgroundColor: '#595959',
-        color: theme.palette.grey[100]
+        color: theme.light.palette?.background?.default
     },
     visualChartCard: {
         overflowY: 'auto',
@@ -401,12 +393,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     visualChartDisabledCard: {
         width: '3vw',
         height: '86vh',
-        padding: theme.spacing(0, 1, 0)
     },
 
     pdfFullScreenButton: {
         position: 'absolute',
-        right: theme.spacing(5)
+        right: 5
     },
 
     // Septrum Panel
@@ -435,7 +426,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         width: '130px',
         margin: '0px',
         marginTop: '5px',
-        borderColor: theme.palette.primary.main
+        borderColor: theme.light.palette?.background?.default
     }
 }));
 

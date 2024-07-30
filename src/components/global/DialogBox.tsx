@@ -1,10 +1,8 @@
 import React, { FC } from 'react';
 import {
-    CssBaseline,
-    useTheme,
-    makeStyles,
-    Theme
-} from '@material-ui/core';
+    CssBaseline
+} from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { TransitionProps } from '@mui/material/transitions';
 import {
     Dialog,
@@ -16,15 +14,16 @@ import {
 import Slide from '@mui/material/Slide';
 import CloseIcon from '@mui/icons-material/Close';
 import useStyles from '../../utills/styles/styles';
+import useTheme from '../../utills/styles/theme';
 
 /********************************************************************************/
 // PLEASE DO NOT CHANGE THIS FILE! Changes here affect all instances of DialogBox.
 /********************************************************************************/
-
-const newStyles = makeStyles((theme: Theme) => ({
+const theme = useTheme;
+const newStyles = makeStyles(() => ({
     dialogBox: {
         '& > div > div': {
-            border: `2px solid ${theme.palette.primary.main}`,
+            border: `2px solid ${theme.light.palette?.primary}`,
             borderRadius: '8px',
             maxWidth: 'none'
         }
@@ -69,7 +68,6 @@ const DialogBox: FC<DialogBoxProps> = ({
 }) => {
     const styles = useStyles();
     const newClasses = newStyles();
-    const theme: Theme = useTheme();
 
     const hideClose = hideX ?? false;
 
@@ -92,7 +90,7 @@ const DialogBox: FC<DialogBoxProps> = ({
                 style={{
                     margin: 0,
                     padding: '8px 16px',
-                    backgroundColor: theme.palette.primary.main,
+                    backgroundColor: theme.light.palette?.background?.default,
                     color: "white",
                     alignItems: "center",
                     display: "flex",
@@ -106,7 +104,7 @@ const DialogBox: FC<DialogBoxProps> = ({
                     <IconButton
                         aria-label="Close"
                         className={styles.dialogCloseBtn}
-                        style={{ color: theme.palette.background.default }}
+                        style={{ color: theme.light.palette?.background?.default }}
                         onClick={onClose}
                         size="small"
                     >

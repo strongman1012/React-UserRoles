@@ -8,12 +8,14 @@ import { TFile, actionTypes } from "../types";
 import { Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Tooltip, Button, Typography, MenuList, MenuItem } from "@mui/material";
 import { THEMES } from '../../../utills/constatnts/general';
 import { Paper } from "@mui/material";
-import { Theme, makeStyles } from "@material-ui/core";
-import { useTheme } from '@material-ui/core';
+import { Theme } from "@mui/material";
+import { makeStyles } from '@mui/styles';
 import CreateScript from "./popups/CreateScript";
 import AddIcon from '@mui/icons-material/Add';
 import { generateUUID } from "../../../utills/functions";
-import themes from "../../../utills/styles/theme";
+import useTheme from '../../../utills/styles/theme';
+
+const theme = useTheme;
 
 enum ext {
     javascript = '.js',
@@ -36,17 +38,17 @@ export interface FileListProps {
     resetScript?: (script: TFile) => void;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
     tabDrawer: {
         '& .MuiDrawer-paper': {
-            backgroundColor: theme.palette.background.default,
-            color: theme.palette.background.default
+            backgroundColor: theme.light.palette?.background?.default,
+            color: theme.light.palette?.background?.default
         }
     },
     labelText: {
         fontWeight: 'inherit',
         flexGrow: 1,
-        color: theme.palette.text.primary,
+        color: theme.light.palette?.text?.primary,
         padding: '0.25rem'
     },
 }));
@@ -66,7 +68,6 @@ const FileList: FC<FileListProps> = ({
 
     const [lightMode, setLightMode] = useState<boolean>();
     const classes = useStyles();
-    const theme = useTheme<Theme>();
     const [createNewDialog, setCreateNewDialog] = useState<boolean>(false);
     const [contextMenu, setShowContextMenu] = useState<{ visible: boolean, x: number, y: number, editable: boolean, custom: boolean, file: TFile | undefined }>({ visible: false, x: 0, y: 0, editable: false, custom: false, file: undefined });
     const [uploadFile, setUploadFile] = useState<TFile | undefined>(undefined);
@@ -75,7 +76,7 @@ const FileList: FC<FileListProps> = ({
     const drawOpened = true;
 
     useEffect(() => {
-        theme.palette.type === THEMES.LIGHT ? setLightMode(true) : setLightMode(false);
+        theme.light.palette?.mode === THEMES.LIGHT ? setLightMode(true) : setLightMode(false);
     }, [theme]);
 
     /**
@@ -200,21 +201,10 @@ const FileList: FC<FileListProps> = ({
                 open={drawOpened}
                 className={classes.tabDrawer}
             >
-                <List sx={{
+                <List style={{
                     padding: '12px 12px',
                     overflowY: 'scroll',
-                    maxHeight: '650px',
-                    '&::-webkit-scrollbar': {
-                        width: '0.4em'
-                    },
-                    '&::-webkit-scrollbar-track': {
-                        boxShadow: theme.palette.background.paper,
-                        webkitBoxShadow: theme.palette.background.paper
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                        backgroundColor: theme.palette.grey[400],
-                        borderRadius: '5px'
-                    }
+                    maxHeight: '650px'
                 }}>
                     {scriptList?.map((file: TFile) => (
                         <ListItem key={file.name}
@@ -224,7 +214,7 @@ const FileList: FC<FileListProps> = ({
                             sx={{
                                 padding: '6px 12px',
                                 borderRadius: '5px',
-                                color: themes.light.palette?.text?.primary,
+                                color: theme.light.palette?.text?.primary,
                                 '&.active': lightMode
                                     ? { backgroundColor: '#EEE !important', color: '#000 !important' }
                                     : { backgroundColor: '#333 !important' },

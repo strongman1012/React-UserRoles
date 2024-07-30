@@ -5,37 +5,40 @@ import DataGrid, {
 } from "devextreme-react/data-grid";
 import { FC, useEffect, useState } from "react";
 import { DatasetName, IColWidth, ParamGroup, Row } from "../types/LinkBudgetTypes";
-import { Theme, makeStyles } from "@material-ui/core";
+import { Theme } from "@mui/material";
+import { makeStyles } from '@mui/styles';
 import { initWidths } from "./initData";
 import * as excelJS from 'exceljs';
 import { saveAs as saveAsFile } from 'file-saver';
 import { Button } from "devextreme-react";
+import useTheme from '../../../utills/styles/theme';
+const theme = useTheme;
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
     button: {
-        // backgroundColor: theme.palette.background.paper,
-        color: theme.palette.text.primary
+        // backgroundColor: theme.light.palette?.background?.paper,
+        color: theme.light.palette?.text?.primary
     },
     root: {
-        backgroundColor: theme.palette.background.default,
-        color: theme.palette.text.primary
+        backgroundColor: theme.light.palette?.background?.default,
+        color: theme.light.palette?.text?.primary
     },
     table: {
         '& .dx-datagrid-header-panel, & .dx-toolbar-items-container': {
-            background: theme.palette.background.default
+            background: theme.light.palette?.background?.default
         },
         '& .dx-button-content': {
-            color: theme.palette.primary.light,
-            backgroundColor: theme.palette.primary.main
+            color: theme.light.palette?.text?.primary,
+            backgroundColor: theme.light.palette?.background?.paper
         },
         '& .dx-datagrid, & .dx-gridbase-container, & .dx-datagrid-borders': {
             borderColor: 'black'
         },
         '& .dx-row, & .dx-data-row & .dx-row-lines': {
-            color: theme.palette.text.primary
+            color: theme.light.palette?.text?.primary
         },
         '& .dx-texteditor-input': {
-            color: theme.palette.text.primary
+            color: theme.light.palette?.text?.primary
         },
         '& .dx-datagrid-content, & .dx-datagrid-table.dx-datagrid-table-fixed': {
             maxWidth: '100%'
@@ -44,14 +47,14 @@ const useStyles = makeStyles((theme: Theme) => ({
             color: 'white'
         },
         '& .dx-button.dx-state-hover': {
-            backgroundColor: theme.palette.grey[700]
+            backgroundColor: theme.light.palette?.primary
         },
         '& .dx-datagrid .dx-link': {
-            color: theme.palette.text.primary
+            color: theme.light.palette?.text?.primary
         }
     },
     marginRow: {
-        backgroundColor: theme.palette.background.default
+        backgroundColor: theme.light.palette?.background?.default
     }
 }));
 

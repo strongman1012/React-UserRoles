@@ -15,18 +15,21 @@ import { Workbook } from 'exceljs';
 import { saveAs } from 'file-saver';
 import DetailComponent from "./DetailComponent";
 import ColumnFilterModal, { ColumnFilter } from "./ColumnFilterModal";
-import { useTheme, makeStyles, Theme } from "@material-ui/core";
+import { makeStyles } from '@mui/styles';
 import { dataApiService } from "../../../services";
 import { Query, rowStatus } from "../types/dataViewer";
+import useTheme from '../../../utills/styles/theme';
+
+const theme = useTheme;
 
 interface ContentProps {
 	query: Query | undefined;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
 	table: {
-		'& .dx-datagrid-borders > .dx-datagrid-header-panel': theme.palette.background.default,
-		'& .dx-toolbar .dx-toolbar-items-container': theme.palette.background.default,
+		'& .dx-datagrid-borders > .dx-datagrid-header-panel': theme.light.palette?.background?.default,
+		'& .dx-toolbar .dx-toolbar-items-container': theme.light.palette?.background?.default,
 		'& .dx-datagrid-search-panel': '#4c4c4c'
 	},
 }));
@@ -42,7 +45,6 @@ const DVContent: FC<ContentProps> = (props: ContentProps) => {
 	const [arrowIcon, setArrowIcon] = useState<boolean>(false);
 	const [isColumnSelectorOpen, setIsColumnSelectorOpen] = useState(false);
 	const [columnsFilter, setColumnsFilter] = useState<ColumnFilter[]>([]);
-	const theme = useTheme<Theme>();
 
 	useEffect(() => {
 		props.query && getFileData(props.query);

@@ -1,5 +1,4 @@
 import React from 'react';
-import 'devextreme/dist/css/dx.light.css';
 import { FC, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Login from './pages/Login';
@@ -9,6 +8,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
 import TestDashboard from './components/TestDashboard';
 import { THEMES } from './utills/constatnts/general';
+import 'devextreme/dist/css/dx.light.css';
 
 const App: FC = () => {
   const [themeName, setThemeName] = useState<string>(THEMES.LIGHT);

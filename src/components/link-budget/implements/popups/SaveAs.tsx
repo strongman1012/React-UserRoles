@@ -1,7 +1,8 @@
 import React from 'react';
 import { FC, useEffect, useState } from "react";
 import DialogBox from "../../../global/DialogBox";
-import { makeStyles, Theme } from "@material-ui/core";
+import { Theme } from "@mui/material";
+import { makeStyles } from '@mui/styles';
 import { Button, Grid, TextField } from "@mui/material"
 import { DatasetName } from "../../types/LinkBudgetTypes";
 

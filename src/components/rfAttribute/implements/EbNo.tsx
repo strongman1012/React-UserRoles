@@ -1,8 +1,6 @@
 import React from 'react';
-import {
-	makeStyles,
-	Theme
-} from '@material-ui/core';
+import { Theme } from "@mui/material";
+import { makeStyles } from '@mui/styles';
 import { Select, MenuItem, Button, Card, Box, Divider, CardContent, Grid } from '@mui/material';
 import { DataGrid } from 'devextreme-react';
 import { Column, Editing, FilterRow } from 'devextreme-react/data-grid';
@@ -11,35 +9,38 @@ import { THEMES } from '../../../utills/constatnts/general';
 import AddIcon from '@mui/icons-material/Add';
 import EbNoModal from './EbNoModal';
 import { EbNo as EbNoType, NewEbNo, AttrValue, UpdateEbNo, DeleteEbNo } from '../types/msTypes';
+import useTheme from '../../../utills/styles/theme';
 
-const customStyles = makeStyles((theme: Theme) => ({
+const theme = useTheme;
+
+const customStyles = makeStyles(() => ({
 	dataTableStyle: {
 		'& .dx-row.dx-header-row': {
-			backgroundColor: theme.palette.background.paper,
+			backgroundColor: theme.light.palette?.background?.paper,
 			fontWeight: 'bold',
 			color: '#333333'
 		},
 		'& .dx-command-edit.dx-command-edit-with-icons': {
 			textAlign: 'right !important',
 			'& *': {
-				// color: `${theme.palette.border?.main} !important`
+				// color: `${theme.light.palette?.border??.main} !important`
 			}
 		},
 		height: '66vh',
-		'& .dx-datagrid .dx-editor-with-menu .dx-menu-item-content .dx-icon.dx-icon-filter-operation-default': { color: theme.palette.text.primary },
-		'& .dx-datagrid .dx-editor-with-menu .dx-texteditor .dx-texteditor-input': { color: theme.palette.text.primary },
-		'& .dx-editor-container': { backgroundColor: theme.palette.type === THEMES.DARK ? '#333333' : `` },
+		'& .dx-datagrid .dx-editor-with-menu .dx-menu-item-content .dx-icon.dx-icon-filter-operation-default': { color: theme.light.palette?.text?.primary },
+		'& .dx-datagrid .dx-editor-with-menu .dx-texteditor .dx-texteditor-input': { color: theme.light.palette?.text?.primary },
+		'& .dx-editor-container': { backgroundColor: theme.light.palette?.mode === THEMES.DARK ? '#333333' : `` },
 		'& .dx-datagrid .dx-datagrid-content .dx-datagrid-table .dx-row:nth-child(2) > .dx-command-edit.dx-command-edit-with-icons': {
-			backgroundColor: theme.palette.type === THEMES.DARK ? '#333333' : ''
+			backgroundColor: theme.light.palette?.mode === THEMES.DARK ? '#333333' : ''
 		},
-		'& .dx-editor-cell .dx-texteditor .dx-texteditor-input': { color: theme.palette.text.primary },
+		'& .dx-editor-cell .dx-texteditor .dx-texteditor-input': { color: theme.light.palette?.text?.primary },
 		// Change edit border bottom color of filter row
 		'& .dx-datagrid-focus-overlay:after': {
 			backgroundColor: 'rgb(227, 71, 72) !important',
 		},
 	},
 	text: {
-		color: `${theme.palette.text.primary} !important`,
+		color: `${theme.light.palette?.text?.primary} !important`,
 		fontFamily: 'Roboto',
 		fontStyle: 'normal',
 		fontSize: '12px',
@@ -48,7 +49,7 @@ const customStyles = makeStyles((theme: Theme) => ({
 		display: 'flex'
 	},
 	select: {
-		background: theme.palette.type === THEMES.LIGHT ? '#FFFFFF' : '#4c4c4c',
+		background: theme.light.palette?.mode === THEMES.LIGHT ? '#FFFFFF' : '#4c4c4c',
 		boxShadow: '0px 4px 14px rgba(0, 0, 0, 0.1)',
 		borderRadius: '8px',
 		display: 'flex',

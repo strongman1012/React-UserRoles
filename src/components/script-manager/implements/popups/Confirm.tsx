@@ -1,6 +1,7 @@
 import React from 'react';
 import { FC } from 'react';
-import { Button, makeStyles, Grid, Typography, Theme } from '@material-ui/core';
+import { Button, Grid, Typography, Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import DialogBox from '../../../global/DialogBox';
 
 interface IConfirmProps {
