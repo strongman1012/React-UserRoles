@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { TextField, Stack, Typography, Button, FormControlLabel, Switch, Grid, Snackbar, Alert, MenuItem, Select, InputLabel, FormControl, SelectChangeEvent } from '@mui/material';
+import { TextField, Stack, Typography, Button, FormControlLabel, Switch, Grid, Snackbar, Alert, Autocomplete } from '@mui/material';
 import { RootState } from '../../store/store';
 import { useAppDispatch } from '../../store/hooks';
 import { useSelector } from 'react-redux';
@@ -39,6 +39,7 @@ const NewBusinessUnit: FC<NewBusinessUnitProps> = ({ onClose }) => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
+    const [selectedParentBusinessUnit, setSelectedParentBusinessUnit] = useState<any | null>(null);
 
     useEffect(() => {
         dispatch(fetchBusinessUnits());
@@ -55,14 +56,6 @@ const NewBusinessUnit: FC<NewBusinessUnitProps> = ({ onClose }) => {
         setFormData({
             ...formData,
             [name]: value,
-        });
-    };
-
-    const handleSelectChange = (e: SelectChangeEvent<number>) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name as string]: value,
         });
     };
 
@@ -91,8 +84,16 @@ const NewBusinessUnit: FC<NewBusinessUnitProps> = ({ onClose }) => {
         setSnackbarOpen(false);
     };
 
+    const handleParentBusinessUnitChange = (event: any, value: any) => {
+        setSelectedParentBusinessUnit(value);
+        setFormData((prevData) => ({
+            ...prevData,
+            parent_id: value?.id || null,
+        }));
+    };
+
     return (
-        <Stack spacing={3} padding={3}>
+        <Stack spacing={3} padding={3} width="100%">
             <Typography variant="h4">New Business Unit</Typography>
             <Stack direction="row" spacing={2}>
                 {userAccessLevel !== 5 && (
@@ -121,24 +122,15 @@ const NewBusinessUnit: FC<NewBusinessUnitProps> = ({ onClose }) => {
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <FormControl fullWidth>
-                                <InputLabel id="parent-select-label">Parent Business</InputLabel>
-                                <Select
-                                    labelId="parent-select-label"
-                                    name="parent_id"
-                                    value={formData.parent_id || ''}
-                                    onChange={handleSelectChange}
-                                >
-                                    <MenuItem value="">
-                                        <em>None</em>
-                                    </MenuItem>
-                                    {allBusinessUnits.map((unit) => (
-                                        <MenuItem key={unit.id} value={unit.id}>
-                                            {unit.name}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
+                            <Autocomplete
+                                options={allBusinessUnits}
+                                getOptionLabel={(option) => option.name}
+                                value={selectedParentBusinessUnit}
+                                onChange={handleParentBusinessUnitChange}
+                                renderInput={(params) => (
+                                    <TextField {...params} label="Parent Business" fullWidth />
+                                )}
+                            />
                         </Grid>
                         <Grid item xs={12}>
                             <TextField

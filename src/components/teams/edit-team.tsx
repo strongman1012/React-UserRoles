@@ -1,12 +1,16 @@
 import React, { FC, useEffect, useState } from 'react';
-import { TextField, Stack, Typography, Button, FormControlLabel, Switch, Grid, Snackbar, Alert, MenuItem, Select, InputLabel, FormControl, SelectChangeEvent } from '@mui/material';
+import {
+    TextField, Stack, Typography, Button, FormControlLabel, Switch, Grid, Snackbar, Alert, Autocomplete, Checkbox, Chip, Dialog, DialogTitle, DialogContent, DialogActions, FormGroup
+} from '@mui/material';
 import { RootState } from '../../store/store';
 import { useAppDispatch } from '../../store/hooks';
 import { useSelector } from 'react-redux';
 import { fetchTeamById, updateTeamById } from '../../reducers/teams/teamsSlice';
 import { fetchBusinessUnits } from '../../reducers/businessUnits/businessUnitsSlice';
 import { fetchUsers } from '../../reducers/users/usersSlice';
+import { fetchRoles } from '../../reducers/roles/rolesSlice';
 import { Team } from '../../reducers/teams/teamsAPI';
+import { User } from 'src/reducers/users/usersAPI';
 import { DataGrid, Column, SearchPanel, Paging, Pager } from 'devextreme-react/data-grid';
 
 interface EditTeamProps {
@@ -20,20 +24,33 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
     const team = useSelector((state: RootState) => state.teams.currentTeam);
     const allBusinessUnits = useSelector((state: RootState) => state.businessUnits.allBusinessUnits);
     const allUsers = useSelector((state: RootState) => state.users.allUsers);
+    const roles = useSelector((state: RootState) => state.roles.allRoles);
     const [formData, setFormData] = useState<Team | null>(null);
-    const [teamMembers, setTeamMembers] = useState<any[]>([]);
-    const [selectedUser, setSelectedUser] = useState<number | null>(null);
+    const [selectedMembers, setSelectedMembers] = useState<User[]>([]);
+    const [initialMembers, setInitialMembers] = useState<User[]>([]);
+    const [removeMembers, setRemoveMembers] = useState<User[]>([]);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
+    const [rolesModalOpen, setRolesModalOpen] = useState(false);
+    const [selectedRoleId, setSelectedRoleId] = useState<number | null>(null);
 
     useEffect(() => {
         if (teamId) {
             dispatch(fetchTeamById(teamId));
             dispatch(fetchBusinessUnits());
             dispatch(fetchUsers());
+            dispatch(fetchRoles());
         }
     }, [dispatch, teamId]);
+
+    useEffect(() => {
+        if (teamId && allUsers) {
+            const members = allUsers.filter(user => user.team_id === teamId);
+            setSelectedMembers(members);
+            setInitialMembers(members);
+        }
+    }, [teamId, allUsers]);
 
     useEffect(() => {
         if (team) {
@@ -49,12 +66,11 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
         });
     };
 
-    const handleSelectChange = (e: SelectChangeEvent<number>) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData!,
-            [name as string]: value,
-        });
+    const handleAutocompleteChange = (event: any, value: any, field: string) => {
+        setFormData((prevData) => ({
+            ...prevData!,
+            [field]: value?.id || null,
+        }));
     };
 
     const handleIsDefaultChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,7 +83,12 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
     const handleSave = async () => {
         if (formData) {
             try {
-                await dispatch(updateTeamById(auth.role_id, teamId, formData));
+                const updatedData = {
+                    ...formData,
+                    ids: selectedMembers.map(member => member.id),
+                    removeIds: removeMembers.map(member => member.id),
+                };
+                await dispatch(updateTeamById(auth.role_id, teamId, updatedData));
                 setSnackbarMessage('Team updated successfully');
                 setSnackbarSeverity('success');
                 setSnackbarOpen(true);
@@ -83,14 +104,32 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
         setSnackbarOpen(false);
     };
 
-    const handleAddMember = () => {
-        if (selectedUser !== null) {
-            const user = allUsers.find(user => user.id === selectedUser);
-            if (user) {
-                setTeamMembers([...teamMembers, user]);
-                setSelectedUser(null);
-            }
+    const handleMemberChange = (event: any, value: any) => {
+        setSelectedMembers(value);
+        const membersToRemove = initialMembers.filter(initialMember => !value.some((newMember: User) => newMember.id === initialMember.id));
+        setRemoveMembers(membersToRemove);
+    };
+
+    const handleManageRolesClick = () => {
+        setRolesModalOpen(true);
+    };
+
+    const handleRoleChange = async (roleId: number) => {
+        setSelectedRoleId(roleId);
+        try {
+            await dispatch(updateTeamById(auth.role_id, teamId, { ...formData, role_id: roleId }));
+            setSnackbarMessage('Team role updated successfully');
+            setSnackbarSeverity('success');
+            setSnackbarOpen(true);
+        } catch (error: any) {
+            setSnackbarMessage('Error updating team role');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
         }
+    };
+
+    const handleRolesModalClose = () => {
+        setRolesModalOpen(false);
     };
 
     if (!formData) {
@@ -98,7 +137,7 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
     }
 
     return (
-        <Stack spacing={3} padding={3}>
+        <Stack spacing={3} padding={3} width="100%">
             <Typography variant="h4">Edit Team</Typography>
             <Stack direction="row" spacing={2}>
                 <Button variant="contained" color="primary" onClick={handleSave}>
@@ -106,6 +145,9 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
                 </Button>
                 <Button variant="outlined" color="secondary" onClick={onClose}>
                     Cancel
+                </Button>
+                <Button variant="outlined" color="primary" onClick={handleManageRolesClick}>
+                    Manage Roles
                 </Button>
             </Stack>
             <Grid container spacing={2}>
@@ -125,38 +167,26 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <FormControl fullWidth>
-                                <InputLabel id="business-unit-select-label">Business Unit</InputLabel>
-                                <Select
-                                    labelId="business-unit-select-label"
-                                    name="business_unit_id"
-                                    value={formData.business_unit_id}
-                                    onChange={handleSelectChange}
-                                >
-                                    {allBusinessUnits.map((unit) => (
-                                        <MenuItem key={unit.id} value={unit.id}>
-                                            {unit.name}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
+                            <Autocomplete
+                                options={allBusinessUnits}
+                                getOptionLabel={(option) => option.name}
+                                value={allBusinessUnits.find(unit => unit.id === formData.business_unit_id) || null}
+                                onChange={(event, value) => handleAutocompleteChange(event, value, 'business_unit_id')}
+                                renderInput={(params) => (
+                                    <TextField {...params} label="Business Unit" fullWidth />
+                                )}
+                            />
                         </Grid>
                         <Grid item xs={12}>
-                            <FormControl fullWidth>
-                                <InputLabel id="admin-select-label">Administrator</InputLabel>
-                                <Select
-                                    labelId="admin-select-label"
-                                    name="admin_id"
-                                    value={formData.admin_id}
-                                    onChange={handleSelectChange}
-                                >
-                                    {allUsers.map((user) => (
-                                        <MenuItem key={user.id} value={user.id}>
-                                            {user.userName}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
+                            <Autocomplete
+                                options={allUsers}
+                                getOptionLabel={(option) => option.userName}
+                                value={allUsers.find(user => user.id === formData.admin_id) || null}
+                                onChange={(event, value) => handleAutocompleteChange(event, value, 'admin_id')}
+                                renderInput={(params) => (
+                                    <TextField {...params} label="Administrator" fullWidth />
+                                )}
+                            />
                         </Grid>
                         <Grid item xs={12}>
                             <TextField
@@ -184,39 +214,51 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
                     </Grid>
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <Typography variant="h6">Team Members</Typography>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
-                            <FormControl fullWidth>
-                                <Select
-                                    labelId="add-member-select-label"
-                                    value={selectedUser}
-                                    onChange={(e) => setSelectedUser(e.target.value as number)}
-                                >
-                                    {allUsers.map(user => (
-                                        <MenuItem key={user.id} value={user.id}>
-                                            {user.userName}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                            <Button variant="contained" color="primary" onClick={handleAddMember} style={{ marginTop: 16 }}>
-                                Add Member
-                            </Button>
+                            <Typography variant="h6">Team Members</Typography>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Autocomplete
+                                multiple
+                                limitTags={3}
+                                options={allUsers}
+                                getOptionLabel={(option) => option.userName}
+                                value={selectedMembers}
+                                onChange={handleMemberChange}
+                                renderTags={(value, getTagProps) =>
+                                    value.map((option, index) => (
+                                        <Chip label={option.fullName ? option.fullName : option.userName} {...getTagProps({ index })} />
+                                    ))
+                                }
+                                renderOption={(props, option, { selected }) => (
+                                    <li {...props}>
+                                        <Checkbox
+                                            checked={selected}
+                                            style={{ marginRight: 8 }}
+                                        />
+                                        {option.fullName ? option.fullName : option.userName}
+                                    </li>
+                                )}
+                                renderInput={(params) => (
+                                    <TextField {...params} label="Search Team Members" placeholder="Add members" fullWidth />
+                                )}
+                            />
                         </Grid>
                         <Grid item xs={12}>
                             <DataGrid
-                                dataSource={teamMembers}
+                                dataSource={selectedMembers}
                                 keyExpr="id"
                                 columnAutoWidth={true}
                                 showRowLines={true}
                                 showBorders={true}
                             >
                                 <SearchPanel visible={true} />
-                                <Paging defaultPageSize={5} />
-                                <Pager showPageSizeSelector={true} allowedPageSizes={[5, 10, 20]} />
+                                <Paging defaultPageSize={10} />
+                                <Pager showPageSizeSelector={true} allowedPageSizes={[5, 10]} />
+                                <Column dataField="userName" caption="User Name" />
                                 <Column dataField="fullName" caption="Full Name" />
-                                <Column dataField="businessUnitName" caption="Business Unit" />
+                                <Column dataField="business_name" caption="Business Unit" />
                             </DataGrid>
                         </Grid>
                     </Grid>
@@ -227,6 +269,33 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
                     {snackbarMessage}
                 </Alert>
             </Snackbar>
+            <Dialog open={rolesModalOpen} onClose={handleRolesModalClose}>
+                <DialogTitle>Manage Team Roles</DialogTitle>
+                <DialogContent>
+                    <FormGroup>
+                        {roles.map((role) => (
+                            <FormControlLabel
+                                key={role.id}
+                                control={
+                                    <Checkbox
+                                        checked={selectedRoleId === role.id}
+                                        onChange={() => handleRoleChange(role.id)}
+                                    />
+                                }
+                                label={`${role.name}`}
+                            />
+                        ))}
+                    </FormGroup>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleRolesModalClose} color="primary">
+                        OK
+                    </Button>
+                    <Button onClick={handleRolesModalClose} color="secondary">
+                        Cancel
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Stack>
     );
 };

@@ -5,11 +5,14 @@ export interface Team {
     id: number;
     name: string;
     description?: string;
-    business_unit_id: number;
-    admin_id: number;
+    business_unit_id?: number;
+    admin_id?: number;
     is_default: boolean;
     business_name?: string;
     admin_name?: string;
+    ids?: number[];
+    removeIds?: number[];
+    role_id?: number;
 }
 
 // Fetch all teams

@@ -1,5 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
-import { TextField, Stack, Typography, Button, FormControlLabel, Switch, Grid, Snackbar, Alert, MenuItem, Select, InputLabel, FormControl, SelectChangeEvent } from '@mui/material';
+import {
+    TextField, Stack, Typography, Button, FormControlLabel, Switch, Grid, Snackbar, Alert, Autocomplete, Checkbox, Chip
+} from '@mui/material';
 import { RootState } from '../../store/store';
 import { useAppDispatch } from '../../store/hooks';
 import { useSelector } from 'react-redux';
@@ -7,6 +9,8 @@ import { fetchBusinessUnits } from '../../reducers/businessUnits/businessUnitsSl
 import { fetchUsers } from '../../reducers/users/usersSlice';
 import { createTeam } from '../../reducers/teams/teamsSlice';
 import { Team } from '../../reducers/teams/teamsAPI';
+import { User } from '../../reducers/users/usersAPI';
+import { DataGrid, Column, SearchPanel, Paging, Pager } from 'devextreme-react/data-grid';
 
 interface NewTeamProps {
     onClose: () => void;
@@ -27,6 +31,7 @@ const NewTeam: FC<NewTeamProps> = ({ onClose }) => {
     };
 
     const [formData, setFormData] = useState(initialFormData);
+    const [selectedMembers, setSelectedMembers] = useState<User[]>([]);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
@@ -44,12 +49,11 @@ const NewTeam: FC<NewTeamProps> = ({ onClose }) => {
         });
     };
 
-    const handleSelectChange = (e: SelectChangeEvent<number>) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name as string]: value,
-        });
+    const handleAutocompleteChange = (event: any, value: any, field: string) => {
+        setFormData((prevData) => ({
+            ...prevData!,
+            [field]: value?.id || null,
+        }));
     };
 
     const handleIsDefaultChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,7 +65,11 @@ const NewTeam: FC<NewTeamProps> = ({ onClose }) => {
 
     const handleSave = async () => {
         try {
-            await dispatch(createTeam(auth.role_id, formData));
+            const newTeamData = {
+                ...formData,
+                ids: selectedMembers.map(member => member.id),
+            };
+            await dispatch(createTeam(auth.role_id, newTeamData));
             setSnackbarMessage('Team created successfully');
             setSnackbarSeverity('success');
             setSnackbarOpen(true);
@@ -77,8 +85,12 @@ const NewTeam: FC<NewTeamProps> = ({ onClose }) => {
         setSnackbarOpen(false);
     };
 
+    const handleMemberChange = (event: any, value: any) => {
+        setSelectedMembers(value);
+    };
+
     return (
-        <Stack spacing={3} padding={3}>
+        <Stack spacing={3} padding={3} width="100%">
             <Typography variant="h4">New Team</Typography>
             <Stack direction="row" spacing={2}>
                 <Button variant="contained" color="primary" onClick={handleSave}>
@@ -105,43 +117,27 @@ const NewTeam: FC<NewTeamProps> = ({ onClose }) => {
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <FormControl fullWidth>
-                                <InputLabel id="business-unit-select-label">Business Unit</InputLabel>
-                                <Select
-                                    labelId="business-unit-select-label"
-                                    name="business_unit_id"
-                                    value={formData.business_unit_id}
-                                    onChange={handleSelectChange}
-                                >
-                                    {allBusinessUnits.map((unit) => (
-                                        <MenuItem key={unit.id} value={unit.id}>
-                                            {unit.name}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
+                            <Autocomplete
+                                options={allBusinessUnits}
+                                getOptionLabel={(option) => option.name}
+                                value={allBusinessUnits.find(unit => unit.id === formData.business_unit_id) || null}
+                                onChange={(event, value) => handleAutocompleteChange(event, value, 'business_unit_id')}
+                                renderInput={(params) => (
+                                    <TextField {...params} label="Business Unit" fullWidth />
+                                )}
+                            />
                         </Grid>
                         <Grid item xs={12}>
-                            <FormControl fullWidth>
-                                <InputLabel id="admin-select-label">Administrator</InputLabel>
-                                <Select
-                                    labelId="admin-select-label"
-                                    name="admin_id"
-                                    value={formData.admin_id}
-                                    onChange={handleSelectChange}
-                                >
-                                    {allUsers.map((user) => (
-                                        <MenuItem key={user.id} value={user.id}>
-                                            {user.userName}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
+                            <Autocomplete
+                                options={allUsers}
+                                getOptionLabel={(option) => option.userName}
+                                value={allUsers.find(user => user.id === formData.admin_id) || null}
+                                onChange={(event, value) => handleAutocompleteChange(event, value, 'admin_id')}
+                                renderInput={(params) => (
+                                    <TextField {...params} label="Administrator" fullWidth />
+                                )}
+                            />
                         </Grid>
-                    </Grid>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <TextField
                                 fullWidth
@@ -164,6 +160,56 @@ const NewTeam: FC<NewTeamProps> = ({ onClose }) => {
                                 }
                                 label="Is Default"
                             />
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <Typography variant="h6">Team Members</Typography>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Autocomplete
+                                multiple
+                                limitTags={3}
+                                options={allUsers}
+                                getOptionLabel={(option) => option.userName}
+                                value={selectedMembers}
+                                onChange={handleMemberChange}
+                                renderTags={(value, getTagProps) =>
+                                    value.map((option, index) => (
+                                        <Chip label={option.fullName ? option.fullName : option.userName} {...getTagProps({ index })} />
+                                    ))
+                                }
+                                renderOption={(props, option, { selected }) => (
+                                    <li {...props}>
+                                        <Checkbox
+                                            checked={selected}
+                                            style={{ marginRight: 8 }}
+                                        />
+                                        {option.fullName ? option.fullName : option.userName}
+                                    </li>
+                                )}
+                                renderInput={(params) => (
+                                    <TextField {...params} label="Search Team Members" placeholder="Add members" fullWidth />
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <DataGrid
+                                dataSource={selectedMembers}
+                                keyExpr="id"
+                                columnAutoWidth={true}
+                                showRowLines={true}
+                                showBorders={true}
+                            >
+                                <SearchPanel visible={true} />
+                                <Paging defaultPageSize={10} />
+                                <Pager showPageSizeSelector={true} allowedPageSizes={[5, 10]} />
+                                <Column dataField="userName" caption="User Name" />
+                                <Column dataField="fullName" caption="Full Name" />
+                                <Column dataField="business_name" caption="Business Unit" />
+                            </DataGrid>
                         </Grid>
                     </Grid>
                 </Grid>

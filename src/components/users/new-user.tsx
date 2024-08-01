@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { TextField, Stack, Typography, Button, FormControlLabel, Switch, Grid, Snackbar, Alert, MenuItem, Select, InputLabel, FormControl, SelectChangeEvent } from '@mui/material';
+import { TextField, Stack, Typography, Button, FormControlLabel, Switch, Grid, Snackbar, Alert, Autocomplete } from '@mui/material';
 import { RootState } from '../../store/store';
 import { useAppDispatch } from '../../store/hooks';
 import { useSelector } from 'react-redux';
@@ -31,6 +31,8 @@ const NewUser: FC<{ onClose: () => void }> = ({ onClose }) => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
+    const [selectedBusinessUnit, setSelectedBusinessUnit] = useState<any | null>(null);
+    const [selectedTeam, setSelectedTeam] = useState<any | null>(null);
 
     useEffect(() => {
         dispatch(fetchBusinessUnits());
@@ -42,14 +44,6 @@ const NewUser: FC<{ onClose: () => void }> = ({ onClose }) => {
         setFormData({
             ...formData,
             [name]: value,
-        });
-    };
-
-    const handleSelectChange = (e: SelectChangeEvent<number>) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name as string]: value,
         });
     };
 
@@ -78,8 +72,24 @@ const NewUser: FC<{ onClose: () => void }> = ({ onClose }) => {
         setSnackbarOpen(false);
     };
 
+    const handleBusinessUnitChange = (event: any, value: any) => {
+        setSelectedBusinessUnit(value);
+        setFormData((prevData) => ({
+            ...prevData,
+            business_unit_id: value?.id || 0,
+        }));
+    };
+
+    const handleTeamChange = (event: any, value: any) => {
+        setSelectedTeam(value);
+        setFormData((prevData) => ({
+            ...prevData,
+            team_id: value?.id || 0,
+        }));
+    };
+
     return (
-        <Stack spacing={3} padding={3}>
+        <Stack spacing={3} padding={3} width="100%">
             <Typography variant="h4">New User</Typography>
             <Stack direction="row" spacing={2}>
                 <Button variant="contained" color="primary" onClick={handleSave}>
@@ -144,38 +154,26 @@ const NewUser: FC<{ onClose: () => void }> = ({ onClose }) => {
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <FormControl fullWidth>
-                        <InputLabel id="business-unit-select-label">Business Unit</InputLabel>
-                        <Select
-                            labelId="business-unit-select-label"
-                            name="business_unit_id"
-                            value={formData.business_unit_id}
-                            onChange={handleSelectChange}
-                        >
-                            {allBusinessUnits.map((unit) => (
-                                <MenuItem key={unit.id} value={unit.id}>
-                                    {unit.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+                    <Autocomplete
+                        options={allBusinessUnits}
+                        getOptionLabel={(option) => option.name}
+                        value={selectedBusinessUnit}
+                        onChange={handleBusinessUnitChange}
+                        renderInput={(params) => (
+                            <TextField {...params} label="Business Unit" fullWidth />
+                        )}
+                    />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <FormControl fullWidth>
-                        <InputLabel id="team-select-label">Team</InputLabel>
-                        <Select
-                            labelId="team-select-label"
-                            name="team_id"
-                            value={formData.team_id}
-                            onChange={handleSelectChange}
-                        >
-                            {allTeams.map((team) => (
-                                <MenuItem key={team.id} value={team.id}>
-                                    {team.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+                    <Autocomplete
+                        options={allTeams}
+                        getOptionLabel={(option) => option.name}
+                        value={selectedTeam}
+                        onChange={handleTeamChange}
+                        renderInput={(params) => (
+                            <TextField {...params} label="Team" fullWidth />
+                        )}
+                    />
                 </Grid>
                 <Grid item xs={12}>
                     <FormControlLabel

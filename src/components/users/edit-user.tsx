@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { TextField, Stack, Typography, Button, FormControlLabel, Select, SelectChangeEvent, FormControl, InputLabel, MenuItem, Switch, Grid, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogActions, FormGroup, Checkbox } from '@mui/material';
+import { TextField, Stack, Typography, Button, FormControlLabel, Switch, Grid, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogActions, FormGroup, Checkbox, Autocomplete } from '@mui/material';
 import { RootState } from '../../store/store';
 import { useAppDispatch } from '../../store/hooks';
 import { useSelector } from 'react-redux';
@@ -22,7 +22,7 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
     const userAccessLevel = useSelector((state: RootState) => state.roles.getAreaAccessLevel);
     const roles = useSelector((state: RootState) => state.roles.allRoles);
     const allBusinessUnits = useSelector((state: RootState) => state.businessUnits.allBusinessUnits);
-    const allTeams = useSelector((state: RootState) => state.teams.allTeams); // Select teams from the state
+    const allTeams = useSelector((state: RootState) => state.teams.allTeams);
 
     const [formData, setFormData] = useState<User | null>(null);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -30,14 +30,15 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
     const [rolesModalOpen, setRolesModalOpen] = useState(false);
     const [selectedRoleId, setSelectedRoleId] = useState<number | null>(null);
-    const [selectedTeamId, setSelectedTeamId] = useState<number | null>(null); // State for selected team ID
+    const [selectedTeam, setSelectedTeam] = useState<any | null>(null);
+    const [selectedBusinessUnit, setSelectedBusinessUnit] = useState<any | null>(null);
 
     useEffect(() => {
         if (userId) {
             dispatch(fetchUserById(userId));
             dispatch(fetchRoles());
             dispatch(fetchBusinessUnits());
-            dispatch(fetchTeams()); // Fetch teams on component mount
+            dispatch(fetchTeams());
         }
     }, [dispatch, userId]);
 
@@ -51,23 +52,16 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
         if (user) {
             setFormData(user);
             setSelectedRoleId(user.role_id || null);
-            setSelectedTeamId(user.team_id || null); // Set selected team ID if it exists in user data
+            setSelectedTeam(allTeams.find(team => team.id === user.team_id) || null);
+            setSelectedBusinessUnit(allBusinessUnits.find(unit => unit.id === user.business_unit_id) || null);
         }
-    }, [user]);
+    }, [user, allTeams, allBusinessUnits]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({
             ...prevData!,
             [name]: value,
-        }));
-    };
-
-    const handleSelectChange = (e: SelectChangeEvent<number>) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData!,
-            [name as string]: value,
         }));
     };
 
@@ -115,17 +109,24 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
         }
     };
 
-    const handleTeamsChange = (e: SelectChangeEvent<number>) => {
-        const teamId = e.target.value as number;
-        setSelectedTeamId(teamId);
+    const handleRolesModalClose = () => {
+        setRolesModalOpen(false);
+    };
+
+    const handleBusinessUnitChange = (event: any, value: any) => {
+        setSelectedBusinessUnit(value);
         setFormData((prevData) => ({
             ...prevData!,
-            team_id: teamId,
+            business_unit_id: value?.id || null,
         }));
     };
 
-    const handleRolesModalClose = () => {
-        setRolesModalOpen(false);
+    const handleTeamChange = (event: any, value: any) => {
+        setSelectedTeam(value);
+        setFormData((prevData) => ({
+            ...prevData!,
+            team_id: value?.id || null,
+        }));
     };
 
     if (!formData) {
@@ -133,7 +134,7 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
     }
 
     return (
-        <Stack spacing={3} padding={3}>
+        <Stack spacing={3} padding={3} width="100%">
             <Typography variant="h4">Users Form</Typography>
             <Stack direction="row" spacing={2}>
                 {userAccessLevel !== 5 && (
@@ -206,38 +207,26 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <FormControl fullWidth>
-                        <InputLabel id="business-unit-select-label">Business Unit</InputLabel>
-                        <Select
-                            labelId="business-unit-select-label"
-                            name="business_unit_id"
-                            value={formData.business_unit_id || ''}
-                            onChange={handleSelectChange}
-                        >
-                            {allBusinessUnits.map((unit) => (
-                                <MenuItem key={unit.id} value={unit.id}>
-                                    {unit.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+                    <Autocomplete
+                        options={allBusinessUnits}
+                        getOptionLabel={(option) => option.name}
+                        value={selectedBusinessUnit}
+                        onChange={handleBusinessUnitChange}
+                        renderInput={(params) => (
+                            <TextField {...params} label="Business Unit" fullWidth />
+                        )}
+                    />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <FormControl fullWidth>
-                        <InputLabel id="team-select-label">Team</InputLabel>
-                        <Select
-                            labelId="team-select-label"
-                            name="team_id"
-                            value={selectedTeamId || ''}
-                            onChange={handleTeamsChange}
-                        >
-                            {allTeams.map((team) => (
-                                <MenuItem key={team.id} value={team.id}>
-                                    {team.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+                    <Autocomplete
+                        options={allTeams}
+                        getOptionLabel={(option) => option.name}
+                        value={selectedTeam}
+                        onChange={handleTeamChange}
+                        renderInput={(params) => (
+                            <TextField {...params} label="Team" fullWidth />
+                        )}
+                    />
                 </Grid>
                 <Grid item xs={12}>
                     <FormControlLabel
