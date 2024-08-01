@@ -26,7 +26,7 @@ const DashboardNavbar: FC<NavbarProps> = (props: NavbarProps) => {
     const [open, setState] = useState(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const user = useSelector((state: RootState) => state.auth.user);
-    const areaLists = useSelector((state: RootState) => state.areaList.areaLists) || [];
+    const areaLists = useSelector((state: RootState) => state.areaList.areaLists);
 
     useEffect(() => {
         if (user) {

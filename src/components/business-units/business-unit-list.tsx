@@ -1,64 +1,158 @@
-import React, { FC, useEffect } from 'react';
-import {
-    DataGrid, Column, ColumnChooser, ColumnChooserSearch, ColumnChooserSelection, Position, SearchPanel, Paging, Pager
-} from 'devextreme-react/data-grid';
-import { Stack, Typography, Button, Grid } from '@mui/material';
+import React, { FC, useState, useCallback, useEffect } from 'react';
+import { DataGrid, Column, ColumnChooser, ColumnChooserSearch, ColumnChooserSelection, Position, SearchPanel, Paging, Pager, Selection, DataGridTypes } from 'devextreme-react/data-grid';
+import { Stack, Typography, Button, Grid, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, MenuItem, Select, FormControl, SelectChangeEvent } from '@mui/material';
 import { RootState } from '../../store/store';
 import { useAppDispatch } from '../../store/hooks';
 import { useSelector } from 'react-redux';
-import { fetchBusinessUnits } from '../../reducers/businessUnits/businessUnitsSlice';
+import { fetchBusinessUnits, deleteBusinessUnitsByIds } from '../../reducers/businessUnits/businessUnitsSlice';
+import { fetchAreaAccessLevel } from '../../reducers/roles/rolesSlice';
+import { BusinessUnit } from 'src/reducers/businessUnits/businessUnitsAPI';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
 
 interface BusinessUnitListsProps {
     onRowClick: (businessUnitId: number) => void;
     onAddNewClick: () => void;
 }
 
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 const searchEditorOptions = { placeholder: 'Search column' };
 
 const BusinessUnitLists: FC<BusinessUnitListsProps> = ({ onRowClick, onAddNewClick }) => {
     const dispatch = useAppDispatch();
     const businessUnits = useSelector((state: RootState) => state.businessUnits.allBusinessUnits);
+    const auth = useSelector((state: RootState) => state.auth.user);
+    const userAccessLevel = useSelector((state: RootState) => state.roles.getAreaAccessLevel);
+    const [selectedBusinessIds, setSelectedBusinessIds] = useState<number[]>([]);
+    const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [statusFilter, setStatusFilter] = useState('All');
+    const [initialBusinessUnits, setInitialBusinessUnits] = useState<BusinessUnit[]>([]);
 
     useEffect(() => {
         dispatch(fetchBusinessUnits());
     }, [dispatch]);
+
+    useEffect(() => {
+        if (auth) {
+            dispatch(fetchAreaAccessLevel(auth.role_id, "Business Units"));
+        }
+    }, [dispatch, auth]);
+
+    useEffect(() => {
+        if (businessUnits) {
+            if (userAccessLevel === 1) {
+                setInitialBusinessUnits(businessUnits);
+            }
+            else if (userAccessLevel === 2) {
+                const parentBusinessUnit = businessUnits.filter(business => business.id === auth.business_unit_id);
+                const childBusinessUnit = businessUnits.filter(business => business.parent_id === auth.business_unit_id);
+                const totalBusinessUnit = parentBusinessUnit.concat(childBusinessUnit);
+                setInitialBusinessUnits(totalBusinessUnit);
+            }
+            else {
+                const filterData = businessUnits.filter(business => { return business.id === auth.business_unit_id });
+                setInitialBusinessUnits(filterData);
+            }
+        }
+    }, [userAccessLevel, businessUnits, auth]);
 
     const handleRowClick = (e: any) => {
         const businessUnitId = e.data.id;
         onRowClick(businessUnitId);
     };
 
+    const onSelectionChanged = useCallback((data: DataGridTypes.SelectionChangedEvent) => {
+        setSelectedBusinessIds(data.selectedRowKeys as number[]);
+    }, []);
+
+    const onDelete = async () => {
+        if (selectedBusinessIds.length > 0) {
+            dispatch(deleteBusinessUnitsByIds(selectedBusinessIds, auth.role_id));
+            setOpenConfirmDialog(false);
+        } else {
+            setOpenConfirmDialog(false);
+            setOpenSnackbar(true);
+        }
+    };
+
+    const handleDeleteClick = () => {
+        if (selectedBusinessIds.length > 0) {
+            setOpenConfirmDialog(true);
+        } else {
+            setOpenSnackbar(true);
+        }
+    };
+
+    const handleCloseDialog = () => {
+        setOpenConfirmDialog(false);
+    };
+
+    const handleCloseSnackbar = (event?: React.SyntheticEvent | Event, reason?: string) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenSnackbar(false);
+    };
+
+    const handleStatusFilterChange = (event: SelectChangeEvent<string>) => {
+        setStatusFilter(event.target.value);
+    };
+
+    const filteredBusinessUnits = initialBusinessUnits.filter(businessUnit => {
+        if (statusFilter === 'All') return true;
+        return statusFilter === 'Active Business Unit' ? businessUnit.status === true : businessUnit.status === false;
+    });
+
     return (
         <Stack width="100%" padding={5}>
             <Typography variant='h5' color="primary">Business Unit Lists</Typography>
-            <Grid container justifyContent="flex-end">
-                <Button variant="contained" color="primary" onClick={onAddNewClick} style={{ marginBottom: 16 }}>
-                    New
-                </Button>
+            <Grid container justifyContent="flex-end" alignItems="center">
+                {userAccessLevel !== 5 && (
+                    <>
+                        <Button variant="contained" color="primary" onClick={onAddNewClick} style={{ marginBottom: 16, marginRight: 12 }}>
+                            New
+                        </Button>
+                        <Button variant="contained" color="inherit" onClick={handleDeleteClick} style={{ marginBottom: 16, marginRight: 12 }}>
+                            Delete
+                        </Button>
+                    </>
+                )}
+                <FormControl style={{ minWidth: 200, marginBottom: 16 }}>
+                    <Select value={statusFilter} onChange={handleStatusFilterChange} size='small'>
+                        <MenuItem value="All">All</MenuItem>
+                        <MenuItem value="Active Business Unit">Active Business Unit</MenuItem>
+                        <MenuItem value="Deactive Business Unit">Deactive Business Unit</MenuItem>
+                    </Select>
+                </FormControl>
             </Grid>
             <DataGrid
                 id="businessUnits"
-                dataSource={businessUnits}
+                dataSource={filteredBusinessUnits}
                 keyExpr="id"
                 columnAutoWidth={true}
                 showRowLines={true}
                 showBorders={true}
                 onRowClick={handleRowClick}
+                selectedRowKeys={selectedBusinessIds}
+                onSelectionChanged={onSelectionChanged}
             >
                 <SearchPanel
                     visible={true}
                     width={240}
                     placeholder="Search..." />
+                <Selection mode='multiple' />
                 <Paging defaultPageSize={10} />
                 <Pager
                     showPageSizeSelector={true}
                     allowedPageSizes={[5, 10]}
                     showInfo={true} />
-                <Column dataField='id' caption='Business Unit ID' allowHiding={false} width={150} />
                 <Column dataField='name' caption='Name' allowHiding={false} />
-                <Column dataField='parent_name' caption='Parent Business' />
                 <Column dataField='website' caption='Website' />
                 <Column dataField='mainPhone' caption='Main Phone' />
+                <Column dataField='parent_name' caption='Parent Business' />
                 <Column dataField='otherPhone' caption='Other Phone' />
                 <Column dataField='fax' caption='Fax' />
                 <Column dataField='email' caption='Email' />
@@ -70,7 +164,6 @@ const BusinessUnitLists: FC<BusinessUnitListsProps> = ({ onRowClick, onAddNewCli
                 <Column dataField='zipCode' caption='Zip Code' />
                 <Column dataField='region' caption='Region' />
                 <Column dataField='status' caption='Status' />
-
                 <ColumnChooser
                     height='340px'
                     enabled={true}
@@ -81,17 +174,46 @@ const BusinessUnitLists: FC<BusinessUnitListsProps> = ({ onRowClick, onAddNewCli
                         at="right bottom"
                         of=".dx-datagrid-column-chooser-button"
                     />
-
                     <ColumnChooserSearch
                         enabled={true}
                         editorOptions={searchEditorOptions} />
-
                     <ColumnChooserSelection
                         allowSelectAll={true}
                         selectByClick={true}
                         recursive={true} />
                 </ColumnChooser>
             </DataGrid>
+            <Dialog
+                open={openConfirmDialog}
+                onClose={handleCloseDialog}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">{"Confirm Delete"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Are you sure you want to delete the selected business units?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={onDelete} color="primary" autoFocus>
+                        Confirm
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={6000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert onClose={handleCloseSnackbar} severity="warning">
+                    No business units selected for deletion.
+                </Alert>
+            </Snackbar>
         </Stack>
     );
 };

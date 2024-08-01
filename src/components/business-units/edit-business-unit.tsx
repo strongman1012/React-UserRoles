@@ -4,6 +4,7 @@ import { RootState } from '../../store/store';
 import { useAppDispatch } from '../../store/hooks';
 import { useSelector } from 'react-redux';
 import { fetchBusinessUnitById, updateBusinessUnitById, fetchBusinessUnits } from '../../reducers/businessUnits/businessUnitsSlice';
+import { fetchAreaAccessLevel } from '../../reducers/roles/rolesSlice';
 import { BusinessUnit } from '../../reducers/businessUnits/businessUnitsAPI';
 
 interface EditBusinessUnitProps {
@@ -14,6 +15,7 @@ interface EditBusinessUnitProps {
 const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }) => {
     const dispatch = useAppDispatch();
     const auth = useSelector((state: RootState) => state.auth.user);
+    const userAccessLevel = useSelector((state: RootState) => state.roles.getAreaAccessLevel);
     const businessUnit = useSelector((state: RootState) => state.businessUnits.currentBusinessUnit);
     const allBusinessUnits = useSelector((state: RootState) => state.businessUnits.allBusinessUnits);
     const [formData, setFormData] = useState<BusinessUnit | null>(null);
@@ -27,6 +29,12 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
             dispatch(fetchBusinessUnits());
         }
     }, [dispatch, businessUnitId]);
+
+    useEffect(() => {
+        if (auth) {
+            dispatch(fetchAreaAccessLevel(auth.role_id, "Business Units"));
+        }
+    }, [dispatch, auth]);
 
     useEffect(() => {
         if (businessUnit) {
@@ -84,9 +92,11 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
         <Stack spacing={3} padding={3}>
             <Typography variant="h4">Edit Business Unit</Typography>
             <Stack direction="row" spacing={2}>
-                <Button variant="contained" color="primary" onClick={handleSave}>
-                    Save
-                </Button>
+                {userAccessLevel !== 5 && (
+                    <Button variant="contained" color="primary" onClick={handleSave}>
+                        Save
+                    </Button>
+                )}
                 <Button variant="outlined" color="secondary" onClick={onClose}>
                     Cancel
                 </Button>

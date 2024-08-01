@@ -1,10 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppDispatch } from '../../store/store';
-import { fetchBusinessUnitsAPI, fetchBusinessUnitByIdAPI, createBusinessUnitAPI, updateBusinessUnitAPI, deleteBusinessUnitAPI, BusinessUnit } from './businessUnitsAPI';
+import { fetchChildBusinessUnitsAPI, fetchBusinessUnitsAPI, fetchBusinessUnitByIdAPI, createBusinessUnitAPI, updateBusinessUnitAPI, deleteBusinessUnitAPI, BusinessUnit } from './businessUnitsAPI';
 
 interface BusinessUnitState {
     allBusinessUnits: BusinessUnit[];
     currentBusinessUnit?: BusinessUnit;
+    childBusinessUnits?: BusinessUnit[];
 }
 
 const initialState: BusinessUnitState = {
@@ -15,13 +16,19 @@ const businessUnitsSlice = createSlice({
     name: 'businessUnits',
     initialState,
     reducers: {
+        setChildBusinessUnits: (state, action: PayloadAction<BusinessUnit[]>) => {
+            state.childBusinessUnits = action.payload;
+        },
+        resetChildBusinessUnits: (state) => {
+            state.childBusinessUnits = [];
+        },
         setBusinessUnits: (state, action: PayloadAction<BusinessUnit[]>) => {
             state.allBusinessUnits = action.payload;
         },
         setCurrentBusinessUnit: (state, action: PayloadAction<BusinessUnit>) => {
             state.currentBusinessUnit = action.payload;
         },
-        addBusinessUnit: (state, action: PayloadAction<BusinessUnit>) => {console.log(action.payload,"payload")
+        addBusinessUnit: (state, action: PayloadAction<BusinessUnit>) => {
             state.allBusinessUnits.push(action.payload);
         },
         updateBusinessUnit: (state, action: PayloadAction<BusinessUnit>) => {
@@ -31,13 +38,24 @@ const businessUnitsSlice = createSlice({
                 state.allBusinessUnits[existingIndex] = updatedBusinessUnit;
             }
         },
-        removeBusinessUnit: (state, action: PayloadAction<number>) => {
-            state.allBusinessUnits = state.allBusinessUnits.filter(businessUnit => businessUnit.id !== action.payload);
+        removeBusinessUnits: (state, action: PayloadAction<number[]>) => {
+            state.allBusinessUnits = state.allBusinessUnits.filter(
+                businessUnit => !action.payload.includes(businessUnit.id)
+            );
         },
     },
 });
 
-export const { setBusinessUnits, setCurrentBusinessUnit, addBusinessUnit, updateBusinessUnit, removeBusinessUnit } = businessUnitsSlice.actions;
+export const { setChildBusinessUnits, resetChildBusinessUnits, setBusinessUnits, setCurrentBusinessUnit, addBusinessUnit, updateBusinessUnit, removeBusinessUnits } = businessUnitsSlice.actions;
+
+export const fetchChildBusinessUnits = (id: number) => async (dispatch: AppDispatch) => {
+    try {
+        const response = await fetchChildBusinessUnitsAPI(id);
+        dispatch(setChildBusinessUnits(response));
+    } catch (error: any) {
+        console.error('Error fetching child business units:', error.response?.data?.message || error.message);
+    }
+};
 
 export const fetchBusinessUnits = () => async (dispatch: AppDispatch) => {
     try {
@@ -75,12 +93,12 @@ export const updateBusinessUnitById = (user_role_id: number, id: number, busines
     }
 };
 
-export const deleteBusinessUnitById = (id: number) => async (dispatch: AppDispatch) => {
+export const deleteBusinessUnitsByIds = (ids: number[], user_role_id: number) => async (dispatch: AppDispatch) => {
     try {
-        await deleteBusinessUnitAPI(id);
-        dispatch(removeBusinessUnit(id));
+        await deleteBusinessUnitAPI(ids, user_role_id);
+        dispatch(removeBusinessUnits(ids));
     } catch (error: any) {
-        console.error('Error deleting business unit:', error.response?.data?.message || error.message);
+        console.error('Error deleting business units:', error.response?.data?.message || error.message);
     }
 };
 

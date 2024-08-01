@@ -17,9 +17,13 @@ import SecurityRoles from "./security-roles";
 import SecurityRolesForm from "./security-roles/SecurityRolesForm";
 import UserLists from "./users/user-list";
 import EditUser from "./users/edit-user";
+import NewUser from "./users/new-user";
 import BusinessUnitLists from "./business-units/business-unit-list";
 import EditBusinessUnit from "./business-units/edit-business-unit";
-import NewBusinessUnit from "./business-units/new-business-unit"; // import NewBusinessUnit component
+import NewBusinessUnit from "./business-units/new-business-unit";
+import TeamLists from "./teams/team-list";
+import EditTeam from "./teams/edit-team";
+import NewTeam from "./teams/new-team";
 import Home from "src/pages/Home";
 
 interface TestDashboardProps {
@@ -58,13 +62,22 @@ const TestDashboard: FC<TestDashboardProps> = (props: TestDashboardProps) => {
         setActiveComponent(<SecurityRolesForm roleId={roleId} />);
     }
     const handleRowUserClick = (userId: number) => {
-        setActiveComponent(<EditUser userId={userId} onClose={() => setActiveComponent(<UserLists onRowClick={handleRowUserClick} />)} />);
+        setActiveComponent(<EditUser userId={userId} onClose={() => setActiveComponent(<UserLists onRowClick={handleRowUserClick} onAddNewClick={handleAddNewClick} />)} />);
+    }
+    const handleAddNewClick = () => {
+        setActiveComponent(<NewUser onClose={() => setActiveComponent(<UserLists onRowClick={handleRowUserClick} onAddNewClick={handleAddNewClick} />)} />);
     }
     const handleRowBusinessClick = (businessUnitId: number) => {
         setActiveComponent(<EditBusinessUnit businessUnitId={businessUnitId} onClose={() => setActiveComponent(<BusinessUnitLists onRowClick={handleRowBusinessClick} onAddNewClick={handleAddNewBusinessClick} />)} />);
     }
     const handleAddNewBusinessClick = () => {
         setActiveComponent(<NewBusinessUnit onClose={() => setActiveComponent(<BusinessUnitLists onRowClick={handleRowBusinessClick} onAddNewClick={handleAddNewBusinessClick} />)} />);
+    }
+    const handleRowTeamClick = (teamId: number) => {
+        setActiveComponent(<EditTeam teamId={teamId} onClose={() => setActiveComponent(<TeamLists onRowClick={handleRowTeamClick} onAddNewClick={handleAddNewTeamClick} />)} />);
+    }
+    const handleAddNewTeamClick = () => {
+        setActiveComponent(<NewTeam onClose={() => setActiveComponent(<TeamLists onRowClick={handleRowTeamClick} onAddNewClick={handleAddNewTeamClick} />)} />);
     }
     const components = [
         {
@@ -97,11 +110,15 @@ const TestDashboard: FC<TestDashboardProps> = (props: TestDashboardProps) => {
         },
         {
             name: 'Users',
-            component: <UserLists onRowClick={handleRowUserClick} />
+            component: <UserLists onRowClick={handleRowUserClick} onAddNewClick={handleAddNewClick} />
         },
         {
             name: 'Business Units',
             component: <BusinessUnitLists onRowClick={handleRowBusinessClick} onAddNewClick={handleAddNewBusinessClick} />
+        },
+        {
+            name: 'Teams',
+            component: <TeamLists onRowClick={handleRowTeamClick} onAddNewClick={handleAddNewTeamClick} />
         }
     ];
     const dispatch = useAppDispatch();

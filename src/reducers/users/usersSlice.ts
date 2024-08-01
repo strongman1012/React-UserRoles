@@ -31,13 +31,15 @@ const usersSlice = createSlice({
                 state.allUsers[existingIndex] = updatedUser;
             }
         },
-        removeUser: (state, action: PayloadAction<number>) => {
-            state.allUsers = state.allUsers.filter(user => user.id !== action.payload);
+        removeUsers: (state, action: PayloadAction<number[]>) => {
+            state.allUsers = state.allUsers.filter(
+                user => !action.payload.includes(user.id)
+            );
         },
     },
 });
 
-export const { setUsers, setCurrentUser, addUser, updateUser, removeUser } = usersSlice.actions;
+export const { setUsers, setCurrentUser, addUser, updateUser, removeUsers } = usersSlice.actions;
 
 export const fetchUsers = () => async (dispatch: AppDispatch) => {
     try {
@@ -57,9 +59,9 @@ export const fetchUserById = (id: number) => async (dispatch: AppDispatch) => {
     }
 };
 
-export const createUser = (user: Omit<User, 'id'>) => async (dispatch: AppDispatch) => {
+export const createUser = (user_role_id: number,user: Omit<User, 'id'>) => async (dispatch: AppDispatch) => {
     try {
-        const response = await createUserAPI(user);
+        const response = await createUserAPI(user_role_id, user);
         dispatch(addUser(response));
     } catch (error: any) {
         console.error('Error creating user:', error.response?.data?.message || error.message);
@@ -75,12 +77,13 @@ export const updateUserById = (user_role_id: number, id: number, user: Partial<U
     }
 };
 
-export const deleteUserById = (id: number) => async (dispatch: AppDispatch) => {
+// New action to handle multiple deletions
+export const deleteUsersByIds = (ids: number[], user_role_id: number) => async (dispatch: AppDispatch) => {
     try {
-        await deleteUserAPI(id);
-        dispatch(removeUser(id));
+        await deleteUserAPI(ids, user_role_id);
+        ids.forEach(id => dispatch(removeUsers(ids)));
     } catch (error: any) {
-        console.error('Error deleting user:', error.response?.data?.message || error.message);
+        console.error('Error deleting users:', error.response?.data?.message || error.message);
     }
 };
 

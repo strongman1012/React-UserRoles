@@ -15,6 +15,8 @@ export interface User {
     role_name?: string;
     business_unit_id?: number;
     team_id?: number;
+    business_name?: string;
+    team_name?: string;
 }
 
 // Fetch all users
@@ -40,9 +42,9 @@ export const fetchUserByIdAPI = async (id: number): Promise<User> => {
 };
 
 // Create a new user
-export const createUserAPI = async (user: Omit<User, 'id'>): Promise<User> => {
+export const createUserAPI = async (user_role_id: number, user: Omit<User, 'id'>): Promise<User> => {
     try {
-        const response = await apiClient.post<User>('/users', user);
+        const response = await apiClient.post<User>('/users', { user_role_id: user_role_id, ...user });
         return response.data;
     } catch (error) {
         console.error('Error creating user:', error);
@@ -53,7 +55,7 @@ export const createUserAPI = async (user: Omit<User, 'id'>): Promise<User> => {
 // Update a user by ID
 export const updateUserAPI = async (user_role_id: number, id: number, user: Partial<User>): Promise<User> => {
     try {
-        const response = await apiClient.put<User>(`/users/${id}`, { user_role_id: user_role_id, ...user });
+        const response = await apiClient.put<User>(`/users/${id}`, { user_role_id, ...user });
         return response.data;
     } catch (error) {
         console.error(`Error updating user with ID ${id}:`, error);
@@ -61,12 +63,13 @@ export const updateUserAPI = async (user_role_id: number, id: number, user: Part
     }
 };
 
-// Delete a user by ID
-export const deleteUserAPI = async (id: number): Promise<void> => {
+// Delete a user by IDs
+export const deleteUserAPI = async (ids: number[], user_role_id: number): Promise<void> => {
     try {
-        await apiClient.delete(`/users/${id}`);
+        await apiClient.delete(`/users`, { data: { ids, user_role_id } });
     } catch (error) {
-        console.error(`Error deleting user with ID ${id}:`, error);
+        console.error(`Error deleting users with IDs ${ids}:`, error);
         throw error; // Re-throw the error after logging it
     }
 };
+

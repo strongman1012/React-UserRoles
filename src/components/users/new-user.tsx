@@ -1,95 +1,76 @@
 import React, { FC, useEffect, useState } from 'react';
-import { TextField, Stack, Typography, Button, FormControlLabel, Select, SelectChangeEvent, FormControl, InputLabel, MenuItem, Switch, Grid, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogActions, FormGroup, Checkbox } from '@mui/material';
+import { TextField, Stack, Typography, Button, FormControlLabel, Switch, Grid, Snackbar, Alert, MenuItem, Select, InputLabel, FormControl, SelectChangeEvent } from '@mui/material';
 import { RootState } from '../../store/store';
 import { useAppDispatch } from '../../store/hooks';
 import { useSelector } from 'react-redux';
-import { fetchUserById, updateUserById } from '../../reducers/users/usersSlice';
-import { fetchRoles } from 'src/reducers/roles/rolesSlice';
-import { fetchBusinessUnits } from 'src/reducers/businessUnits/businessUnitsSlice';
-import { fetchTeams } from 'src/reducers/teams/teamsSlice';
-import { fetchAreaAccessLevel } from '../../reducers/roles/rolesSlice';
+import { createUser } from '../../reducers/users/usersSlice';
+import { fetchBusinessUnits } from '../../reducers/businessUnits/businessUnitsSlice';
+import { fetchTeams } from '../../reducers/teams/teamsSlice';
 import { User } from '../../reducers/users/usersAPI';
 
-interface EditUserProps {
-    userId: number;
-    onClose: () => void;
-}
+const initialFormData: Omit<User, 'id'> = {
+    userName: '',
+    email: '',
+    password: '',
+    fullName: '',
+    mobilePhone: '',
+    mainPhone: '',
+    status: false,
+    role_id: 0,
+    business_unit_id: 0,
+    team_id: 0,
+};
 
-const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
+const NewUser: FC<{ onClose: () => void }> = ({ onClose }) => {
     const dispatch = useAppDispatch();
     const auth = useSelector((state: RootState) => state.auth.user);
-    const user = useSelector((state: RootState) => state.users.currentUser);
-    const userAccessLevel = useSelector((state: RootState) => state.roles.getAreaAccessLevel);
-    const roles = useSelector((state: RootState) => state.roles.allRoles);
     const allBusinessUnits = useSelector((state: RootState) => state.businessUnits.allBusinessUnits);
-    const allTeams = useSelector((state: RootState) => state.teams.allTeams); // Select teams from the state
+    const allTeams = useSelector((state: RootState) => state.teams.allTeams);
 
-    const [formData, setFormData] = useState<User | null>(null);
+    const [formData, setFormData] = useState<Omit<User, 'id'>>(initialFormData);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
-    const [rolesModalOpen, setRolesModalOpen] = useState(false);
-    const [selectedRoleId, setSelectedRoleId] = useState<number | null>(null);
-    const [selectedTeamId, setSelectedTeamId] = useState<number | null>(null); // State for selected team ID
 
     useEffect(() => {
-        if (userId) {
-            dispatch(fetchUserById(userId));
-            dispatch(fetchRoles());
-            dispatch(fetchBusinessUnits());
-            dispatch(fetchTeams()); // Fetch teams on component mount
-        }
-    }, [dispatch, userId]);
-
-    useEffect(() => {
-        if (auth) {
-            dispatch(fetchAreaAccessLevel(auth.role_id, "Users"));
-        }
-    }, [dispatch, auth]);
-
-    useEffect(() => {
-        if (user) {
-            setFormData(user);
-            setSelectedRoleId(user.role_id || null);
-            setSelectedTeamId(user.team_id || null); // Set selected team ID if it exists in user data
-        }
-    }, [user]);
+        dispatch(fetchBusinessUnits());
+        dispatch(fetchTeams());
+    }, [dispatch]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData!,
+        setFormData({
+            ...formData,
             [name]: value,
-        }));
+        });
     };
 
     const handleSelectChange = (e: SelectChangeEvent<number>) => {
         const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData!,
+        setFormData({
+            ...formData,
             [name as string]: value,
-        }));
+        });
     };
 
     const handleStatusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData((prevData) => ({
-            ...prevData!,
+        setFormData({
+            ...formData,
             status: e.target.checked,
-        }));
+        });
     };
 
     const handleSave = async () => {
-        if (formData) {
-            try {
-                await dispatch(updateUserById(auth.role_id, userId, formData));
-                setSnackbarMessage('User updated successfully');
-                setSnackbarSeverity('success');
-                setSnackbarOpen(true);
-            } catch (error: any) {
-                setSnackbarMessage('Error updating user');
-                setSnackbarSeverity('error');
-                setSnackbarOpen(true);
-            }
+        try {
+            await dispatch(createUser(auth.role_id, formData));
+            setSnackbarMessage('User created successfully');
+            setSnackbarSeverity('success');
+            setSnackbarOpen(true);
+            setFormData(initialFormData); // Reset form data after successful save
+        } catch (error: any) {
+            setSnackbarMessage('Error creating user');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
         }
     };
 
@@ -97,58 +78,16 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
         setSnackbarOpen(false);
     };
 
-    const handleManageRolesClick = () => {
-        setRolesModalOpen(true);
-    };
-
-    const handleRoleChange = async (roleId: number) => {
-        setSelectedRoleId(roleId);
-        try {
-            await dispatch(updateUserById(auth.role_id, userId, { ...formData, role_id: roleId }));
-            setSnackbarMessage('User updated successfully');
-            setSnackbarSeverity('success');
-            setSnackbarOpen(true);
-        } catch (error: any) {
-            setSnackbarMessage('Error updating user');
-            setSnackbarSeverity('error');
-            setSnackbarOpen(true);
-        }
-    };
-
-    const handleTeamsChange = (e: SelectChangeEvent<number>) => {
-        const teamId = e.target.value as number;
-        setSelectedTeamId(teamId);
-        setFormData((prevData) => ({
-            ...prevData!,
-            team_id: teamId,
-        }));
-    };
-
-    const handleRolesModalClose = () => {
-        setRolesModalOpen(false);
-    };
-
-    if (!formData) {
-        return <div>Loading...</div>;
-    }
-
     return (
         <Stack spacing={3} padding={3}>
-            <Typography variant="h4">Users Form</Typography>
+            <Typography variant="h4">New User</Typography>
             <Stack direction="row" spacing={2}>
-                {userAccessLevel !== 5 && (
-                    <Button variant="contained" color="primary" onClick={handleSave}>
-                        Save
-                    </Button>
-                )}
+                <Button variant="contained" color="primary" onClick={handleSave}>
+                    Save
+                </Button>
                 <Button variant="outlined" color="secondary" onClick={onClose}>
                     Cancel
                 </Button>
-                {userAccessLevel !== 5 && (
-                    <Button variant="outlined" color="primary" onClick={handleManageRolesClick}>
-                        Manage Roles
-                    </Button>
-                )}
             </Stack>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
@@ -170,7 +109,6 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
                 <Grid item xs={12} md={6}>
                     <TextField
                         fullWidth
-                        required
                         label="Full Name"
                         name="fullName"
                         value={formData.fullName || ''}
@@ -211,7 +149,7 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
                         <Select
                             labelId="business-unit-select-label"
                             name="business_unit_id"
-                            value={formData.business_unit_id || ''}
+                            value={formData.business_unit_id}
                             onChange={handleSelectChange}
                         >
                             {allBusinessUnits.map((unit) => (
@@ -228,8 +166,8 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
                         <Select
                             labelId="team-select-label"
                             name="team_id"
-                            value={selectedTeamId || ''}
-                            onChange={handleTeamsChange}
+                            value={formData.team_id}
+                            onChange={handleSelectChange}
                         >
                             {allTeams.map((team) => (
                                 <MenuItem key={team.id} value={team.id}>
@@ -243,7 +181,7 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
                     <FormControlLabel
                         control={
                             <Switch
-                                checked={formData.status || false}
+                                checked={formData.status}
                                 onChange={handleStatusChange}
                                 name="status"
                             />
@@ -257,35 +195,8 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
                     {snackbarMessage}
                 </Alert>
             </Snackbar>
-            <Dialog open={rolesModalOpen} onClose={handleRolesModalClose}>
-                <DialogTitle>Manage User Roles</DialogTitle>
-                <DialogContent>
-                    <FormGroup>
-                        {roles.map((role) => (
-                            <FormControlLabel
-                                key={role.id}
-                                control={
-                                    <Checkbox
-                                        checked={selectedRoleId === role.id}
-                                        onChange={() => handleRoleChange(role.id)}
-                                    />
-                                }
-                                label={`${role.name}`}
-                            />
-                        ))}
-                    </FormGroup>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleRolesModalClose} color="primary">
-                        OK
-                    </Button>
-                    <Button onClick={handleRolesModalClose} color="secondary">
-                        Cancel
-                    </Button>
-                </DialogActions>
-            </Dialog>
         </Stack>
     );
 };
 
-export default EditUser;
+export default NewUser;

@@ -1,10 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppDispatch } from '../../store/store';
-import { fetchRolesAPI, fetchRoleByIdAPI, createRoleAPI, updateRoleAPI, deleteRoleAPI, Role } from './rolesAPI';
+import { fetchAreaAccessLevelAPI, fetchRolesAPI, fetchRoleByIdAPI, createRoleAPI, updateRoleAPI, deleteRoleAPI, Role } from './rolesAPI';
 
 interface RoleState {
     allRoles: Role[];
     currentRole?: Role;
+    getAreaAccessLevel?: number;
 }
 
 const initialState: RoleState = {
@@ -15,6 +16,12 @@ const rolesSlice = createSlice({
     name: 'roles',
     initialState,
     reducers: {
+        getAreaAccessLevel: (state, action: PayloadAction<number>) => {
+            state.getAreaAccessLevel = action.payload;
+        },
+        resetAccessLevel: (state) => {
+            state.getAreaAccessLevel = undefined;
+        },
         setRoles: (state, action: PayloadAction<Role[]>) => {
             state.allRoles = action.payload;
         },
@@ -37,7 +44,16 @@ const rolesSlice = createSlice({
     },
 });
 
-export const { setRoles, setCurrentRole, addRole, updateRole, removeRole } = rolesSlice.actions;
+export const { getAreaAccessLevel, resetAccessLevel, setRoles, setCurrentRole, addRole, updateRole, removeRole } = rolesSlice.actions;
+
+export const fetchAreaAccessLevel = (user_role_id: number, area_name: string) => async (dispatch: AppDispatch) => {
+    try {
+        const response = await fetchAreaAccessLevelAPI(user_role_id, area_name);
+        dispatch(getAreaAccessLevel(response));
+    } catch (error: any) {
+        console.error('Error fetching area access level:', error.response?.data?.message || error.message);
+    }
+};
 
 export const fetchRoles = () => async (dispatch: AppDispatch) => {
     try {

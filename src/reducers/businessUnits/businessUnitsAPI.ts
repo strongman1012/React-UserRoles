@@ -18,7 +18,19 @@ export interface BusinessUnit {
     zipCode?: string;
     region?: string;
     status?: boolean;
+    parent_name?: string;
 }
+
+// Fetch child business units
+export const fetchChildBusinessUnitsAPI = async (id: number): Promise<BusinessUnit[]> => {
+    try {
+        const response = await apiClient.get<BusinessUnit[]>(`/childBusinessUnits/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching child business units:', error);
+        throw error; // Re-throw the error after logging it
+    }
+};
 
 // Fetch all business units
 export const fetchBusinessUnitsAPI = async (): Promise<BusinessUnit[]> => {
@@ -65,11 +77,11 @@ export const updateBusinessUnitAPI = async (user_role_id: number, id: number, bu
 };
 
 // Delete a business unit by ID
-export const deleteBusinessUnitAPI = async (id: number): Promise<void> => {
+export const deleteBusinessUnitAPI = async (ids: number[], user_role_id: number): Promise<void> => {
     try {
-        await apiClient.delete(`/businessUnits/${id}`);
+        await apiClient.delete(`/businessUnits`, { data: { ids, user_role_id } });
     } catch (error) {
-        console.error(`Error deleting business unit with ID ${id}:`, error);
+        console.error(`Error deleting business unit with ID ${ids}:`, error);
         throw error; // Re-throw the error after logging it
     }
 };

@@ -3,6 +3,9 @@ import { AppDispatch } from '../../store/store';
 import { loginAPI, registerAPI, forgotPasswordAPI, logoutAPI } from './authAPI';
 import getUserFromToken from '../../utills/getUserFromToken';
 
+import { resetAccessLevel } from '../roles/rolesSlice';
+import { resetChildBusinessUnits } from '../businessUnits/businessUnitsSlice';
+
 interface AuthState {
     user: any | null;
     token: string | null;
@@ -120,6 +123,8 @@ export const logout = () => async (dispatch: AppDispatch) => {
     try {
         await logoutAPI();
         dispatch(logoutSuccess());
+        dispatch(resetAccessLevel());
+        dispatch(resetChildBusinessUnits());
     } catch (error: any) {
         dispatch(logoutFailure());
         throw error.response?.data?.message || error.message;

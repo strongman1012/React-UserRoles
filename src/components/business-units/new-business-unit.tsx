@@ -4,6 +4,7 @@ import { RootState } from '../../store/store';
 import { useAppDispatch } from '../../store/hooks';
 import { useSelector } from 'react-redux';
 import { fetchBusinessUnits, createBusinessUnit } from '../../reducers/businessUnits/businessUnitsSlice';
+import { fetchAreaAccessLevel } from '../../reducers/roles/rolesSlice';
 import { BusinessUnit } from '../../reducers/businessUnits/businessUnitsAPI';
 
 interface NewBusinessUnitProps {
@@ -13,6 +14,7 @@ interface NewBusinessUnitProps {
 const NewBusinessUnit: FC<NewBusinessUnitProps> = ({ onClose }) => {
     const dispatch = useAppDispatch();
     const auth = useSelector((state: RootState) => state.auth.user);
+    const userAccessLevel = useSelector((state: RootState) => state.roles.getAreaAccessLevel);
     const allBusinessUnits = useSelector((state: RootState) => state.businessUnits.allBusinessUnits);
 
     const initialFormData: Omit<BusinessUnit, 'id'> = {
@@ -41,6 +43,12 @@ const NewBusinessUnit: FC<NewBusinessUnitProps> = ({ onClose }) => {
     useEffect(() => {
         dispatch(fetchBusinessUnits());
     }, [dispatch]);
+
+    useEffect(() => {
+        if (auth) {
+            dispatch(fetchAreaAccessLevel(auth.role_id, "Business Units"));
+        }
+    }, [dispatch, auth]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -87,9 +95,11 @@ const NewBusinessUnit: FC<NewBusinessUnitProps> = ({ onClose }) => {
         <Stack spacing={3} padding={3}>
             <Typography variant="h4">New Business Unit</Typography>
             <Stack direction="row" spacing={2}>
-                <Button variant="contained" color="primary" onClick={handleSave}>
-                    Save
-                </Button>
+                {userAccessLevel !== 5 && (
+                    <Button variant="contained" color="primary" onClick={handleSave}>
+                        Save
+                    </Button>
+                )}
                 <Button variant="outlined" color="secondary" onClick={onClose}>
                     Cancel
                 </Button>

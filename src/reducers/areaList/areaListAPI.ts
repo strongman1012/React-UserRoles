@@ -4,6 +4,7 @@ export interface AreaList {
     id: number;
     role_id: number;
     area_id: number;
+    data_access_id: number;
     permission: boolean;
     application_name: string;
     area_name: string;
@@ -19,6 +20,10 @@ export const getAreaListsAPI = async (roleId: number): Promise<AreaList[]> => {
 };
 
 export const saveAreaListAPI = async (user_roleId: number, roleId: number, areaList: { area_id: number; permission: boolean }): Promise<AreaList[]> => {
+    const response = await apiClient.post<AreaList[]>(`/areaList/save`, { user_role_id: user_roleId, role_id: roleId, ...areaList });
+    return response.data;
+};
+export const saveAreaListAPI_2 = async (user_roleId: number, roleId: number, areaList: { area_id: number; data_access_id: number }): Promise<AreaList[]> => {
     const response = await apiClient.post<AreaList[]>(`/areaList/save`, { user_role_id: user_roleId, role_id: roleId, ...areaList });
     return response.data;
 };

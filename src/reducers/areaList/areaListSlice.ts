@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppDispatch } from '../../store/store';
-import { fetchAreaListsAPI, saveAreaListAPI, getAreaListsAPI, AreaList } from './areaListAPI';
+import { fetchAreaListsAPI, saveAreaListAPI, saveAreaListAPI_2, getAreaListsAPI, AreaList } from './areaListAPI';
 
 interface AreaListState {
     areaLists: AreaList[];
@@ -50,6 +50,14 @@ export const getAreaLists = (roleId: number) => async (dispatch: AppDispatch) =>
 export const saveAreaList = (user_roleId: number, roleId: number, areaList: { area_id: number; permission: boolean }) => async (dispatch: AppDispatch) => {
     try {
         const response = await saveAreaListAPI(user_roleId, roleId, areaList);
+        dispatch(updateAreaList(response));
+    } catch (error: any) {
+        console.error('Error saving area list:', error.response?.data?.message || error.message);
+    }
+};
+export const saveAreaList_2 = (user_roleId: number, roleId: number, areaList: { area_id: number; data_access_id: number }) => async (dispatch: AppDispatch) => {
+    try {
+        const response = await saveAreaListAPI_2(user_roleId, roleId, areaList);
         dispatch(updateAreaList(response));
     } catch (error: any) {
         console.error('Error saving area list:', error.response?.data?.message || error.message);
