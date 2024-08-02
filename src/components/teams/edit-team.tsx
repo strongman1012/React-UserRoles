@@ -9,6 +9,7 @@ import { fetchTeamById, updateTeamById } from '../../reducers/teams/teamsSlice';
 import { fetchBusinessUnits } from '../../reducers/businessUnits/businessUnitsSlice';
 import { fetchUsers } from '../../reducers/users/usersSlice';
 import { fetchRoles } from '../../reducers/roles/rolesSlice';
+import { fetchAreaAccessLevel } from '../../reducers/roles/rolesSlice';
 import { Team } from '../../reducers/teams/teamsAPI';
 import { User } from 'src/reducers/users/usersAPI';
 import { DataGrid, Column, SearchPanel, Paging, Pager } from 'devextreme-react/data-grid';
@@ -21,6 +22,7 @@ interface EditTeamProps {
 const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
     const dispatch = useAppDispatch();
     const auth = useSelector((state: RootState) => state.auth.user);
+    const userAccessLevel = useSelector((state: RootState) => state.roles.getAreaAccessLevel);
     const team = useSelector((state: RootState) => state.teams.currentTeam);
     const allBusinessUnits = useSelector((state: RootState) => state.businessUnits.allBusinessUnits);
     const allUsers = useSelector((state: RootState) => state.users.allUsers);
@@ -34,6 +36,7 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
     const [rolesModalOpen, setRolesModalOpen] = useState(false);
     const [selectedRoleId, setSelectedRoleId] = useState<number | null>(null);
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
     useEffect(() => {
         if (teamId) {
@@ -43,6 +46,12 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
             dispatch(fetchRoles());
         }
     }, [dispatch, teamId]);
+
+    useEffect(() => {
+        if (auth) {
+            dispatch(fetchAreaAccessLevel(auth.role_id, "Teams"));
+        }
+    }, [dispatch, auth]);
 
     useEffect(() => {
         if (teamId && allUsers) {
@@ -55,6 +64,7 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
     useEffect(() => {
         if (team) {
             setFormData(team);
+            setSelectedRoleId(team.role_id || null);
         }
     }, [team]);
 
@@ -80,7 +90,22 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
         });
     };
 
+    const validateForm = () => {
+        let tempErrors: { [key: string]: string } = {};
+        if (!formData?.name) tempErrors.name = "Team name is required";
+        if (!formData?.business_unit_id) tempErrors.business_unit_id = "Business unit is required";
+        if (!formData?.admin_id) tempErrors.admin_id = "Administrator is required";
+        setErrors(tempErrors);
+        return Object.keys(tempErrors).length === 0;
+    };
+
     const handleSave = async () => {
+        if (!validateForm()) {
+            setSnackbarMessage('Please fill in the required fields');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
+            return;
+        }
         if (formData) {
             try {
                 const updatedData = {
@@ -117,7 +142,10 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
     const handleRoleChange = async (roleId: number) => {
         setSelectedRoleId(roleId);
         try {
-            await dispatch(updateTeamById(auth.role_id, teamId, { ...formData, role_id: roleId }));
+            await dispatch(updateTeamById(auth.role_id, teamId, {
+                ...formData, ids: selectedMembers.map(member => member.id),
+                removeIds: removeMembers.map(member => member.id), role_id: roleId
+            }));
             setSnackbarMessage('Team role updated successfully');
             setSnackbarSeverity('success');
             setSnackbarOpen(true);
@@ -140,15 +168,19 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
         <Stack spacing={3} padding={3} width="100%">
             <Typography variant="h4">Edit Team</Typography>
             <Stack direction="row" spacing={2}>
-                <Button variant="contained" color="primary" onClick={handleSave}>
-                    Save
-                </Button>
+                {userAccessLevel !== 5 && (
+                    <Button variant="contained" color="primary" onClick={handleSave}>
+                        Save
+                    </Button>
+                )}
                 <Button variant="outlined" color="secondary" onClick={onClose}>
                     Cancel
                 </Button>
-                <Button variant="outlined" color="primary" onClick={handleManageRolesClick}>
-                    Manage Roles
-                </Button>
+                {userAccessLevel !== 5 && (
+                    <Button variant="outlined" color="primary" onClick={handleManageRolesClick}>
+                        Manage Roles
+                    </Button>
+                )}
             </Stack>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
@@ -164,6 +196,8 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
                                 name="name"
                                 value={formData.name}
                                 onChange={handleInputChange}
+                                error={!!errors.name}
+                                helperText={errors.name}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -173,7 +207,7 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
                                 value={allBusinessUnits.find(unit => unit.id === formData.business_unit_id) || null}
                                 onChange={(event, value) => handleAutocompleteChange(event, value, 'business_unit_id')}
                                 renderInput={(params) => (
-                                    <TextField {...params} label="Business Unit" fullWidth />
+                                    <TextField {...params} label="Business Unit" fullWidth error={!!errors.business_unit_id} helperText={errors.business_unit_id} />
                                 )}
                             />
                         </Grid>
@@ -184,7 +218,7 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
                                 value={allUsers.find(user => user.id === formData.admin_id) || null}
                                 onChange={(event, value) => handleAutocompleteChange(event, value, 'admin_id')}
                                 renderInput={(params) => (
-                                    <TextField {...params} label="Administrator" fullWidth />
+                                    <TextField {...params} label="Administrator" fullWidth error={!!errors.admin_id} helperText={errors.admin_id} />
                                 )}
                             />
                         </Grid>

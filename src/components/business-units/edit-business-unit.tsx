@@ -23,6 +23,7 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
     const [selectedParentBusinessUnit, setSelectedParentBusinessUnit] = useState<any | null>(null);
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
     useEffect(() => {
         if (businessUnitId) {
@@ -61,8 +62,22 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
         });
     };
 
+    const validateForm = () => {
+        let tempErrors: { [key: string]: string } = {};
+        if (!formData?.name) tempErrors.name = "Name is required";
+        if (!formData?.email) tempErrors.email = "Email is required";
+        setErrors(tempErrors);
+        return Object.keys(tempErrors).length === 0;
+    };
+
     const handleSave = async () => {
         if (formData) {
+            if (!validateForm()) {
+                setSnackbarMessage('Please fill in the required fields');
+                setSnackbarSeverity('error');
+                setSnackbarOpen(true);
+                return;
+            }
             try {
                 await dispatch(updateBusinessUnitById(auth.role_id, businessUnitId, formData));
                 setSnackbarMessage('Business Unit updated successfully');
@@ -119,6 +134,8 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
                                 name="name"
                                 value={formData.name}
                                 onChange={handleInputChange}
+                                error={!!errors.name}
+                                helperText={errors.name}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -175,10 +192,13 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
                         <Grid item xs={12}>
                             <TextField
                                 fullWidth
+                                required
                                 label="Email"
                                 name="email"
                                 value={formData.email || ''}
                                 onChange={handleInputChange}
+                                error={!!errors.email}
+                                helperText={errors.email}
                             />
                         </Grid>
                     </Grid>

@@ -5,8 +5,8 @@ export interface Team {
     id: number;
     name: string;
     description?: string;
-    business_unit_id?: number;
-    admin_id?: number;
+    business_unit_id?: number | null;
+    admin_id?: number | null;
     is_default: boolean;
     business_name?: string;
     admin_name?: string;

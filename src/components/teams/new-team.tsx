@@ -7,6 +7,7 @@ import { useAppDispatch } from '../../store/hooks';
 import { useSelector } from 'react-redux';
 import { fetchBusinessUnits } from '../../reducers/businessUnits/businessUnitsSlice';
 import { fetchUsers } from '../../reducers/users/usersSlice';
+import { fetchAreaAccessLevel } from '../../reducers/roles/rolesSlice';
 import { createTeam } from '../../reducers/teams/teamsSlice';
 import { Team } from '../../reducers/teams/teamsAPI';
 import { User } from '../../reducers/users/usersAPI';
@@ -19,14 +20,15 @@ interface NewTeamProps {
 const NewTeam: FC<NewTeamProps> = ({ onClose }) => {
     const dispatch = useAppDispatch();
     const auth = useSelector((state: RootState) => state.auth.user);
+    const userAccessLevel = useSelector((state: RootState) => state.roles.getAreaAccessLevel);
     const allBusinessUnits = useSelector((state: RootState) => state.businessUnits.allBusinessUnits);
     const allUsers = useSelector((state: RootState) => state.users.allUsers);
 
     const initialFormData: Omit<Team, 'id'> = {
         name: '',
         description: '',
-        business_unit_id: 0,
-        admin_id: 0,
+        business_unit_id: null,
+        admin_id: null,
         is_default: false,
     };
 
@@ -35,11 +37,18 @@ const NewTeam: FC<NewTeamProps> = ({ onClose }) => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
     useEffect(() => {
         dispatch(fetchBusinessUnits());
         dispatch(fetchUsers());
     }, [dispatch]);
+
+    useEffect(() => {
+        if (auth) {
+            dispatch(fetchAreaAccessLevel(auth.role_id, "Teams"));
+        }
+    }, [dispatch, auth]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -63,7 +72,23 @@ const NewTeam: FC<NewTeamProps> = ({ onClose }) => {
         });
     };
 
+    const validateForm = () => {
+        let tempErrors: { [key: string]: string } = {};
+        if (!formData.name) tempErrors.name = "Team name is required";
+        if (!formData.business_unit_id) tempErrors.business_unit_id = "Business unit is required";
+        if (!formData.admin_id) tempErrors.admin_id = "Administrator is required";
+        setErrors(tempErrors);
+        return Object.keys(tempErrors).length === 0;
+    };
+
     const handleSave = async () => {
+        if (!validateForm()) {
+            setSnackbarMessage('Please fill in the required fields');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
+            return;
+        }
+
         try {
             const newTeamData = {
                 ...formData,
@@ -74,6 +99,7 @@ const NewTeam: FC<NewTeamProps> = ({ onClose }) => {
             setSnackbarSeverity('success');
             setSnackbarOpen(true);
             setFormData(initialFormData); // Reset form data after successful save
+            setSelectedMembers([]);
         } catch (error: any) {
             setSnackbarMessage('Error creating team');
             setSnackbarSeverity('error');
@@ -93,9 +119,11 @@ const NewTeam: FC<NewTeamProps> = ({ onClose }) => {
         <Stack spacing={3} padding={3} width="100%">
             <Typography variant="h4">New Team</Typography>
             <Stack direction="row" spacing={2}>
-                <Button variant="contained" color="primary" onClick={handleSave}>
-                    Save
-                </Button>
+                {userAccessLevel !== 5 && (
+                    <Button variant="contained" color="primary" onClick={handleSave}>
+                        Save
+                    </Button>
+                )}
                 <Button variant="outlined" color="secondary" onClick={onClose}>
                     Cancel
                 </Button>
@@ -114,6 +142,8 @@ const NewTeam: FC<NewTeamProps> = ({ onClose }) => {
                                 name="name"
                                 value={formData.name}
                                 onChange={handleInputChange}
+                                error={!!errors.name}
+                                helperText={errors.name}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -123,7 +153,7 @@ const NewTeam: FC<NewTeamProps> = ({ onClose }) => {
                                 value={allBusinessUnits.find(unit => unit.id === formData.business_unit_id) || null}
                                 onChange={(event, value) => handleAutocompleteChange(event, value, 'business_unit_id')}
                                 renderInput={(params) => (
-                                    <TextField {...params} label="Business Unit" fullWidth />
+                                    <TextField {...params} label="Business Unit" fullWidth error={!!errors.business_unit_id} helperText={errors.business_unit_id} />
                                 )}
                             />
                         </Grid>
@@ -134,7 +164,7 @@ const NewTeam: FC<NewTeamProps> = ({ onClose }) => {
                                 value={allUsers.find(user => user.id === formData.admin_id) || null}
                                 onChange={(event, value) => handleAutocompleteChange(event, value, 'admin_id')}
                                 renderInput={(params) => (
-                                    <TextField {...params} label="Administrator" fullWidth />
+                                    <TextField {...params} label="Administrator" fullWidth error={!!errors.admin_id} helperText={errors.admin_id} />
                                 )}
                             />
                         </Grid>

@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { createUser } from '../../reducers/users/usersSlice';
 import { fetchBusinessUnits } from '../../reducers/businessUnits/businessUnitsSlice';
 import { fetchTeams } from '../../reducers/teams/teamsSlice';
+import { fetchAreaAccessLevel } from '../../reducers/roles/rolesSlice';
 import { User } from '../../reducers/users/usersAPI';
 
 const initialFormData: Omit<User, 'id'> = {
@@ -24,6 +25,7 @@ const initialFormData: Omit<User, 'id'> = {
 const NewUser: FC<{ onClose: () => void }> = ({ onClose }) => {
     const dispatch = useAppDispatch();
     const auth = useSelector((state: RootState) => state.auth.user);
+    const userAccessLevel = useSelector((state: RootState) => state.roles.getAreaAccessLevel);
     const allBusinessUnits = useSelector((state: RootState) => state.businessUnits.allBusinessUnits);
     const allTeams = useSelector((state: RootState) => state.teams.allTeams);
 
@@ -38,6 +40,12 @@ const NewUser: FC<{ onClose: () => void }> = ({ onClose }) => {
         dispatch(fetchBusinessUnits());
         dispatch(fetchTeams());
     }, [dispatch]);
+
+    useEffect(() => {
+        if (auth) {
+            dispatch(fetchAreaAccessLevel(auth.role_id, "Users"));
+        }
+    }, [dispatch, auth]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -54,17 +62,35 @@ const NewUser: FC<{ onClose: () => void }> = ({ onClose }) => {
         });
     };
 
-    const handleSave = async () => {
-        try {
-            await dispatch(createUser(auth.role_id, formData));
-            setSnackbarMessage('User created successfully');
-            setSnackbarSeverity('success');
-            setSnackbarOpen(true);
-            setFormData(initialFormData); // Reset form data after successful save
-        } catch (error: any) {
-            setSnackbarMessage('Error creating user');
+    const validateForm = () => {
+        if (!formData.userName) {
+            setSnackbarMessage('User Name is required');
             setSnackbarSeverity('error');
             setSnackbarOpen(true);
+            return false;
+        }
+        if (!formData.email) {
+            setSnackbarMessage('Primary Email is required');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
+            return false;
+        }
+        return true;
+    };
+
+    const handleSave = async () => {
+        if (validateForm()) {
+            try {
+                await dispatch(createUser(auth.role_id, formData));
+                setSnackbarMessage('User created successfully');
+                setSnackbarSeverity('success');
+                setSnackbarOpen(true);
+                setFormData(initialFormData); // Reset form data after successful save
+            } catch (error: any) {
+                setSnackbarMessage('Error creating user');
+                setSnackbarSeverity('error');
+                setSnackbarOpen(true);
+            }
         }
     };
 
@@ -92,9 +118,11 @@ const NewUser: FC<{ onClose: () => void }> = ({ onClose }) => {
         <Stack spacing={3} padding={3} width="100%">
             <Typography variant="h4">New User</Typography>
             <Stack direction="row" spacing={2}>
-                <Button variant="contained" color="primary" onClick={handleSave}>
-                    Save
-                </Button>
+                {userAccessLevel !== 5 && (
+                    <Button variant="contained" color="primary" onClick={handleSave}>
+                        Save
+                    </Button>
+                )}
                 <Button variant="outlined" color="secondary" onClick={onClose}>
                     Cancel
                 </Button>

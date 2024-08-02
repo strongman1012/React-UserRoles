@@ -5,6 +5,9 @@ import { RootState } from '../../store/store';
 import { useAppDispatch } from '../../store/hooks';
 import { useSelector } from 'react-redux';
 import { fetchTeams, deleteTeamsByIds } from '../../reducers/teams/teamsSlice';
+import { fetchAreaAccessLevel } from '../../reducers/roles/rolesSlice';
+import { fetchChildBusinessUnits } from 'src/reducers/businessUnits/businessUnitsSlice';
+import { Team } from 'src/reducers/teams/teamsAPI';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 
 interface TeamListsProps {
@@ -22,13 +25,47 @@ const TeamLists: FC<TeamListsProps> = ({ onRowClick, onAddNewClick }) => {
     const dispatch = useAppDispatch();
     const teams = useSelector((state: RootState) => state.teams.allTeams);
     const auth = useSelector((state: RootState) => state.auth.user);
+    const userAccessLevel = useSelector((state: RootState) => state.roles.getAreaAccessLevel);
+    const childBusinessUnits = useSelector((state: RootState) => state.businessUnits.childBusinessUnits);
     const [selectedTeamIds, setSelectedTeamIds] = useState<number[]>([]);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [filteredTeams, setFilteredTeams] = useState<Team[]>([]);
 
     useEffect(() => {
         dispatch(fetchTeams());
     }, [dispatch]);
+
+    useEffect(() => {
+        if (auth) {
+            dispatch(fetchAreaAccessLevel(auth.role_id, "Teams"));
+            dispatch(fetchChildBusinessUnits(auth.business_unit_id));
+        }
+    }, [dispatch, auth]);
+
+    useEffect(() => {
+        if (teams) {
+            if (userAccessLevel === 1) {
+                setFilteredTeams(teams);
+            }
+            else if (userAccessLevel === 2) {
+                let filteredData: Team[] = [];
+                childBusinessUnits?.forEach(child => {
+                    const teamsInChildBusinessUnit = teams.filter(team => { return team.business_unit_id === child.id });
+                    filteredData = filteredData.concat(teamsInChildBusinessUnit);
+                });
+                setFilteredTeams(filteredData);
+            }
+            else if (userAccessLevel === 3) {
+                const filteredData = teams.filter(team => { return team.business_unit_id === auth.business_unit_id });
+                setFilteredTeams(filteredData);
+            }
+            else {
+                const filteredData = teams.filter(team => { return team.id === auth.team_id });
+                setFilteredTeams(filteredData);
+            }
+        }
+    }, [userAccessLevel, teams, auth, childBusinessUnits]);
 
     const handleRowClick = (e: any) => {
         const teamId = e.data.id;
@@ -72,16 +109,20 @@ const TeamLists: FC<TeamListsProps> = ({ onRowClick, onAddNewClick }) => {
         <Stack width="100%" padding={5}>
             <Typography variant='h5' color="primary">Team Lists</Typography>
             <Grid container justifyContent="flex-end" alignItems="center">
-                <Button variant="contained" color="primary" onClick={onAddNewClick} style={{ marginBottom: 16, marginRight: 12 }}>
-                    New
-                </Button>
-                <Button variant="contained" color="inherit" onClick={handleDeleteClick} style={{ marginBottom: 16 }}>
-                    Delete
-                </Button>
+                {userAccessLevel !== 5 && (
+                    <>
+                        <Button variant="contained" color="primary" onClick={onAddNewClick} style={{ marginBottom: 16, marginRight: 12 }}>
+                            New
+                        </Button>
+                        <Button variant="contained" color="inherit" onClick={handleDeleteClick} style={{ marginBottom: 16 }}>
+                            Delete
+                        </Button>
+                    </>
+                )}
             </Grid>
             <DataGrid
                 id="teams"
-                dataSource={teams}
+                dataSource={filteredTeams}
                 keyExpr="id"
                 columnAutoWidth={true}
                 showRowLines={true}
@@ -104,7 +145,7 @@ const TeamLists: FC<TeamListsProps> = ({ onRowClick, onAddNewClick }) => {
                 <Column dataField='description' caption='Description' />
                 <Column dataField='business_name' caption='Business Unit' />
                 <Column dataField='admin_name' caption='Team Administrator' />
-                <Column dataField='is_default' caption='Default' />
+                <Column dataField='is_default' caption='Default Team' />
                 <ColumnChooser
                     height='340px'
                     enabled={true}

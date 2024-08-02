@@ -72,8 +72,30 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
         }));
     };
 
+    const validateForm = () => {
+        if (!formData?.userName) {
+            setSnackbarMessage('User Name is required');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
+            return false;
+        }
+        if (!formData.fullName) {
+            setSnackbarMessage('Full Name is required');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
+            return false;
+        }
+        if (!formData.email) {
+            setSnackbarMessage('Primary Email is required');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
+            return false;
+        }
+        return true;
+    };
+
     const handleSave = async () => {
-        if (formData) {
+        if (formData && validateForm()) {
             try {
                 await dispatch(updateUserById(auth.role_id, userId, formData));
                 setSnackbarMessage('User updated successfully');
