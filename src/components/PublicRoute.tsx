@@ -8,13 +8,13 @@ interface PublicRouteProps extends RouteProps {
 }
 
 const PublicRoute: React.FC<PublicRouteProps> = ({ component: Component, ...rest }) => {
-  const isAuthenticated = useSelector((state: RootState) => state.auth.token);
+  const isAuthenticated = useSelector((state: RootState) => state.auth.user);
 
   return (
     <Route
       {...rest}
       render={props =>
-        !isAuthenticated ? (
+        !isAuthenticated?.status ? (
           <Component {...props} />
         ) : (
           <Redirect to="/" />

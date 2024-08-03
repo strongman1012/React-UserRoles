@@ -49,12 +49,13 @@ const TeamLists: FC<TeamListsProps> = ({ onRowClick, onAddNewClick }) => {
                 setFilteredTeams(teams);
             }
             else if (userAccessLevel === 2) {
-                let filteredData: Team[] = [];
+                const parentData = teams.filter(team => { return team.business_unit_id === auth.business_unit_id });
+                let childrenData: Team[] = [];
                 childBusinessUnits?.forEach(child => {
                     const teamsInChildBusinessUnit = teams.filter(team => { return team.business_unit_id === child.id });
-                    filteredData = filteredData.concat(teamsInChildBusinessUnit);
+                    childrenData = childrenData.concat(teamsInChildBusinessUnit);
                 });
-                setFilteredTeams(filteredData);
+                setFilteredTeams(parentData.concat(childrenData));
             }
             else if (userAccessLevel === 3) {
                 const filteredData = teams.filter(team => { return team.business_unit_id === auth.business_unit_id });
