@@ -20,9 +20,9 @@ export interface User {
 }
 
 // Fetch all users
-export const fetchUsersAPI = async (): Promise<User[]> => {
+export const fetchUsersAPI = async (): Promise<any> => {
     try {
-        const response = await apiClient.get<User[]>('/users');
+        const response = await apiClient.get<any>('/users');
         return response.data;
     } catch (error) {
         console.error('Error fetching users:', error);
@@ -31,9 +31,9 @@ export const fetchUsersAPI = async (): Promise<User[]> => {
 };
 
 // Fetch a user by ID
-export const fetchUserByIdAPI = async (id: number): Promise<User> => {
+export const fetchUserByIdAPI = async (id: number): Promise<any> => {
     try {
-        const response = await apiClient.get<User>(`/users/${id}`);
+        const response = await apiClient.get<any>(`/users/${id}`);
         return response.data;
     } catch (error) {
         console.error(`Error fetching user with ID ${id}:`, error);
@@ -42,9 +42,9 @@ export const fetchUserByIdAPI = async (id: number): Promise<User> => {
 };
 
 // Create a new user
-export const createUserAPI = async (user_role_id: number, user: Omit<User, 'id'>): Promise<User> => {
+export const createUserAPI = async (user: Omit<User, 'id'>): Promise<User> => {
     try {
-        const response = await apiClient.post<User>('/users', { user_role_id: user_role_id, ...user });
+        const response = await apiClient.post<User>('/users', { ...user });
         return response.data;
     } catch (error) {
         console.error('Error creating user:', error);
@@ -53,9 +53,9 @@ export const createUserAPI = async (user_role_id: number, user: Omit<User, 'id'>
 };
 
 // Update a user by ID
-export const updateUserAPI = async (user_role_id: number, id: number, user: Partial<User>): Promise<User> => {
+export const updateUserAPI = async (id: number, user: Partial<User>): Promise<User> => {
     try {
-        const response = await apiClient.put<User>(`/users/${id}`, { user_role_id, ...user });
+        const response = await apiClient.put<User>(`/users/${id}`, { ...user });
         return response.data;
     } catch (error) {
         console.error(`Error updating user with ID ${id}:`, error);
@@ -64,9 +64,9 @@ export const updateUserAPI = async (user_role_id: number, id: number, user: Part
 };
 
 // Delete a user by IDs
-export const deleteUserAPI = async (ids: number[], user_role_id: number): Promise<void> => {
+export const deleteUserAPI = async (ids: number[]): Promise<void> => {
     try {
-        await apiClient.delete(`/users`, { data: { ids, user_role_id } });
+        await apiClient.delete(`/users`, { data: { ids } });
     } catch (error) {
         console.error(`Error deleting users with IDs ${ids}:`, error);
         throw error; // Re-throw the error after logging it

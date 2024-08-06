@@ -7,7 +7,6 @@ import { useAppDispatch } from '../../store/hooks';
 import { useSelector } from 'react-redux';
 import { fetchBusinessUnits } from '../../reducers/businessUnits/businessUnitsSlice';
 import { fetchUsers } from '../../reducers/users/usersSlice';
-import { fetchAreaAccessLevel } from '../../reducers/roles/rolesSlice';
 import { createTeam } from '../../reducers/teams/teamsSlice';
 import { Team } from '../../reducers/teams/teamsAPI';
 import { User } from '../../reducers/users/usersAPI';
@@ -19,8 +18,7 @@ interface NewTeamProps {
 
 const NewTeam: FC<NewTeamProps> = ({ onClose }) => {
     const dispatch = useAppDispatch();
-    const auth = useSelector((state: RootState) => state.auth.user);
-    const userAccessLevel = useSelector((state: RootState) => state.roles.getAreaAccessLevel);
+    const editable = useSelector((state: RootState) => state.teams.editable);
     const allBusinessUnits = useSelector((state: RootState) => state.businessUnits.allBusinessUnits);
     const allUsers = useSelector((state: RootState) => state.users.allUsers);
 
@@ -43,12 +41,6 @@ const NewTeam: FC<NewTeamProps> = ({ onClose }) => {
         dispatch(fetchBusinessUnits());
         dispatch(fetchUsers());
     }, [dispatch]);
-
-    useEffect(() => {
-        if (auth) {
-            dispatch(fetchAreaAccessLevel(auth.role_id, "Teams"));
-        }
-    }, [dispatch, auth]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -94,7 +86,7 @@ const NewTeam: FC<NewTeamProps> = ({ onClose }) => {
                 ...formData,
                 ids: selectedMembers.map(member => member.id),
             };
-            await dispatch(createTeam(auth.role_id, newTeamData));
+            await dispatch(createTeam(newTeamData));
             setSnackbarMessage('Team created successfully');
             setSnackbarSeverity('success');
             setSnackbarOpen(true);
@@ -119,7 +111,7 @@ const NewTeam: FC<NewTeamProps> = ({ onClose }) => {
         <Stack spacing={3} padding={3} width="100%">
             <Typography variant="h4">New Team</Typography>
             <Stack direction="row" spacing={2}>
-                {userAccessLevel !== 5 && (
+                {editable && (
                     <Button variant="contained" color="primary" onClick={handleSave}>
                         Save
                     </Button>

@@ -1,10 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppDispatch } from '../../store/store';
-import { fetchApplicationsAPI, fetchApplicationByIdAPI, createApplicationAPI, updateApplicationAPI, deleteApplicationAPI, Application } from './applicationsAPI';
+import { fetchApplicationsAPI, fetchApplicationByIdAPI, createApplicationAPI, updateApplicationAPI, deleteApplicationsAPI, Application } from './applicationsAPI';
 
 interface ApplicationState {
     allApplications: Application[];
     currentApplication?: Application;
+    editable?: boolean;
 }
 
 const initialState: ApplicationState = {
@@ -15,11 +16,18 @@ const applicationsSlice = createSlice({
     name: 'applications',
     initialState,
     reducers: {
-        setApplications: (state, action: PayloadAction<Application[]>) => {
-            state.allApplications = action.payload;
+        resetApplications: (state) => {
+            state.allApplications = [];
+            state.currentApplication = undefined;
+            state.editable = false;
         },
-        setCurrentApplication: (state, action: PayloadAction<Application>) => {
-            state.currentApplication = action.payload;
+        setApplications: (state, action: PayloadAction<any>) => {
+            state.allApplications = action.payload.result;
+            state.editable = action.payload.editable;
+        },
+        setCurrentApplication: (state, action: PayloadAction<any>) => {
+            state.currentApplication = action.payload.result;
+            state.editable = action.payload.editable;
         },
         addApplication: (state, action: PayloadAction<Application>) => {
             state.allApplications.push(action.payload);
@@ -31,13 +39,15 @@ const applicationsSlice = createSlice({
                 state.allApplications[existingIndex] = updatedApplication;
             }
         },
-        removeApplication: (state, action: PayloadAction<number>) => {
-            state.allApplications = state.allApplications.filter(application => application.id !== action.payload);
+        removeApplications: (state, action: PayloadAction<number[]>) => {
+            state.allApplications = state.allApplications.filter(
+                application => !action.payload.includes(application.id)
+            );
         },
     },
 });
 
-export const { setApplications, setCurrentApplication, addApplication, updateApplication, removeApplication } = applicationsSlice.actions;
+export const { resetApplications, setApplications, setCurrentApplication, addApplication, updateApplication, removeApplications } = applicationsSlice.actions;
 
 export const fetchApplications = () => async (dispatch: AppDispatch) => {
     try {
@@ -57,28 +67,28 @@ export const fetchApplicationById = (id: number) => async (dispatch: AppDispatch
     }
 };
 
-export const createApplication = (name: string, description: string) => async (dispatch: AppDispatch) => {
+export const createApplication = (formData: { name: string, description: string }) => async (dispatch: AppDispatch) => {
     try {
-        const response = await createApplicationAPI(name, description);
+        const response = await createApplicationAPI(formData);
         dispatch(addApplication(response));
     } catch (error: any) {
         console.error('Error creating application:', error.response?.data?.message || error.message);
     }
 };
 
-export const updateApplicationById = (id: number, name: string, description: string) => async (dispatch: AppDispatch) => {
+export const updateApplicationById = (id: number, formData: { name: string, description: string }) => async (dispatch: AppDispatch) => {
     try {
-        const response = await updateApplicationAPI(id, name, description);
+        const response = await updateApplicationAPI(id, formData);
         dispatch(updateApplication(response));
     } catch (error: any) {
         console.error('Error updating application:', error.response?.data?.message || error.message);
     }
 };
 
-export const deleteApplicationById = (id: number) => async (dispatch: AppDispatch) => {
+export const deleteApplicationByIds = (ids: number[]) => async (dispatch: AppDispatch) => {
     try {
-        await deleteApplicationAPI(id);
-        dispatch(removeApplication(id));
+        await deleteApplicationsAPI(ids);
+        dispatch(removeApplications(ids));
     } catch (error: any) {
         console.error('Error deleting application:', error.response?.data?.message || error.message);
     }

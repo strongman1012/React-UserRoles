@@ -7,7 +7,6 @@ import { fetchUserById, updateUserById } from '../../reducers/users/usersSlice';
 import { fetchRoles } from 'src/reducers/roles/rolesSlice';
 import { fetchBusinessUnits } from 'src/reducers/businessUnits/businessUnitsSlice';
 import { fetchTeams } from 'src/reducers/teams/teamsSlice';
-import { fetchAreaAccessLevel } from '../../reducers/roles/rolesSlice';
 import { User } from '../../reducers/users/usersAPI';
 
 interface EditUserProps {
@@ -17,9 +16,8 @@ interface EditUserProps {
 
 const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
     const dispatch = useAppDispatch();
-    const auth = useSelector((state: RootState) => state.auth.user);
     const user = useSelector((state: RootState) => state.users.currentUser);
-    const userAccessLevel = useSelector((state: RootState) => state.roles.getAreaAccessLevel);
+    const editable = useSelector((state: RootState) => state.users.editable);
     const roles = useSelector((state: RootState) => state.roles.allRoles);
     const allBusinessUnits = useSelector((state: RootState) => state.businessUnits.allBusinessUnits);
     const allTeams = useSelector((state: RootState) => state.teams.allTeams);
@@ -41,12 +39,6 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
             dispatch(fetchTeams());
         }
     }, [dispatch, userId]);
-
-    useEffect(() => {
-        if (auth) {
-            dispatch(fetchAreaAccessLevel(auth.role_id, "Users"));
-        }
-    }, [dispatch, auth]);
 
     useEffect(() => {
         if (user) {
@@ -97,7 +89,7 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
     const handleSave = async () => {
         if (formData && validateForm()) {
             try {
-                await dispatch(updateUserById(auth.role_id, userId, formData));
+                await dispatch(updateUserById(userId, formData));
                 setSnackbarMessage('User updated successfully');
                 setSnackbarSeverity('success');
                 setSnackbarOpen(true);
@@ -120,7 +112,7 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
     const handleRoleChange = async (roleId: number) => {
         setSelectedRoleId(roleId);
         try {
-            await dispatch(updateUserById(auth.role_id, userId, { ...formData, role_id: roleId }));
+            await dispatch(updateUserById(userId, { ...formData, role_id: roleId }));
             setSnackbarMessage('User updated successfully');
             setSnackbarSeverity('success');
             setSnackbarOpen(true);
@@ -159,7 +151,7 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
         <Stack spacing={3} padding={3} width="100%">
             <Typography variant="h4">Users Form</Typography>
             <Stack direction="row" spacing={2}>
-                {userAccessLevel !== 5 && (
+                {editable && (
                     <Button variant="contained" color="primary" onClick={handleSave}>
                         Save
                     </Button>
@@ -167,7 +159,7 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
                 <Button variant="outlined" color="secondary" onClick={onClose}>
                     Cancel
                 </Button>
-                {userAccessLevel !== 5 && (
+                {editable && (
                     <Button variant="outlined" color="primary" onClick={handleManageRolesClick}>
                         Manage Roles
                     </Button>

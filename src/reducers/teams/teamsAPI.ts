@@ -16,9 +16,9 @@ export interface Team {
 }
 
 // Fetch all teams
-export const fetchTeamsAPI = async (): Promise<Team[]> => {
+export const fetchTeamsAPI = async (): Promise<any> => {
     try {
-        const response = await apiClient.get<Team[]>('/teams');
+        const response = await apiClient.get<any>('/teams');
         return response.data;
     } catch (error) {
         console.error('Error fetching teams:', error);
@@ -27,9 +27,9 @@ export const fetchTeamsAPI = async (): Promise<Team[]> => {
 };
 
 // Fetch a team by ID
-export const fetchTeamByIdAPI = async (id: number): Promise<Team> => {
+export const fetchTeamByIdAPI = async (id: number): Promise<any> => {
     try {
-        const response = await apiClient.get<Team>(`/teams/${id}`);
+        const response = await apiClient.get<any>(`/teams/${id}`);
         return response.data;
     } catch (error) {
         console.error(`Error fetching team with ID ${id}:`, error);
@@ -38,9 +38,9 @@ export const fetchTeamByIdAPI = async (id: number): Promise<Team> => {
 };
 
 // Create a new team
-export const createTeamAPI = async (user_role_id: number, team: Omit<Team, 'id'>): Promise<Team> => {
+export const createTeamAPI = async (team: Omit<Team, 'id'>): Promise<Team> => {
     try {
-        const response = await apiClient.post<Team>('/teams', { user_role_id: user_role_id, ...team });
+        const response = await apiClient.post<Team>('/teams', { ...team });
         return response.data;
     } catch (error) {
         console.error('Error creating team:', error);
@@ -49,9 +49,9 @@ export const createTeamAPI = async (user_role_id: number, team: Omit<Team, 'id'>
 };
 
 // Update a team by ID
-export const updateTeamAPI = async (user_role_id: number, id: number, team: Partial<Team>): Promise<Team> => {
+export const updateTeamAPI = async (id: number, team: Partial<Team>): Promise<Team> => {
     try {
-        const response = await apiClient.put<Team>(`/teams/${id}`, { user_role_id: user_role_id, ...team });
+        const response = await apiClient.put<Team>(`/teams/${id}`, { ...team });
         return response.data;
     } catch (error) {
         console.error(`Error updating team with ID ${id}:`, error);
@@ -60,9 +60,9 @@ export const updateTeamAPI = async (user_role_id: number, id: number, team: Part
 };
 
 // Delete teams by IDs
-export const deleteTeamAPI = async (ids: number[], user_role_id: number): Promise<void> => {
+export const deleteTeamAPI = async (ids: number[]): Promise<void> => {
     try {
-        await apiClient.delete(`/teams`, { data: { ids, user_role_id } });
+        await apiClient.delete(`/teams`, { data: { ids } });
     } catch (error) {
         console.error(`Error deleting teams with IDs ${ids}:`, error);
         throw error; // Re-throw the error after logging it

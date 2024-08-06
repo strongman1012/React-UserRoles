@@ -5,6 +5,7 @@ import { fetchDataAccessesAPI, fetchDataAccessByIdAPI, createDataAccessAPI, upda
 interface DataAccessState {
     allDataAccesses: DataAccess[];
     currentDataAccess?: DataAccess;
+    editable?: boolean;
 }
 
 const initialState: DataAccessState = {
@@ -15,11 +16,18 @@ const dataAccessesSlice = createSlice({
     name: 'dataAccesses',
     initialState,
     reducers: {
-        setDataAccesses: (state, action: PayloadAction<DataAccess[]>) => {
-            state.allDataAccesses = action.payload;
+        resetDataAccesses: (state) => {
+            state.allDataAccesses = [];
+            state.currentDataAccess = undefined;
+            state.editable = false;
         },
-        setCurrentDataAccess: (state, action: PayloadAction<DataAccess>) => {
-            state.currentDataAccess = action.payload;
+        setDataAccesses: (state, action: PayloadAction<any>) => {
+            state.allDataAccesses = action.payload.result;
+            state.editable = action.payload.editable;
+        },
+        setCurrentDataAccess: (state, action: PayloadAction<any>) => {
+            state.currentDataAccess = action.payload.result;
+            state.editable = action.payload.editable;
         },
         addDataAccess: (state, action: PayloadAction<DataAccess>) => {
             state.allDataAccesses.push(action.payload);
@@ -39,7 +47,7 @@ const dataAccessesSlice = createSlice({
     },
 });
 
-export const { setDataAccesses, setCurrentDataAccess, addDataAccess, updateDataAccess, removeDataAccesses } = dataAccessesSlice.actions;
+export const { resetDataAccesses, setDataAccesses, setCurrentDataAccess, addDataAccess, updateDataAccess, removeDataAccesses } = dataAccessesSlice.actions;
 
 export const fetchDataAccesses = () => async (dispatch: AppDispatch) => {
     try {

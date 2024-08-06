@@ -2,11 +2,11 @@ import React, { FC, useEffect, useMemo, useState } from 'react';
 import { useAppDispatch } from '../../store/hooks';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
-import { fetchRoleById, fetchAreaAccessLevel } from '../../reducers/roles/rolesSlice';
+import { fetchRoleById } from '../../reducers/roles/rolesSlice';
 import { fetchApplications } from 'src/reducers/applications/applicationsSlice';
 import { fetchAreas } from 'src/reducers/areas/areasSlice';
 import { fetchDataAccesses } from 'src/reducers/dataAccesses/dataAccessesSlice';
-import { getAreaLists, saveAreaList, saveAreaList_2 } from '../../reducers/areaList/areaListSlice';
+import { getAreaLists, saveAreaList } from '../../reducers/areaList/areaListSlice';
 import { Tabs, Tab, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Stack, Select, MenuItem, Snackbar, Alert, Checkbox } from '@mui/material';
 
 interface SecurityRolesFormProps {
@@ -16,12 +16,11 @@ interface SecurityRolesFormProps {
 const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
     const dispatch = useAppDispatch();
     const role = useSelector((state: RootState) => state.roles.currentRole);
-    const auth = useSelector((state: RootState) => state.auth.user);
-    const userAccessLevel = useSelector((state: RootState) => state.roles.getAreaAccessLevel);
+    const editable = useSelector((state: RootState) => state.areaList.editable);
     const selectedAreaLists = useSelector((state: RootState) => state.areaList.selectedAreaLists);
     const dataAccessLists = useSelector((state: RootState) => state.dataAccesses.allDataAccesses);
-    const allApplications = useSelector((state: RootState) => state.application.allApplications);
-    const allAreas = useSelector((state: RootState) => state.area.allAreas);
+    const allApplications = useSelector((state: RootState) => state.applications.allApplications);
+    const allAreas = useSelector((state: RootState) => state.areas.allAreas);
     const [tabValue, setTabValue] = useState<number>(0);
 
     const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -42,20 +41,18 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
     }, [dispatch, roleId]);
 
     useEffect(() => {
-        if(auth) {
-            dispatch(fetchAreaAccessLevel(auth.role_id, "Security Roles"));
-        }
-    }, [dispatch, auth]);
-
-    useEffect(() => {
         if (allApplications.length > 0) {
-            setTabValue(allApplications[0].id);
+            setTabValue(allApplications[0]?.id);
         }
     }, [allApplications]);
 
     const filteredAreas = useMemo(() => {
         return allAreas.filter(area => area.application_id === tabValue);
     }, [allAreas, tabValue]);
+
+    const filteredSelectedAreaLists = useMemo(() => {
+        return selectedAreaLists.filter(areaList => areaList.application_id === tabValue)
+    }, [selectedAreaLists, tabValue]);
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setTabValue(newValue);
@@ -64,7 +61,7 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
     const handlePermissionChange = async (areaId: number, newPermission: string) => {
         const permission = newPermission === 'true';
         try {
-            await dispatch(saveAreaList(auth.role_id, roleId, { area_id: areaId, permission: permission }));
+            await dispatch(saveAreaList(roleId, { area_id: areaId, permission: permission }));
             setSnackbarMessage('Permission updated successfully');
             setSnackbarSeverity('success');
         } catch (error) {
@@ -77,7 +74,7 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
 
     const handleDataAccessChange = async (areaId: number, data_access_id: number) => {
         try {
-            await dispatch(saveAreaList_2(auth.role_id, roleId, { area_id: areaId, data_access_id: data_access_id }));
+            await dispatch(saveAreaList(roleId, { area_id: areaId, data_access_id: data_access_id }));
             setSnackbarMessage('Data access updated successfully');
             setSnackbarSeverity('success');
         } catch (error) {
@@ -89,7 +86,7 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
     };
 
     const getPermission = (areaId: number) => {
-        const area = selectedAreaLists.find(area => area.area_id === areaId && area.role_id === roleId);
+        const area = filteredSelectedAreaLists[0]?.data.find(area => area.area_id === areaId);
         return area ? area.permission : false;
     };
 
@@ -97,24 +94,9 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
         setSnackbarOpen(false);
     };
 
-    const getDataAccessLevel = (areaId: number, param: string) => {
-        const area = selectedAreaLists.find(area => area.area_id === areaId && area.role_id === roleId);
-        const dataAccess = dataAccessLists.find(access => access.id === area?.data_access_id);
-        if (param === "value") {
-            return dataAccess ? dataAccess.id : '';
-        } else {
-            return dataAccess ? dataAccess.level : '';
-        }
-    };
-
-    const getCheckboxState = (level: number | string, permissionType: 'read' | 'create' | 'update' | 'delete') => {
-        if (level === '') {
-            return false;
-        }
-        if (level === 5) {
-            return permissionType === 'read';
-        }
-        return true;
+    const getDataAccess = (areaId: number) => {
+        const area = filteredSelectedAreaLists[0]?.data.find(area => area.area_id === areaId);
+        return area ? area.data_access_id : '';
     };
 
     if (!role) {
@@ -161,7 +143,7 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
                                             <Select
                                                 value={getPermission(area.id).toString()}
                                                 onChange={(e) => handlePermissionChange(area.id, e.target.value as string)}
-                                                disabled={userAccessLevel !== 1}
+                                                disabled={!editable}
                                             >
                                                 <MenuItem value={'true'}>Yes</MenuItem>
                                                 <MenuItem value={'false'}>No</MenuItem>
@@ -169,9 +151,9 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
                                         </TableCell>
                                         <TableCell>
                                             <Select
-                                                value={getDataAccessLevel(area.id, "value")}
+                                                value={getDataAccess(area.id)}
                                                 onChange={(e) => handleDataAccessChange(area.id, e.target.value as number)}
-                                                disabled={userAccessLevel !== 1}
+                                                disabled={!editable}
                                             >
                                                 {dataAccessLists.map(data => (
                                                     <MenuItem key={data.id} value={data.id}>
@@ -182,25 +164,25 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
                                         </TableCell>
                                         <TableCell>
                                             <Checkbox
-                                                checked={getCheckboxState(getDataAccessLevel(area.id, "level"), 'read')}
+                                                checked={filteredSelectedAreaLists[0]?.data.filter(row => row.area_id === area.id).map(row => row.read)[0] || false}
                                                 disabled
                                             />
                                         </TableCell>
                                         <TableCell>
                                             <Checkbox
-                                                checked={getCheckboxState(getDataAccessLevel(area.id, "level"), 'create')}
+                                                checked={filteredSelectedAreaLists[0]?.data.filter(row => row.area_id === area.id).map(row => row.create)[0] || false}
                                                 disabled
                                             />
                                         </TableCell>
                                         <TableCell>
                                             <Checkbox
-                                                checked={getCheckboxState(getDataAccessLevel(area.id, "level"), 'update')}
+                                                checked={filteredSelectedAreaLists[0]?.data.filter(row => row.area_id === area.id).map(row => row.update)[0] || false}
                                                 disabled
                                             />
                                         </TableCell>
                                         <TableCell>
                                             <Checkbox
-                                                checked={getCheckboxState(getDataAccessLevel(area.id, "level"), 'delete')}
+                                                checked={filteredSelectedAreaLists[0]?.data.filter(row => row.area_id === area.id).map(row => row.delete)[0] || false}
                                                 disabled
                                             />
                                         </TableCell>

@@ -9,7 +9,6 @@ import { fetchTeamById, updateTeamById } from '../../reducers/teams/teamsSlice';
 import { fetchBusinessUnits } from '../../reducers/businessUnits/businessUnitsSlice';
 import { fetchUsers } from '../../reducers/users/usersSlice';
 import { fetchRoles } from '../../reducers/roles/rolesSlice';
-import { fetchAreaAccessLevel } from '../../reducers/roles/rolesSlice';
 import { Team } from '../../reducers/teams/teamsAPI';
 import { User } from 'src/reducers/users/usersAPI';
 import { DataGrid, Column, SearchPanel, Paging, Pager } from 'devextreme-react/data-grid';
@@ -21,8 +20,7 @@ interface EditTeamProps {
 
 const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
     const dispatch = useAppDispatch();
-    const auth = useSelector((state: RootState) => state.auth.user);
-    const userAccessLevel = useSelector((state: RootState) => state.roles.getAreaAccessLevel);
+    const editable = useSelector((state: RootState) => state.teams.editable);
     const team = useSelector((state: RootState) => state.teams.currentTeam);
     const allBusinessUnits = useSelector((state: RootState) => state.businessUnits.allBusinessUnits);
     const allUsers = useSelector((state: RootState) => state.users.allUsers);
@@ -46,12 +44,6 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
             dispatch(fetchRoles());
         }
     }, [dispatch, teamId]);
-
-    useEffect(() => {
-        if (auth) {
-            dispatch(fetchAreaAccessLevel(auth.role_id, "Teams"));
-        }
-    }, [dispatch, auth]);
 
     useEffect(() => {
         if (teamId && allUsers) {
@@ -113,7 +105,7 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
                     ids: selectedMembers.map(member => member.id),
                     removeIds: removeMembers.map(member => member.id),
                 };
-                await dispatch(updateTeamById(auth.role_id, teamId, updatedData));
+                await dispatch(updateTeamById(teamId, updatedData));
                 setSnackbarMessage('Team updated successfully');
                 setSnackbarSeverity('success');
                 setSnackbarOpen(true);
@@ -142,7 +134,7 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
     const handleRoleChange = async (roleId: number) => {
         setSelectedRoleId(roleId);
         try {
-            await dispatch(updateTeamById(auth.role_id, teamId, {
+            await dispatch(updateTeamById(teamId, {
                 ...formData, ids: selectedMembers.map(member => member.id),
                 removeIds: removeMembers.map(member => member.id), role_id: roleId
             }));
@@ -168,7 +160,7 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
         <Stack spacing={3} padding={3} width="100%">
             <Typography variant="h4">Edit Team</Typography>
             <Stack direction="row" spacing={2}>
-                {userAccessLevel !== 5 && (
+                {editable && (
                     <Button variant="contained" color="primary" onClick={handleSave}>
                         Save
                     </Button>
@@ -176,7 +168,7 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
                 <Button variant="outlined" color="secondary" onClick={onClose}>
                     Cancel
                 </Button>
-                {userAccessLevel !== 5 && (
+                {editable && (
                     <Button variant="outlined" color="primary" onClick={handleManageRolesClick}>
                         Manage Roles
                     </Button>

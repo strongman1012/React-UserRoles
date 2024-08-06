@@ -5,9 +5,6 @@ import { RootState } from '../../store/store';
 import { useAppDispatch } from '../../store/hooks';
 import { useSelector } from 'react-redux';
 import { fetchTeams, deleteTeamsByIds } from '../../reducers/teams/teamsSlice';
-import { fetchAreaAccessLevel } from '../../reducers/roles/rolesSlice';
-import { fetchChildBusinessUnits } from 'src/reducers/businessUnits/businessUnitsSlice';
-import { Team } from 'src/reducers/teams/teamsAPI';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 
 interface TeamListsProps {
@@ -24,49 +21,14 @@ const searchEditorOptions = { placeholder: 'Search column' };
 const TeamLists: FC<TeamListsProps> = ({ onRowClick, onAddNewClick }) => {
     const dispatch = useAppDispatch();
     const teams = useSelector((state: RootState) => state.teams.allTeams);
-    const auth = useSelector((state: RootState) => state.auth.user);
-    const userAccessLevel = useSelector((state: RootState) => state.roles.getAreaAccessLevel);
-    const childBusinessUnits = useSelector((state: RootState) => state.businessUnits.childBusinessUnits);
+    const editable = useSelector((state: RootState) => state.teams.editable);
     const [selectedTeamIds, setSelectedTeamIds] = useState<number[]>([]);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [openSnackbar, setOpenSnackbar] = useState(false);
-    const [filteredTeams, setFilteredTeams] = useState<Team[]>([]);
 
     useEffect(() => {
         dispatch(fetchTeams());
     }, [dispatch]);
-
-    useEffect(() => {
-        if (auth) {
-            dispatch(fetchAreaAccessLevel(auth.role_id, "Teams"));
-            dispatch(fetchChildBusinessUnits(auth.business_unit_id));
-        }
-    }, [dispatch, auth]);
-
-    useEffect(() => {
-        if (teams) {
-            if (userAccessLevel === 1) {
-                setFilteredTeams(teams);
-            }
-            else if (userAccessLevel === 2) {
-                const parentData = teams.filter(team => { return team.business_unit_id === auth.business_unit_id });
-                let childrenData: Team[] = [];
-                childBusinessUnits?.forEach(child => {
-                    const teamsInChildBusinessUnit = teams.filter(team => { return team.business_unit_id === child.id });
-                    childrenData = childrenData.concat(teamsInChildBusinessUnit);
-                });
-                setFilteredTeams(parentData.concat(childrenData));
-            }
-            else if (userAccessLevel === 3) {
-                const filteredData = teams.filter(team => { return team.business_unit_id === auth.business_unit_id });
-                setFilteredTeams(filteredData);
-            }
-            else {
-                const filteredData = teams.filter(team => { return team.id === auth.team_id });
-                setFilteredTeams(filteredData);
-            }
-        }
-    }, [userAccessLevel, teams, auth, childBusinessUnits]);
 
     const handleRowClick = (e: any) => {
         const teamId = e.data.id;
@@ -79,7 +41,7 @@ const TeamLists: FC<TeamListsProps> = ({ onRowClick, onAddNewClick }) => {
 
     const onDelete = async () => {
         if (selectedTeamIds.length > 0) {
-            dispatch(deleteTeamsByIds(selectedTeamIds, auth.role_id));
+            dispatch(deleteTeamsByIds(selectedTeamIds));
             setOpenConfirmDialog(false);
         } else {
             setOpenConfirmDialog(false);
@@ -110,7 +72,7 @@ const TeamLists: FC<TeamListsProps> = ({ onRowClick, onAddNewClick }) => {
         <Stack width="100%" padding={5}>
             <Typography variant='h5' color="primary">Team Lists</Typography>
             <Grid container justifyContent="flex-end" alignItems="center">
-                {userAccessLevel !== 5 && (
+                {editable && (
                     <>
                         <Button variant="contained" color="primary" onClick={onAddNewClick} style={{ marginBottom: 16, marginRight: 12 }}>
                             New
@@ -123,7 +85,7 @@ const TeamLists: FC<TeamListsProps> = ({ onRowClick, onAddNewClick }) => {
             </Grid>
             <DataGrid
                 id="teams"
-                dataSource={filteredTeams}
+                dataSource={teams}
                 keyExpr="id"
                 columnAutoWidth={true}
                 showRowLines={true}

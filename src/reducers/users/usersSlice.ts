@@ -5,6 +5,7 @@ import { fetchUsersAPI, fetchUserByIdAPI, createUserAPI, updateUserAPI, deleteUs
 interface UserState {
     allUsers: User[];
     currentUser?: User;
+    editable?: boolean;
 }
 
 const initialState: UserState = {
@@ -15,11 +16,18 @@ const usersSlice = createSlice({
     name: 'users',
     initialState,
     reducers: {
-        setUsers: (state, action: PayloadAction<User[]>) => {
-            state.allUsers = action.payload;
+        resetUsers: (state) => {
+            state.allUsers = [];
+            state.currentUser = undefined;
+            state.editable = false;
         },
-        setCurrentUser: (state, action: PayloadAction<User>) => {
-            state.currentUser = action.payload;
+        setUsers: (state, action: PayloadAction<any>) => {
+            state.allUsers = action.payload.result;
+            state.editable = action.payload.editable;
+        },
+        setCurrentUser: (state, action: PayloadAction<any>) => {
+            state.currentUser = action.payload.result;
+            state.editable = action.payload.editable;
         },
         addUser: (state, action: PayloadAction<User>) => {
             state.allUsers.push(action.payload);
@@ -39,7 +47,7 @@ const usersSlice = createSlice({
     },
 });
 
-export const { setUsers, setCurrentUser, addUser, updateUser, removeUsers } = usersSlice.actions;
+export const { resetUsers, setUsers, setCurrentUser, addUser, updateUser, removeUsers } = usersSlice.actions;
 
 export const fetchUsers = () => async (dispatch: AppDispatch) => {
     try {
@@ -59,18 +67,18 @@ export const fetchUserById = (id: number) => async (dispatch: AppDispatch) => {
     }
 };
 
-export const createUser = (user_role_id: number,user: Omit<User, 'id'>) => async (dispatch: AppDispatch) => {
+export const createUser = (user: Omit<User, 'id'>) => async (dispatch: AppDispatch) => {
     try {
-        const response = await createUserAPI(user_role_id, user);
+        const response = await createUserAPI(user);
         dispatch(addUser(response));
     } catch (error: any) {
         console.error('Error creating user:', error.response?.data?.message || error.message);
     }
 };
 
-export const updateUserById = (user_role_id: number, id: number, user: Partial<User>) => async (dispatch: AppDispatch) => {
+export const updateUserById = (id: number, user: Partial<User>) => async (dispatch: AppDispatch) => {
     try {
-        const response = await updateUserAPI(user_role_id, id, user);
+        const response = await updateUserAPI(id, user);
         dispatch(updateUser(response));
     } catch (error: any) {
         console.error('Error updating user:', error.response?.data?.message || error.message);
@@ -78,10 +86,10 @@ export const updateUserById = (user_role_id: number, id: number, user: Partial<U
 };
 
 // New action to handle multiple deletions
-export const deleteUsersByIds = (ids: number[], user_role_id: number) => async (dispatch: AppDispatch) => {
+export const deleteUsersByIds = (ids: number[]) => async (dispatch: AppDispatch) => {
     try {
-        await deleteUserAPI(ids, user_role_id);
-        ids.forEach(id => dispatch(removeUsers(ids)));
+        await deleteUserAPI(ids);
+        dispatch(removeUsers(ids));
     } catch (error: any) {
         console.error('Error deleting users:', error.response?.data?.message || error.message);
     }

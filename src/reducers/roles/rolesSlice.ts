@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppDispatch } from '../../store/store';
-import { fetchAreaAccessLevelAPI, fetchRolesAPI, fetchRoleByIdAPI, createRoleAPI, updateRoleAPI, deleteRoleAPI, Role } from './rolesAPI';
+import { fetchRolesAPI, fetchRoleByIdAPI, createRoleAPI, updateRoleAPI, deleteRoleAPI, Role } from './rolesAPI';
 
 interface RoleState {
     allRoles: Role[];
     currentRole?: Role;
-    getAreaAccessLevel?: number;
+    editable?: boolean;
 }
 
 const initialState: RoleState = {
@@ -16,17 +16,18 @@ const rolesSlice = createSlice({
     name: 'roles',
     initialState,
     reducers: {
-        getAreaAccessLevel: (state, action: PayloadAction<number>) => {
-            state.getAreaAccessLevel = action.payload;
+        resetRoles: (state) => {
+            state.allRoles = [];
+            state.currentRole = undefined;
+            state.editable = false;
         },
-        resetAccessLevel: (state) => {
-            state.getAreaAccessLevel = undefined;
+        setRoles: (state, action: PayloadAction<any>) => {
+            state.allRoles = action.payload.result;
+            state.editable = action.payload.editable;
         },
-        setRoles: (state, action: PayloadAction<Role[]>) => {
-            state.allRoles = action.payload;
-        },
-        setCurrentRole: (state, action: PayloadAction<Role>) => {
-            state.currentRole = action.payload;
+        setCurrentRole: (state, action: PayloadAction<any>) => {
+            state.currentRole = action.payload.result;
+            state.editable = action.payload.editable;
         },
         addRole: (state, action: PayloadAction<Role>) => {
             state.allRoles.push(action.payload);
@@ -38,22 +39,15 @@ const rolesSlice = createSlice({
                 state.allRoles[existingIndex] = updatedRole;
             }
         },
-        removeRole: (state, action: PayloadAction<number>) => {
-            state.allRoles = state.allRoles.filter(role => role.id !== action.payload);
+        removeRoles: (state, action: PayloadAction<number[]>) => {
+            state.allRoles = state.allRoles.filter(
+                role => !action.payload.includes(role.id)
+            );
         },
     },
 });
 
-export const { getAreaAccessLevel, resetAccessLevel, setRoles, setCurrentRole, addRole, updateRole, removeRole } = rolesSlice.actions;
-
-export const fetchAreaAccessLevel = (user_role_id: number, area_name: string) => async (dispatch: AppDispatch) => {
-    try {
-        const response = await fetchAreaAccessLevelAPI(user_role_id, area_name);
-        dispatch(getAreaAccessLevel(response));
-    } catch (error: any) {
-        console.error('Error fetching area access level:', error.response?.data?.message || error.message);
-    }
-};
+export const { resetRoles, setRoles, setCurrentRole, addRole, updateRole, removeRoles } = rolesSlice.actions;
 
 export const fetchRoles = () => async (dispatch: AppDispatch) => {
     try {
@@ -91,10 +85,10 @@ export const updateRoleById = (id: number, name: string) => async (dispatch: App
     }
 };
 
-export const deleteRoleById = (id: string) => async (dispatch: AppDispatch) => {
+export const deleteRoleByIds = (ids: number[]) => async (dispatch: AppDispatch) => {
     try {
-        await deleteRoleAPI(id);
-        dispatch(removeRole(parseInt(id)));
+        await deleteRoleAPI(ids);
+        dispatch(removeRoles(ids));
     } catch (error: any) {
         console.error('Error deleting role:', error.response?.data?.message || error.message);
     }

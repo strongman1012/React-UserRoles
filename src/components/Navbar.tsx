@@ -25,18 +25,18 @@ const DashboardNavbar: FC<NavbarProps> = (props: NavbarProps) => {
     const dispatch = useAppDispatch();
     const [open, setState] = useState(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const user = useSelector((state: RootState) => state.auth.user);
+    const auth = useSelector((state: RootState) => state.auth.user);
     const areaLists = useSelector((state: RootState) => state.areaList.areaLists);
 
     useEffect(() => {
-        if (user) {
-            dispatch(fetchAreaLists(user.role_id));
+        if (auth) {
+            dispatch(fetchAreaLists(auth.role_id));
         }
-    }, [dispatch, user]);
+    }, [dispatch, auth]);
 
     // Filter and map the area lists based on the required conditions
     const filteredMenuItems = useMemo(() => {
-        return areaLists.filter(area => area.application_name === "Application A" && area.permission);
+        return areaLists.filter(area => area.application_name === "Application A");
     }, [areaLists]);
 
     const handleClickStart = () => {
@@ -61,14 +61,14 @@ const DashboardNavbar: FC<NavbarProps> = (props: NavbarProps) => {
     };
 
     const systemMenuItems = useMemo(() => {
-        return areaLists.filter(area => area.application_name === "System" && area.permission);
+        return areaLists.filter(area => area.application_name === "System");
     }, [areaLists]);
 
     return (
         <>
             <AppBar elevation={0}>
                 <Toolbar variant="dense">
-                    {filteredMenuItems.length > 0 && (
+                    {filteredMenuItems[0]?.data.length > 0 && (
                         <IconButton
                             size="large"
                             edge="start"
@@ -123,7 +123,7 @@ const DashboardNavbar: FC<NavbarProps> = (props: NavbarProps) => {
                             open={Boolean(anchorEl)}
                             onClose={handleClose}
                         >
-                            {systemMenuItems.length > 0 && systemMenuItems.map((item, idx: number) => (
+                            {systemMenuItems[0]?.data.length > 0 && systemMenuItems[0]?.data.map((item, idx: number) => (
                                 <MenuItem
                                     key={idx}
                                     onClick={() => handleMenuItemClick(item.area_name)}

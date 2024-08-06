@@ -21,21 +21,10 @@ export interface BusinessUnit {
     parent_name?: string;
 }
 
-// Fetch child business units
-export const fetchChildBusinessUnitsAPI = async (id: number): Promise<BusinessUnit[]> => {
-    try {
-        const response = await apiClient.get<BusinessUnit[]>(`/childBusinessUnits/${id}`);
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching child business units:', error);
-        throw error; // Re-throw the error after logging it
-    }
-};
-
 // Fetch all business units
-export const fetchBusinessUnitsAPI = async (): Promise<BusinessUnit[]> => {
+export const fetchBusinessUnitsAPI = async (): Promise<any> => {
     try {
-        const response = await apiClient.get<BusinessUnit[]>('/businessUnits');
+        const response = await apiClient.get<any>('/businessUnits');
         return response.data;
     } catch (error) {
         console.error('Error fetching business units:', error);
@@ -44,9 +33,9 @@ export const fetchBusinessUnitsAPI = async (): Promise<BusinessUnit[]> => {
 };
 
 // Fetch a business unit by ID
-export const fetchBusinessUnitByIdAPI = async (id: number): Promise<BusinessUnit> => {
+export const fetchBusinessUnitByIdAPI = async (id: number): Promise<any> => {
     try {
-        const response = await apiClient.get<BusinessUnit>(`/businessUnits/${id}`);
+        const response = await apiClient.get<any>(`/businessUnits/${id}`);
         return response.data;
     } catch (error) {
         console.error(`Error fetching business unit with ID ${id}:`, error);
@@ -55,9 +44,9 @@ export const fetchBusinessUnitByIdAPI = async (id: number): Promise<BusinessUnit
 };
 
 // Create a new business unit
-export const createBusinessUnitAPI = async (user_role_id: number, businessUnit: Omit<BusinessUnit, 'id'>): Promise<BusinessUnit> => {
+export const createBusinessUnitAPI = async (businessUnit: Omit<BusinessUnit, 'id'>): Promise<BusinessUnit> => {
     try {
-        const response = await apiClient.post<BusinessUnit>('/businessUnits', { user_role_id: user_role_id, ...businessUnit });
+        const response = await apiClient.post<BusinessUnit>('/businessUnits', { ...businessUnit });
         return response.data;
     } catch (error) {
         console.error('Error creating business unit:', error);
@@ -66,9 +55,9 @@ export const createBusinessUnitAPI = async (user_role_id: number, businessUnit: 
 };
 
 // Update a business unit by ID
-export const updateBusinessUnitAPI = async (user_role_id: number, id: number, businessUnit: Partial<BusinessUnit>): Promise<BusinessUnit> => {
+export const updateBusinessUnitAPI = async ( id: number, businessUnit: Partial<BusinessUnit>): Promise<BusinessUnit> => {
     try {
-        const response = await apiClient.put<BusinessUnit>(`/businessUnits/${id}`, { user_role_id: user_role_id, ...businessUnit });
+        const response = await apiClient.put<BusinessUnit>(`/businessUnits/${id}`, { ...businessUnit });
         return response.data;
     } catch (error) {
         console.error(`Error updating business unit with ID ${id}:`, error);
@@ -77,9 +66,9 @@ export const updateBusinessUnitAPI = async (user_role_id: number, id: number, bu
 };
 
 // Delete a business unit by ID
-export const deleteBusinessUnitAPI = async (ids: number[], user_role_id: number): Promise<void> => {
+export const deleteBusinessUnitAPI = async (ids: number[]): Promise<void> => {
     try {
-        await apiClient.delete(`/businessUnits`, { data: { ids, user_role_id } });
+        await apiClient.delete(`/businessUnits`, { data: { ids } });
     } catch (error) {
         console.error(`Error deleting business unit with ID ${ids}:`, error);
         throw error; // Re-throw the error after logging it

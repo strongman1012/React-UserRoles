@@ -11,11 +11,11 @@ interface MenuProps {
 }
 
 const DrawerMenu: FC<MenuProps> = (props: MenuProps) => {
-    const areaLists = useSelector((state: RootState) => state.areaList.areaLists) || [];
+    const areaLists = useSelector((state: RootState) => state.areaList.areaLists);
 
     // Filter and map the area lists based on the required conditions
     const filteredMenuItems = useMemo(() => {
-        return areaLists.filter(area => area.application_name === "Application A" && area.permission)
+        return areaLists.filter(area => area.application_name === "Application A")
     }, [areaLists]);
 
     return (
@@ -41,7 +41,7 @@ const DrawerMenu: FC<MenuProps> = (props: MenuProps) => {
                 <Divider sx={{ mb: 2 }} />
 
                 <Box sx={{ mb: 2 }}>
-                    {filteredMenuItems.map((item, idx: number) => (
+                    {filteredMenuItems[0]?.data.length > 0 && filteredMenuItems[0].data.map((item, idx: number) => (
                         <ListItemButton
                             key={idx}
                             onClick={() => {

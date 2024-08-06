@@ -8,9 +8,9 @@ export interface DataAccess {
 }
 
 // Fetch all data accesses
-export const fetchDataAccessesAPI = async (): Promise<DataAccess[]> => {
+export const fetchDataAccessesAPI = async (): Promise<any> => {
     try {
-        const response = await apiClient.get<DataAccess[]>('/dataAccesses');
+        const response = await apiClient.get<any>('/dataAccesses');
         return response.data;
     } catch (error) {
         console.error('Error fetching data accesses:', error);
@@ -19,9 +19,9 @@ export const fetchDataAccessesAPI = async (): Promise<DataAccess[]> => {
 };
 
 // Fetch a data access by ID
-export const fetchDataAccessByIdAPI = async (id: number): Promise<DataAccess> => {
+export const fetchDataAccessByIdAPI = async (id: number): Promise<any> => {
     try {
-        const response = await apiClient.get<DataAccess>(`/dataAccesses/${id}`);
+        const response = await apiClient.get<any>(`/dataAccesses/${id}`);
         return response.data;
     } catch (error) {
         console.error(`Error fetching data access with ID ${id}:`, error);

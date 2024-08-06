@@ -4,7 +4,6 @@ import { RootState } from '../../store/store';
 import { useAppDispatch } from '../../store/hooks';
 import { useSelector } from 'react-redux';
 import { fetchBusinessUnitById, updateBusinessUnitById, fetchBusinessUnits } from '../../reducers/businessUnits/businessUnitsSlice';
-import { fetchAreaAccessLevel } from '../../reducers/roles/rolesSlice';
 import { BusinessUnit } from '../../reducers/businessUnits/businessUnitsAPI';
 
 interface EditBusinessUnitProps {
@@ -14,8 +13,7 @@ interface EditBusinessUnitProps {
 
 const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }) => {
     const dispatch = useAppDispatch();
-    const auth = useSelector((state: RootState) => state.auth.user);
-    const userAccessLevel = useSelector((state: RootState) => state.roles.getAreaAccessLevel);
+    const editable = useSelector((state: RootState) => state.businessUnits.editable);
     const businessUnit = useSelector((state: RootState) => state.businessUnits.currentBusinessUnit);
     const allBusinessUnits = useSelector((state: RootState) => state.businessUnits.allBusinessUnits);
     const [formData, setFormData] = useState<BusinessUnit | null>(null);
@@ -31,12 +29,6 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
             dispatch(fetchBusinessUnits());
         }
     }, [dispatch, businessUnitId]);
-
-    useEffect(() => {
-        if (auth) {
-            dispatch(fetchAreaAccessLevel(auth.role_id, "Business Units"));
-        }
-    }, [dispatch, auth]);
 
     useEffect(() => {
         if (businessUnit) {
@@ -79,7 +71,7 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
                 return;
             }
             try {
-                await dispatch(updateBusinessUnitById(auth.role_id, businessUnitId, formData));
+                await dispatch(updateBusinessUnitById(businessUnitId, formData));
                 setSnackbarMessage('Business Unit updated successfully');
                 setSnackbarSeverity('success');
                 setSnackbarOpen(true);
@@ -111,7 +103,7 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
         <Stack spacing={3} padding={3} width="100%">
             <Typography variant="h4">Edit Business Unit</Typography>
             <Stack direction="row" spacing={2}>
-                {userAccessLevel !== 5 && (
+                {editable && (
                     <Button variant="contained" color="primary" onClick={handleSave}>
                         Save
                     </Button>

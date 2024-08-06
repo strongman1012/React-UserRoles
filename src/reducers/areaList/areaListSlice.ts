@@ -1,10 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppDispatch } from '../../store/store';
-import { fetchAreaListsAPI, saveAreaListAPI, saveAreaListAPI_2, getAreaListsAPI, AreaList } from './areaListAPI';
+import { fetchAreaListsAPI, saveAreaListAPI, getAreaListsAPI, ApplicationAreaList } from './areaListAPI';
 
 interface AreaListState {
-    areaLists: AreaList[];
-    selectedAreaLists: AreaList[];
+    areaLists: ApplicationAreaList[];
+    selectedAreaLists: ApplicationAreaList[];
+    editable?: boolean;
 }
 
 const initialState: AreaListState = {
@@ -16,19 +17,25 @@ const areaListSlice = createSlice({
     name: 'areaList',
     initialState,
     reducers: {
-        setAreaLists: (state, action: PayloadAction<AreaList[]>) => {
+        resetAreaLists: (state) => {
+            state.areaLists = [];
+            state.selectedAreaLists = [];
+            state.editable = false;
+        },
+        setAreaLists: (state, action: PayloadAction<ApplicationAreaList[]>) => {
             state.areaLists = action.payload;
         },
-        selectedAreaLists: (state, action: PayloadAction<AreaList[]>) => {
-            state.selectedAreaLists = action.payload;
+        selectedAreaLists: (state, action: PayloadAction<any>) => {
+            state.selectedAreaLists = action.payload.result;
+            state.editable = action.payload.editable
         },
-        updateAreaList: (state, action: PayloadAction<AreaList[]>) => {
+        updateAreaList: (state, action: PayloadAction<ApplicationAreaList[]>) => {
             state.selectedAreaLists = action.payload;
         },
     },
 });
 
-export const { setAreaLists, selectedAreaLists, updateAreaList } = areaListSlice.actions;
+export const { resetAreaLists, setAreaLists, selectedAreaLists, updateAreaList } = areaListSlice.actions;
 
 export const fetchAreaLists = (roleId: number) => async (dispatch: AppDispatch) => {
     try {
@@ -47,17 +54,9 @@ export const getAreaLists = (roleId: number) => async (dispatch: AppDispatch) =>
     }
 };
 
-export const saveAreaList = (user_roleId: number, roleId: number, areaList: { area_id: number; permission: boolean }) => async (dispatch: AppDispatch) => {
+export const saveAreaList = (roleId: number, areaList: { area_id: number; permission?: boolean, data_access_id?: number }) => async (dispatch: AppDispatch) => {
     try {
-        const response = await saveAreaListAPI(user_roleId, roleId, areaList);
-        dispatch(updateAreaList(response));
-    } catch (error: any) {
-        console.error('Error saving area list:', error.response?.data?.message || error.message);
-    }
-};
-export const saveAreaList_2 = (user_roleId: number, roleId: number, areaList: { area_id: number; data_access_id: number }) => async (dispatch: AppDispatch) => {
-    try {
-        const response = await saveAreaListAPI_2(user_roleId, roleId, areaList);
+        const response = await saveAreaListAPI(roleId, areaList);
         dispatch(updateAreaList(response));
     } catch (error: any) {
         console.error('Error saving area list:', error.response?.data?.message || error.message);

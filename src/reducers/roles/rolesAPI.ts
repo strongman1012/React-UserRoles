@@ -4,23 +4,14 @@ export interface Role {
     id: number;
     name: string;
 }
-// Fetch area data access level
-export const fetchAreaAccessLevelAPI = async (user_role_id: number, area_name: string): Promise<number> => {
-    try {
-        const response = await apiClient.get<number>(`/areaAccessLevel/${user_role_id}/${area_name}`,);
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching area access level:', error);
-        throw error; // Re-throw the error after logging it
-    }
-};
-export const fetchRolesAPI = async (): Promise<Role[]> => {
-    const response = await apiClient.get<Role[]>('/roles');
+
+export const fetchRolesAPI = async (): Promise<any> => {
+    const response = await apiClient.get<any>('/roles');
     return response.data;
 };
 
-export const fetchRoleByIdAPI = async (id: number): Promise<Role> => {
-    const response = await apiClient.get<Role>(`/roles/${id}`);
+export const fetchRoleByIdAPI = async (id: number): Promise<any> => {
+    const response = await apiClient.get<any>(`/roles/${id}`);
     return response.data;
 };
 
@@ -34,6 +25,6 @@ export const updateRoleAPI = async (id: number, name: string): Promise<Role> => 
     return response.data;
 };
 
-export const deleteRoleAPI = async (id: string): Promise<void> => {
-    await apiClient.delete(`/roles/${id}`);
+export const deleteRoleAPI = async (ids: number[]): Promise<void> => {
+    await apiClient.delete(`/roles`, { data: { ids } });
 };

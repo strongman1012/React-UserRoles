@@ -1,14 +1,16 @@
-import React, { FC, useState, useCallback, useEffect } from 'react';
-import { DataGrid, Column, ColumnChooser, ColumnChooserSearch, ColumnChooserSelection, Position, SearchPanel, Paging, Pager, Selection, DataGridTypes } from 'devextreme-react/data-grid';
-import { Stack, Typography, Button, Grid, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, MenuItem, Select, FormControl, SelectChangeEvent } from '@mui/material';
+import React, { FC, useEffect, useState, useCallback } from 'react';
+import {
+    DataGrid, Column, ColumnChooser, ColumnChooserSearch, ColumnChooserSelection, Position, SearchPanel, Paging, Pager, Selection
+} from 'devextreme-react/data-grid';
+import { Stack, Grid, Typography, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar } from '@mui/material';
 import { RootState } from '../../store/store';
 import { useAppDispatch } from '../../store/hooks';
 import { useSelector } from 'react-redux';
-import { fetchBusinessUnits, deleteBusinessUnitsByIds } from '../../reducers/businessUnits/businessUnitsSlice';
+import { fetchRoles, deleteRoleByIds } from '../../reducers/roles/rolesSlice';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 
-interface BusinessUnitListsProps {
-    onRowClick: (businessUnitId: number) => void;
+interface RoleListsProps {
+    onRowClick: (roleId: number) => void;
     onAddNewClick: () => void;
 }
 
@@ -18,31 +20,30 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props,
 
 const searchEditorOptions = { placeholder: 'Search column' };
 
-const BusinessUnitLists: FC<BusinessUnitListsProps> = ({ onRowClick, onAddNewClick }) => {
+const RoleLists: FC<RoleListsProps> = ({ onRowClick, onAddNewClick }) => {
     const dispatch = useAppDispatch();
-    const businessUnits = useSelector((state: RootState) => state.businessUnits.allBusinessUnits);
-    const editable = useSelector((state: RootState) => state.businessUnits.editable);
-    const [selectedBusinessIds, setSelectedBusinessIds] = useState<number[]>([]);
+    const roles = useSelector((state: RootState) => state.roles.allRoles);
+    const editable = useSelector((state: RootState) => state.roles.editable);
+    const [selectedRoleIds, setSelectedRoleIds] = useState<number[]>([]);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [openSnackbar, setOpenSnackbar] = useState(false);
-    const [statusFilter, setStatusFilter] = useState('All');
 
     useEffect(() => {
-        dispatch(fetchBusinessUnits());
+        dispatch(fetchRoles());
     }, [dispatch]);
 
     const handleRowClick = (e: any) => {
-        const businessUnitId = e.data.id;
-        onRowClick(businessUnitId);
+        const roleId = e.data.id;
+        onRowClick(roleId);
     };
 
-    const onSelectionChanged = useCallback((data: DataGridTypes.SelectionChangedEvent) => {
-        setSelectedBusinessIds(data.selectedRowKeys as number[]);
+    const onSelectionChanged = useCallback((data: any) => {
+        setSelectedRoleIds(data.selectedRowKeys as number[]);
     }, []);
 
     const onDelete = async () => {
-        if (selectedBusinessIds.length > 0) {
-            dispatch(deleteBusinessUnitsByIds(selectedBusinessIds));
+        if (selectedRoleIds.length > 0) {
+            dispatch(deleteRoleByIds(selectedRoleIds));
             setOpenConfirmDialog(false);
         } else {
             setOpenConfirmDialog(false);
@@ -51,7 +52,7 @@ const BusinessUnitLists: FC<BusinessUnitListsProps> = ({ onRowClick, onAddNewCli
     };
 
     const handleDeleteClick = () => {
-        if (selectedBusinessIds.length > 0) {
+        if (selectedRoleIds.length > 0) {
             setOpenConfirmDialog(true);
         } else {
             setOpenSnackbar(true);
@@ -69,18 +70,9 @@ const BusinessUnitLists: FC<BusinessUnitListsProps> = ({ onRowClick, onAddNewCli
         setOpenSnackbar(false);
     };
 
-    const handleStatusFilterChange = (event: SelectChangeEvent<string>) => {
-        setStatusFilter(event.target.value);
-    };
-
-    const filteredBusinessUnits = businessUnits.filter(businessUnit => {
-        if (statusFilter === 'All') return true;
-        return statusFilter === 'Active Business Unit' ? businessUnit.status === true : businessUnit.status === false;
-    });
-
     return (
         <Stack width="100%" padding={5}>
-            <Typography variant='h5' color="primary">Business Unit Lists</Typography>
+            <Typography variant='h5' color="primary">Role Lists</Typography>
             <Grid container justifyContent="flex-end" alignItems="center">
                 {editable && (
                     <>
@@ -92,23 +84,16 @@ const BusinessUnitLists: FC<BusinessUnitListsProps> = ({ onRowClick, onAddNewCli
                         </Button>
                     </>
                 )}
-                <FormControl style={{ minWidth: 200, marginBottom: 16 }}>
-                    <Select value={statusFilter} onChange={handleStatusFilterChange} size='small'>
-                        <MenuItem value="All">All</MenuItem>
-                        <MenuItem value="Active Business Unit">Active Business Unit</MenuItem>
-                        <MenuItem value="Deactive Business Unit">Deactive Business Unit</MenuItem>
-                    </Select>
-                </FormControl>
             </Grid>
             <DataGrid
-                id="businessUnits"
-                dataSource={filteredBusinessUnits}
+                id="roles"
+                dataSource={roles}
                 keyExpr="id"
                 columnAutoWidth={true}
                 showRowLines={true}
                 showBorders={true}
                 onRowClick={handleRowClick}
-                selectedRowKeys={selectedBusinessIds}
+                selectedRowKeys={selectedRoleIds}
                 onSelectionChanged={onSelectionChanged}
             >
                 <SearchPanel
@@ -121,21 +106,9 @@ const BusinessUnitLists: FC<BusinessUnitListsProps> = ({ onRowClick, onAddNewCli
                     showPageSizeSelector={true}
                     allowedPageSizes={[5, 10]}
                     showInfo={true} />
-                <Column dataField='name' caption='Name' allowHiding={false} />
-                <Column dataField='website' caption='Website' />
-                <Column dataField='mainPhone' caption='Main Phone' />
-                <Column dataField='parent_name' caption='Parent Business' />
-                <Column dataField='otherPhone' caption='Other Phone' />
-                <Column dataField='fax' caption='Fax' />
-                <Column dataField='email' caption='Email' />
-                <Column dataField='street1' caption='Street 1' />
-                <Column dataField='street2' caption='Street 2' />
-                <Column dataField='street3' caption='Street 3' />
-                <Column dataField='city' caption='City' />
-                <Column dataField='state' caption='State' />
-                <Column dataField='zipCode' caption='Zip Code' />
-                <Column dataField='region' caption='Region' />
-                <Column dataField='status' caption='Status' />
+                <Column dataField='id' caption='Role ID' allowHiding={false} alignment='left' />
+                <Column dataField='name' caption='Role Name' allowHiding={false} />
+
                 <ColumnChooser
                     height='340px'
                     enabled={true}
@@ -164,7 +137,7 @@ const BusinessUnitLists: FC<BusinessUnitListsProps> = ({ onRowClick, onAddNewCli
                 <DialogTitle id="alert-dialog-title">{"Confirm Delete"}</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        Are you sure you want to delete the selected business units?
+                        Are you sure you want to delete the selected roles?
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
@@ -183,11 +156,11 @@ const BusinessUnitLists: FC<BusinessUnitListsProps> = ({ onRowClick, onAddNewCli
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
                 <Alert onClose={handleCloseSnackbar} severity="warning">
-                    No business units selected for deletion.
+                    No roles selected for deletion.
                 </Alert>
             </Snackbar>
         </Stack>
     );
 };
 
-export default BusinessUnitLists;
+export default RoleLists;

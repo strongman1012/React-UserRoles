@@ -5,6 +5,7 @@ import { fetchTeamsAPI, fetchTeamByIdAPI, createTeamAPI, updateTeamAPI, deleteTe
 interface TeamState {
     allTeams: Team[];
     currentTeam?: Team;
+    editable?: boolean;
 }
 
 const initialState: TeamState = {
@@ -15,11 +16,18 @@ const teamsSlice = createSlice({
     name: 'teams',
     initialState,
     reducers: {
-        setTeams: (state, action: PayloadAction<Team[]>) => {
-            state.allTeams = action.payload;
+        resetTeams: (state) => {
+            state.allTeams = [];
+            state.currentTeam = undefined;
+            state.editable = false;
         },
-        setCurrentTeam: (state, action: PayloadAction<Team>) => {
-            state.currentTeam = action.payload;
+        setTeams: (state, action: PayloadAction<any>) => {
+            state.allTeams = action.payload.result;
+            state.editable = action.payload.editable;
+        },
+        setCurrentTeam: (state, action: PayloadAction<any>) => {
+            state.currentTeam = action.payload.result;
+            state.editable = action.payload.editable;
         },
         addTeam: (state, action: PayloadAction<Team>) => {
             state.allTeams.push(action.payload);
@@ -39,7 +47,7 @@ const teamsSlice = createSlice({
     },
 });
 
-export const { setTeams, setCurrentTeam, addTeam, updateTeam, removeTeams } = teamsSlice.actions;
+export const { resetTeams, setTeams, setCurrentTeam, addTeam, updateTeam, removeTeams } = teamsSlice.actions;
 
 export const fetchTeams = () => async (dispatch: AppDispatch) => {
     try {
@@ -59,27 +67,27 @@ export const fetchTeamById = (id: number) => async (dispatch: AppDispatch) => {
     }
 };
 
-export const createTeam = (user_role_id: number, team: Omit<Team, 'id'>) => async (dispatch: AppDispatch) => {
+export const createTeam = (team: Omit<Team, 'id'>) => async (dispatch: AppDispatch) => {
     try {
-        const response = await createTeamAPI(user_role_id, team);
+        const response = await createTeamAPI(team);
         dispatch(addTeam(response));
     } catch (error: any) {
         console.error('Error creating team:', error.response?.data?.message || error.message);
     }
 };
 
-export const updateTeamById = (user_role_id: number, id: number, team: Partial<Team>) => async (dispatch: AppDispatch) => {
+export const updateTeamById = (id: number, team: Partial<Team>) => async (dispatch: AppDispatch) => {
     try {
-        const response = await updateTeamAPI(user_role_id, id, team);
+        const response = await updateTeamAPI(id, team);
         dispatch(updateTeam(response));
     } catch (error: any) {
         console.error('Error updating team:', error.response?.data?.message || error.message);
     }
 };
 
-export const deleteTeamsByIds = (ids: number[], user_role_id: number) => async (dispatch: AppDispatch) => {
+export const deleteTeamsByIds = (ids: number[]) => async (dispatch: AppDispatch) => {
     try {
-        await deleteTeamAPI(ids, user_role_id);
+        await deleteTeamAPI(ids);
         dispatch(removeTeams(ids));
     } catch (error: any) {
         console.error('Error deletingteams:', error.response?.data?.message || error.message);

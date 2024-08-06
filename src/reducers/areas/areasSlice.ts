@@ -5,6 +5,7 @@ import { fetchAreasAPI, fetchAreaByIdAPI, createAreaAPI, updateAreaAPI, deleteAr
 interface AreaState {
     allAreas: Area[];
     currentArea?: Area;
+    editable?: boolean;
 }
 
 const initialState: AreaState = {
@@ -15,11 +16,18 @@ const areasSlice = createSlice({
     name: 'areas',
     initialState,
     reducers: {
-        setAreas: (state, action: PayloadAction<Area[]>) => {
-            state.allAreas = action.payload;
+        resetAreas: (state) => {
+            state.allAreas = [];
+            state.currentArea = undefined;
+            state.editable = false;
         },
-        setCurrentArea: (state, action: PayloadAction<Area>) => {
-            state.currentArea = action.payload;
+        setAreas: (state, action: PayloadAction<any>) => {
+            state.allAreas = action.payload.result;
+            state.editable = action.payload.editable;
+        },
+        setCurrentArea: (state, action: PayloadAction<any>) => {
+            state.currentArea = action.payload.result;
+            state.editable = action.payload.editable;
         },
         addArea: (state, action: PayloadAction<Area>) => {
             state.allAreas.push(action.payload);
@@ -31,13 +39,15 @@ const areasSlice = createSlice({
                 state.allAreas[existingIndex] = updatedArea;
             }
         },
-        removeArea: (state, action: PayloadAction<number>) => {
-            state.allAreas = state.allAreas.filter(area => area.id !== action.payload);
+        removeAreas: (state, action: PayloadAction<number[]>) => {
+            state.allAreas = state.allAreas.filter(
+                area => !action.payload.includes(area.id)
+            );
         },
     },
 });
 
-export const { setAreas, setCurrentArea, addArea, updateArea, removeArea } = areasSlice.actions;
+export const { resetAreas, setAreas, setCurrentArea, addArea, updateArea, removeAreas } = areasSlice.actions;
 
 export const fetchAreas = () => async (dispatch: AppDispatch) => {
     try {
@@ -57,28 +67,28 @@ export const fetchAreaById = (id: number) => async (dispatch: AppDispatch) => {
     }
 };
 
-export const createArea = (name: string, description: string, application_id: number) => async (dispatch: AppDispatch) => {
+export const createArea = (formData: { name: string, description: string, application_id: number }) => async (dispatch: AppDispatch) => {
     try {
-        const response = await createAreaAPI(name, description, application_id);
+        const response = await createAreaAPI(formData);
         dispatch(addArea(response));
     } catch (error: any) {
         console.error('Error creating area:', error.response?.data?.message || error.message);
     }
 };
 
-export const updateAreaById = (id: number, name: string, description: string, application_id: number) => async (dispatch: AppDispatch) => {
+export const updateAreaById = (id: number, formData: { name: string, description: string, application_id: number }) => async (dispatch: AppDispatch) => {
     try {
-        const response = await updateAreaAPI(id, name, description, application_id);
+        const response = await updateAreaAPI(id, formData);
         dispatch(updateArea(response));
     } catch (error: any) {
         console.error('Error updating area:', error.response?.data?.message || error.message);
     }
 };
 
-export const deleteAreaById = (id: number) => async (dispatch: AppDispatch) => {
+export const deleteAreaByIds = (ids: number[]) => async (dispatch: AppDispatch) => {
     try {
-        await deleteAreaAPI(id);
-        dispatch(removeArea(id));
+        await deleteAreaAPI(ids);
+        dispatch(removeAreas(ids));
     } catch (error: any) {
         console.error('Error deleting area:', error.response?.data?.message || error.message);
     }

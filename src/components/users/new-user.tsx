@@ -6,7 +6,6 @@ import { useSelector } from 'react-redux';
 import { createUser } from '../../reducers/users/usersSlice';
 import { fetchBusinessUnits } from '../../reducers/businessUnits/businessUnitsSlice';
 import { fetchTeams } from '../../reducers/teams/teamsSlice';
-import { fetchAreaAccessLevel } from '../../reducers/roles/rolesSlice';
 import { User } from '../../reducers/users/usersAPI';
 
 const initialFormData: Omit<User, 'id'> = {
@@ -24,8 +23,7 @@ const initialFormData: Omit<User, 'id'> = {
 
 const NewUser: FC<{ onClose: () => void }> = ({ onClose }) => {
     const dispatch = useAppDispatch();
-    const auth = useSelector((state: RootState) => state.auth.user);
-    const userAccessLevel = useSelector((state: RootState) => state.roles.getAreaAccessLevel);
+    const editable = useSelector((state: RootState) => state.users.editable);
     const allBusinessUnits = useSelector((state: RootState) => state.businessUnits.allBusinessUnits);
     const allTeams = useSelector((state: RootState) => state.teams.allTeams);
 
@@ -40,12 +38,6 @@ const NewUser: FC<{ onClose: () => void }> = ({ onClose }) => {
         dispatch(fetchBusinessUnits());
         dispatch(fetchTeams());
     }, [dispatch]);
-
-    useEffect(() => {
-        if (auth) {
-            dispatch(fetchAreaAccessLevel(auth.role_id, "Users"));
-        }
-    }, [dispatch, auth]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -81,7 +73,7 @@ const NewUser: FC<{ onClose: () => void }> = ({ onClose }) => {
     const handleSave = async () => {
         if (validateForm()) {
             try {
-                await dispatch(createUser(auth.role_id, formData));
+                await dispatch(createUser(formData));
                 setSnackbarMessage('User created successfully');
                 setSnackbarSeverity('success');
                 setSnackbarOpen(true);
@@ -118,7 +110,7 @@ const NewUser: FC<{ onClose: () => void }> = ({ onClose }) => {
         <Stack spacing={3} padding={3} width="100%">
             <Typography variant="h4">New User</Typography>
             <Stack direction="row" spacing={2}>
-                {userAccessLevel !== 5 && (
+                {editable && (
                     <Button variant="contained" color="primary" onClick={handleSave}>
                         Save
                     </Button>

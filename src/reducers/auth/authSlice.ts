@@ -3,8 +3,14 @@ import { AppDispatch } from '../../store/store';
 import { loginAPI, registerAPI, forgotPasswordAPI, logoutAPI } from './authAPI';
 import getUserFromToken from '../../utills/getUserFromToken';
 
-import { resetAccessLevel } from '../roles/rolesSlice';
-import { resetChildBusinessUnits } from '../businessUnits/businessUnitsSlice';
+import { resetRoles } from '../roles/rolesSlice';
+import { resetBusinessUnits } from '../businessUnits/businessUnitsSlice';
+import { resetUsers } from '../users/usersSlice';
+import { resetTeams } from '../teams/teamsSlice';
+import { resetAreaLists } from '../areaList/areaListSlice';
+import { resetApplications } from '../applications/applicationsSlice';
+import { resetDataAccesses } from '../dataAccesses/dataAccessesSlice';
+import { resetAreas } from '../areas/areasSlice';
 
 interface AuthState {
     user: any | null;
@@ -123,8 +129,14 @@ export const logout = () => async (dispatch: AppDispatch) => {
     try {
         await logoutAPI();
         dispatch(logoutSuccess());
-        dispatch(resetAccessLevel());
-        dispatch(resetChildBusinessUnits());
+        dispatch(resetUsers());
+        dispatch(resetTeams());
+        dispatch(resetRoles());
+        dispatch(resetBusinessUnits());
+        dispatch(resetAreaLists());
+        dispatch(resetApplications());
+        dispatch(resetDataAccesses());
+        dispatch(resetAreas());
     } catch (error: any) {
         dispatch(logoutFailure());
         throw error.response?.data?.message || error.message;
