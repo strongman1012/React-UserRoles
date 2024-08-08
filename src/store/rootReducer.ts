@@ -8,6 +8,7 @@ import usersSlice from 'src/reducers/users/usersSlice';
 import businessUnitsSlice from 'src/reducers/businessUnits/businessUnitsSlice';
 import teamsSlice from 'src/reducers/teams/teamsSlice';
 import dataAccessesSlice from 'src/reducers/dataAccesses/dataAccessesSlice';
+import loginReportsSlice from 'src/reducers/loginReports/loginReportsSlice';
 import storage from 'redux-persist/lib/storage';
 import testReducer from "../reducers/testReducer";
 import { persistReducer } from 'redux-persist';
@@ -22,7 +23,8 @@ const rootReducer = combineReducers({
     users: usersSlice,
     businessUnits: businessUnitsSlice,
     teams: teamsSlice,
-    dataAccesses: dataAccessesSlice
+    dataAccesses: dataAccessesSlice,
+    loginReports: loginReportsSlice
 });
 
 export default rootReducer;

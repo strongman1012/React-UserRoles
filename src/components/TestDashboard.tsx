@@ -37,6 +37,7 @@ import NewArea from "./areas/new-area"; // Assuming you have a NewArea component
 import DataAccessLists from "./data-access/data-access-list"; // Assuming you have a DataAccessLists component
 import EditDataAccess from "./data-access/edit-data-access"; // Assuming you have an EditDataAccess component
 import NewDataAccess from "./data-access/new-data-access"; // Assuming you have a NewDataAccess component
+import LoginReportLists from "./loginReports/login-report-list";
 
 interface TestDashboardProps {
     children?: ReactNode;
@@ -168,6 +169,10 @@ const TestDashboard: FC<TestDashboardProps> = (props: TestDashboardProps) => {
         {
             name: 'Data Accesses',
             component: <DataAccessLists onRowClick={handleRowDataAccessClick} onAddNewClick={handleAddNewDataAccessClick} />
+        },
+        {
+            name: "Login Reports",
+            component: <LoginReportLists />
         }
     ];
 

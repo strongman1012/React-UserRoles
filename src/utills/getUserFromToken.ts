@@ -1,4 +1,5 @@
 import { jwtDecode } from 'jwt-decode';
+import { logout } from 'src/reducers/auth/authSlice';
 
 interface DecodedToken {
     user: any;
@@ -12,13 +13,12 @@ const getUserFromToken = (token: string | null): any => {
         const decoded = jwtDecode<DecodedToken>(token);
         if (decoded.exp * 1000 < Date.now()) {
             // Token has expired
-            localStorage.removeItem('token');
+            logout();
             return null;
         }
         return decoded.user;
     } catch (error) {
         console.error('Error decoding token:', error);
-        localStorage.removeItem('token');
         return null;
     }
 };

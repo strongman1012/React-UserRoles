@@ -11,6 +11,7 @@ import { resetAreaLists } from '../areaList/areaListSlice';
 import { resetApplications } from '../applications/applicationsSlice';
 import { resetDataAccesses } from '../dataAccesses/dataAccessesSlice';
 import { resetAreas } from '../areas/areasSlice';
+import { resetLoginReports } from '../loginReports/loginReportsSlice';
 
 interface AuthState {
     user: any | null;
@@ -66,10 +67,10 @@ const authSlice = createSlice({
             state.user = null;
             state.token = null;
             localStorage.removeItem('token');
-            localStorage.removeItem('user');
         },
         logoutFailure: (state) => {
             state.status = 'failed';
+            localStorage.removeItem('token');
         },
     },
 });
@@ -137,6 +138,7 @@ export const logout = () => async (dispatch: AppDispatch) => {
         dispatch(resetApplications());
         dispatch(resetDataAccesses());
         dispatch(resetAreas());
+        dispatch(resetLoginReports());
     } catch (error: any) {
         dispatch(logoutFailure());
         throw error.response?.data?.message || error.message;

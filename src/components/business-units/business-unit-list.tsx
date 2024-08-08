@@ -31,6 +31,18 @@ const BusinessUnitLists: FC<BusinessUnitListsProps> = ({ onRowClick, onAddNewCli
         dispatch(fetchBusinessUnits());
     }, [dispatch]);
 
+    const renderStatusCell = (cellData: any) => {
+        const isSuccessful = cellData.value;
+        const statusText = isSuccessful ? "✔" : "X";
+        const statusStyle = {
+            color: isSuccessful ? 'green' : 'red'
+        };
+
+        return (
+            <span style={statusStyle}>{statusText}</span>
+        );
+    };
+
     const handleRowClick = (e: any) => {
         const businessUnitId = e.data.id;
         onRowClick(businessUnitId);
@@ -135,7 +147,11 @@ const BusinessUnitLists: FC<BusinessUnitListsProps> = ({ onRowClick, onAddNewCli
                 <Column dataField='state' caption='State' />
                 <Column dataField='zipCode' caption='Zip Code' />
                 <Column dataField='region' caption='Region' />
-                <Column dataField='status' caption='Status' />
+                <Column
+                    dataField='status'
+                    caption='Status'
+                    cellRender={renderStatusCell}
+                />
                 <ColumnChooser
                     height='340px'
                     enabled={true}

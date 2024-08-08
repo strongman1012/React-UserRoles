@@ -21,7 +21,7 @@ interface AuthResponse {
 }
 
 export const loginAPI = async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    const response = await apiClient.post<AuthResponse>('/login', credentials);
+    const response = await apiClient.post<AuthResponse>('/login', { ...credentials, application: "System" });
     return response.data;
 };
 
@@ -35,6 +35,6 @@ export const forgotPasswordAPI = async (email: ForgotPasswordInfo): Promise<void
 };
 
 export const logoutAPI = async (): Promise<{ message: string }> => {
-    const response = await apiClient.post('/logout');
+    const response = await apiClient.post('/logout', { application: "System" });
     return response.data;
 };

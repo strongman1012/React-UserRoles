@@ -2,17 +2,30 @@ import React, { FC, useEffect, useState, useCallback } from 'react';
 import {
     DataGrid, Column, ColumnChooser, ColumnChooserSearch, ColumnChooserSelection, Position, SearchPanel, Paging, Pager, Selection
 } from 'devextreme-react/data-grid';
-import { Stack, Grid, Typography, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, MenuItem, Select, FormControl, SelectChangeEvent } from '@mui/material';
+import { Stack, Grid, Typography, Button, Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText, Snackbar, MenuItem, Select, FormControl, SelectChangeEvent, IconButton } from '@mui/material';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import { RootState } from '../../store/store';
 import { useAppDispatch } from '../../store/hooks';
 import { useSelector } from 'react-redux';
+import { User } from 'src/reducers/users/usersAPI';
 import { fetchUsers, deleteUsersByIds } from '../../reducers/users/usersSlice';
-import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import { fetchUserMetricsById, resetLoginReports } from 'src/reducers/loginReports/loginReportsSlice';
+import { Chart, Series, Legend, ArgumentAxis, ValueAxis } from 'devextreme-react/chart';
+import { makeStyles } from '@mui/styles';
 
 interface UserListsProps {
     onRowClick: (userId: number) => void;
     onAddNewClick: () => void;
 }
+
+const useStyles = makeStyles({
+    dataGrid: {
+        '& .dx-row > td': {
+            verticalAlign: 'middle !important',
+        },
+    },
+});
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -21,17 +34,39 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props,
 const searchEditorOptions = { placeholder: 'Search column' };
 
 const UserLists: FC<UserListsProps> = ({ onRowClick, onAddNewClick }) => {
+    const classes = useStyles();
     const dispatch = useAppDispatch();
     const users = useSelector((state: RootState) => state.users.allUsers);
     const editable = useSelector((state: RootState) => state.users.editable);
+    const loginMetrics = useSelector((state: RootState) => state.loginReports.currentLoginMetrics);
     const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [statusFilter, setStatusFilter] = useState('All');
+    const [openMetricsDialog, setOpenMetricsDialog] = useState(false);
+    const [selectedUser, setSelectedUser] = useState<User>();
 
     useEffect(() => {
         dispatch(fetchUsers());
     }, [dispatch]);
+
+    const renderStatusCell = (cellData: any) => {
+        const isSuccessful = cellData.value;
+        const statusText = isSuccessful ? "✔" : "X";
+        const statusStyle = {
+            color: isSuccessful ? 'green' : 'red'
+        };
+
+        return (
+            <span style={statusStyle}>{statusText}</span>
+        );
+    };
+
+    const renderMetricsCell = (cellData: any) => (
+        <IconButton onClick={(e) => handleMetricsClick(e, cellData.data.id)}>
+            <VisibilityIcon />
+        </IconButton>
+    );
 
     const handleRowClick = (e: any) => {
         const userId = e.data.id;
@@ -75,6 +110,19 @@ const UserLists: FC<UserListsProps> = ({ onRowClick, onAddNewClick }) => {
         setStatusFilter(event.target.value);
     };
 
+    const handleMetricsClick = (e: React.MouseEvent, userId: number) => {
+        e.stopPropagation(); // Prevent row click event
+        const selectUser = users.filter(user => user.id === userId);
+        setSelectedUser(selectUser[0]);
+        dispatch(fetchUserMetricsById(userId));
+        setOpenMetricsDialog(true);
+    };
+
+    const handleCloseMetricsDialog = () => {
+        dispatch(resetLoginReports());
+        setOpenMetricsDialog(false);
+    };
+
     const filteredUsers = users.filter(user => {
         if (statusFilter === 'All') return true;
         return statusFilter === 'Active' ? user.status === true : user.status === false;
@@ -112,6 +160,7 @@ const UserLists: FC<UserListsProps> = ({ onRowClick, onAddNewClick }) => {
                 onRowClick={handleRowClick}
                 selectedRowKeys={selectedUserIds}
                 onSelectionChanged={onSelectionChanged}
+                className={classes.dataGrid}
             >
                 <SearchPanel
                     visible={true}
@@ -131,7 +180,18 @@ const UserLists: FC<UserListsProps> = ({ onRowClick, onAddNewClick }) => {
                 <Column dataField='role_name' caption='Role Name' />
                 <Column dataField='business_name' caption='Business Unit' />
                 <Column dataField='team_name' caption='Team' />
-                <Column dataField='status' caption='Status' />
+                <Column
+                    dataField='status'
+                    caption='Status'
+                    cellRender={renderStatusCell}
+                />
+                <Column
+                    alignment='center'
+                    dataField="metrics"
+                    caption="Metrics"
+                    cellRender={renderMetricsCell}
+                    allowHiding={false}
+                />
 
                 <ColumnChooser
                     height='340px'
@@ -183,6 +243,34 @@ const UserLists: FC<UserListsProps> = ({ onRowClick, onAddNewClick }) => {
                     No users selected for deletion.
                 </Alert>
             </Snackbar>
+            <Dialog
+                open={openMetricsDialog}
+                onClose={handleCloseMetricsDialog}
+                aria-labelledby="metrics-dialog-title"
+                aria-describedby="metrics-dialog-description"
+                fullWidth
+            >
+                <DialogTitle id="metrics-dialog-title" style={{ textAlign: 'center' }}>
+                    {selectedUser?.userName}{"'s Logins Per Day"}
+                </DialogTitle>
+                <DialogContent>
+                    <Chart id="chart" dataSource={loginMetrics}>
+                        <ArgumentAxis title="Date" />
+                        <ValueAxis title="Count" tickInterval={1} label={{ format: { type: 'fixedPoint', precision: 0 } }} />
+                        <Series
+                            valueField="login_count"
+                            argumentField="login_date"
+                            type="bar"
+                        />
+                        <Legend visible={false} />
+                    </Chart>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseMetricsDialog} color="primary">
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Stack>
     );
 };
