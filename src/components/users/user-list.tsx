@@ -38,7 +38,11 @@ const UserLists: FC<UserListsProps> = ({ onRowClick, onAddNewClick }) => {
     const dispatch = useAppDispatch();
     const users = useSelector((state: RootState) => state.users.allUsers);
     const editable = useSelector((state: RootState) => state.users.editable);
-    const loginMetrics = useSelector((state: RootState) => state.loginReports.currentLoginMetrics);
+    const loginMetrics = useSelector((state: RootState) => state.loginReports.currentLoginMetrics)?.sort((a, b) => {
+        const dateA: any = new Date(a.login_date);
+        const dateB: any = new Date(b.login_date);
+        return dateA - dateB;
+    });
     const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [openSnackbar, setOpenSnackbar] = useState(false);
