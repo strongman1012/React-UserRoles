@@ -51,11 +51,12 @@ const UserLists: FC<UserListsProps> = ({ onRowClick, onAddNewClick }) => {
     }, [dispatch]);
 
     const sortedLoginMetrics = useMemo(() => {
-        return loginMetrics?.sort((a, b) => {
-            const dateA: any = new Date(a.login_date);
-            const dateB: any = new Date(b.login_date);
-            return dateA - dateB;
-        });
+        if (loginMetrics && loginMetrics?.length > 0)
+            return loginMetrics?.sort((a, b) => {
+                const dateA: any = new Date(a.login_date);
+                const dateB: any = new Date(b.login_date);
+                return dateA - dateB;
+            });
     }, [loginMetrics]);
 
     const renderStatusCell = (cellData: any) => {
