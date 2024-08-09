@@ -4,12 +4,9 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { Button } from '@mui/material';
-import DrawerMenu from './Menu';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { useAppDispatch } from '../store/hooks';
@@ -17,13 +14,11 @@ import { logout } from '../reducers/auth/authSlice';
 import { fetchAreaLists } from '../reducers/areaList/areaListSlice';
 
 interface NavbarProps {
-    onStart: () => void;
     onSelectComponent: (name: string) => void;
 }
 
 const DashboardNavbar: FC<NavbarProps> = (props: NavbarProps) => {
     const dispatch = useAppDispatch();
-    const [open, setState] = useState(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const auth = useSelector((state: RootState) => state.auth.user);
     const areaLists = useSelector((state: RootState) => state.areaList.areaLists);
@@ -33,19 +28,6 @@ const DashboardNavbar: FC<NavbarProps> = (props: NavbarProps) => {
             dispatch(fetchAreaLists(auth.role_id));
         }
     }, [dispatch, auth]);
-
-    // Filter and map the area lists based on the required conditions
-    const filteredMenuItems = useMemo(() => {
-        return areaLists.filter(area => area.application_name === "Application A");
-    }, [areaLists]);
-
-    const handleClickStart = () => {
-        props.onStart();
-    };
-
-    const toggleDrawer = (open: boolean) => {
-        setState(open);
-    };
 
     const handleMenu = (event: MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -68,35 +50,16 @@ const DashboardNavbar: FC<NavbarProps> = (props: NavbarProps) => {
         <>
             <AppBar elevation={0}>
                 <Toolbar variant="dense">
-                    {filteredMenuItems[0]?.data.length > 0 && (
-                        <IconButton
-                            size="large"
-                            edge="start"
-                            color="inherit"
-                            aria-label="open drawer"
-                            sx={{ mr: 2 }}
-                            onClick={() => toggleDrawer(true)}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                    )}
                     <Typography
                         variant="h6"
                         noWrap
                         component="div"
                         sx={{ display: { xs: 'none', sm: 'block' } }}
                     >
-                        Test Component
+                        System
                     </Typography>
                     <Box sx={{ flexGrow: 1 }} />
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                        <Button
-                            variant='outlined'
-                            sx={{ color: 'white', border: '1px solid #ffffff8f' }}
-                            onClick={handleClickStart}
-                        >
-                            Start Test
-                        </Button>
                         <IconButton
                             size="large"
                             edge="end"
@@ -137,11 +100,6 @@ const DashboardNavbar: FC<NavbarProps> = (props: NavbarProps) => {
                 </Toolbar>
             </AppBar>
 
-            <DrawerMenu
-                open={open}
-                handleClose={() => toggleDrawer(false)}
-                handleChange={(name: string) => props.onSelectComponent(name)}
-            />
         </>
     );
 };

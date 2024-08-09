@@ -1,18 +1,6 @@
 import React, { FC, ReactNode, useState } from "react";
 import { styled } from '@mui/system';
 import DashboardNavbar from "./Navbar";
-import DashboardSidebar from "./Sidebar";
-import LoadingScreen from "./LoadingScreen";
-import ShellApi from "../utills/shellApi";
-import { setOutputJson, setTestStatus } from "../reducers/testReducer";
-import DashboardFooter from "./Footerbar";
-import { useAppDispatch } from "../store/hooks";
-import ConnectAccountSetupGuide from "./connect-account-setup-guide/implements/ConnectAccountSetupGuide";
-import DataViewer from "./data-viewer/implements/DataViewer";
-import ScriptManager from "./script-manager/implements/ScriptManager";
-import LinkBudgetComponent from "./link-budget/implements";
-import RenderEbNo from "./rfAttribute/implements/RenderEbNo";
-import HeatMapSlider from './heatmap-slider/implements/HeatMapSlider';
 import SecurityRoles from "./security-roles";
 import SecurityRolesForm from "./security-roles/SecurityRolesForm";
 import UserLists from "./users/user-list";
@@ -41,14 +29,12 @@ import LoginReportLists from "./loginReports/login-report-list";
 
 interface TestDashboardProps {
     children?: ReactNode;
-    themeName: string;
-    onChangeTheme: (name: string) => void;
 }
 
 const DashboardContainer = styled('div')({
     display: 'flex',
     flexDirection: 'column',
-    height: '100vh'
+    height: '90vh'
 });
 
 const DashboardMainArea = styled('div')({
@@ -57,14 +43,6 @@ const DashboardMainArea = styled('div')({
     display: 'flex',
     flexGrow: 1
 });
-
-const initOutput = {
-    status: 200,
-    data: {
-        success: true,
-        message: 'Success!'
-    }
-};
 
 const TestDashboard: FC<TestDashboardProps> = (props: TestDashboardProps) => {
     const handleRowSecurityRoleClick = (roleId: number) => {
@@ -115,30 +93,6 @@ const TestDashboard: FC<TestDashboardProps> = (props: TestDashboardProps) => {
 
     const components = [
         {
-            name: 'Connect Account Setup',
-            component: <ConnectAccountSetupGuide />
-        },
-        {
-            name: 'Data Viewer',
-            component: <DataViewer />
-        },
-        {
-            name: 'Script Manager',
-            component: <ScriptManager />
-        },
-        {
-            name: 'RfAttribute',
-            component: <RenderEbNo />
-        },
-        {
-            name: 'Link Budget',
-            component: <LinkBudgetComponent themeName={'light'} onChangeTheme={() => { }} />
-        },
-        {
-            name: 'HeatMap Slider',
-            component: <HeatMapSlider />
-        },
-        {
             name: 'Security Roles',
             component: <SecurityRoles onRowClick={handleRowSecurityRoleClick} />
         },
@@ -176,29 +130,9 @@ const TestDashboard: FC<TestDashboardProps> = (props: TestDashboardProps) => {
         }
     ];
 
-    const dispatch = useAppDispatch();
-    const apiObj = new ShellApi();
-    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [activeComponent, setActiveComponent] = useState<any>(
         <Home />
     );
-
-    const handleTestStart = async () => {
-        setIsLoading(true);
-
-        try {
-            const response = await apiObj.excuteTestShell();
-            console.log('response', response)
-            dispatch(setTestStatus(JSON.stringify(response.data)));
-        } catch (err) {
-            console.log('error', err);
-            dispatch(setTestStatus(JSON.stringify(err)));
-        }
-
-        dispatch(setOutputJson(JSON.stringify(initOutput)));
-
-        setIsLoading(false);
-    };
 
     const handleChangeComponent = (name: string) => {
         const selectedComponent = components.find((c) => c.name === name)
@@ -207,14 +141,11 @@ const TestDashboard: FC<TestDashboardProps> = (props: TestDashboardProps) => {
 
     return (
         <>
-            <LoadingScreen show={isLoading} />
             <DashboardContainer>
-                <DashboardNavbar onStart={handleTestStart} onSelectComponent={handleChangeComponent} />
+                <DashboardNavbar onSelectComponent={handleChangeComponent} />
                 <DashboardMainArea>
                     {activeComponent}
-                    <DashboardSidebar />
                 </DashboardMainArea>
-                <DashboardFooter result="" />
             </DashboardContainer>
         </>
     )

@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-export const REACT_APP_SERVER_URL = "https://linkbudgettesting.azurewebsites.net";
 export const LOCAL_SERVER_URL = "https://react-userroles-backend.onrender.com/api/v0";
 export const API_VERSION = "v0";
 
