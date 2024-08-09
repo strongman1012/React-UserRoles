@@ -70,7 +70,6 @@ const authSlice = createSlice({
         },
         logoutFailure: (state) => {
             state.status = 'failed';
-            localStorage.removeItem('token');
         },
     },
 });
@@ -128,8 +127,14 @@ export const forgotPassword = (info: { email: string }) => async (dispatch: AppD
 export const logout = () => async (dispatch: AppDispatch) => {
     dispatch(logoutStart());
     try {
-        await logoutAPI();
-        dispatch(logoutSuccess());
+        const response = await logoutAPI();
+        if (response) {
+            dispatch(logoutSuccess());
+        }
+    } catch (error: any) {
+        dispatch(logoutFailure());
+        throw error.response?.data?.message || error.message;
+    } finally {
         dispatch(resetUsers());
         dispatch(resetTeams());
         dispatch(resetRoles());
@@ -139,9 +144,6 @@ export const logout = () => async (dispatch: AppDispatch) => {
         dispatch(resetDataAccesses());
         dispatch(resetAreas());
         dispatch(resetLoginReports());
-    } catch (error: any) {
-        dispatch(logoutFailure());
-        throw error.response?.data?.message || error.message;
     }
 };
 
