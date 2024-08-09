@@ -9,18 +9,13 @@ interface DecodedToken {
 const getUserFromToken = (token: string | null): any => {
     if (!token) return null;
 
-    try {
-        const decoded = jwtDecode<DecodedToken>(token);
-        if (decoded.exp * 1000 < Date.now()) {
-            // Token has expired
-            logout();
-            return null;
-        }
-        return decoded.user;
-    } catch (error) {
-        console.error('Error decoding token:', error);
+    const decoded = jwtDecode<DecodedToken>(token);
+    if (decoded.exp * 1000 < Date.now()) {
+        // Token has expired
+        logout();
         return null;
     }
+    return decoded.user;
 };
 
 export default getUserFromToken;
