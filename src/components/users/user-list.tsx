@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState, useCallback, useMemo } from 'react';
+import React, { FC, useEffect, useState, useCallback } from 'react';
 import {
     DataGrid, Column, ColumnChooser, ColumnChooserSearch, ColumnChooserSelection, Position, SearchPanel, Paging, Pager, Selection
 } from 'devextreme-react/data-grid';
@@ -49,15 +49,6 @@ const UserLists: FC<UserListsProps> = ({ onRowClick, onAddNewClick }) => {
     useEffect(() => {
         dispatch(fetchUsers());
     }, [dispatch]);
-
-    const sortedLoginMetrics = useMemo(() => {
-        if (loginMetrics && loginMetrics?.length > 0)
-            return loginMetrics?.sort((a, b) => {
-                const dateA: any = new Date(a.login_date);
-                const dateB: any = new Date(b.login_date);
-                return dateA - dateB;
-            });
-    }, [loginMetrics]);
 
     const renderStatusCell = (cellData: any) => {
         const isSuccessful = cellData.value;
@@ -263,7 +254,7 @@ const UserLists: FC<UserListsProps> = ({ onRowClick, onAddNewClick }) => {
                     {selectedUser?.userName}{"'s Logins Per Day"}
                 </DialogTitle>
                 <DialogContent>
-                    <Chart id="chart" dataSource={sortedLoginMetrics}>
+                    <Chart id="chart" dataSource={loginMetrics}>
                         <ArgumentAxis title="Date" />
                         <ValueAxis title="Count" tickInterval={1} label={{ format: { type: 'fixedPoint', precision: 0 } }} />
                         <Series
