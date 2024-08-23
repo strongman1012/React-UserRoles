@@ -138,13 +138,13 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
                                     <Table>
                                         <TableHead>
                                             <TableRow>
-                                                <TableCell>Area / Feature</TableCell>
-                                                <TableCell>Application Access</TableCell>
+                                                <TableCell sx={{ borderRight: 1, borderColor: '#DDDDDD' }}>Area / Feature</TableCell>
+                                                <TableCell sx={{ borderRight: 1, borderColor: '#DDDDDD', textAlign: 'center' }}>Application Access</TableCell>
                                                 <TableCell colSpan={5} align="center">Data Access</TableCell>
                                             </TableRow>
                                             <TableRow>
-                                                <TableCell></TableCell>
-                                                <TableCell></TableCell>
+                                                <TableCell sx={{ borderRight: 1, borderColor: '#DDDDDD' }}></TableCell>
+                                                <TableCell sx={{ borderRight: 1, borderColor: '#DDDDDD' }}></TableCell>
                                                 <TableCell>Level</TableCell>
                                                 <TableCell>Read</TableCell>
                                                 <TableCell>Create</TableCell>
@@ -153,10 +153,13 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {filteredAreas.map(area => (
-                                                <TableRow key={area.id}>
-                                                    <TableCell>{area.name}</TableCell>
-                                                    <TableCell>
+                                            {filteredAreas.map((area, index) => (
+                                                <TableRow
+                                                    key={area.id}
+                                                    sx={{ backgroundColor: index % 2 === 0 ? '#F5F5F5' : 'white' }}
+                                                >
+                                                    <TableCell sx={{ borderRight: 1, borderColor: '#DDDDDD' }}>{area.name}</TableCell>
+                                                    <TableCell sx={{ borderRight: 1, borderColor: '#DDDDDD', display: 'flex', justifyContent: 'center' }}>
                                                         <Select
                                                             value={getPermission(area.id).toString()}
                                                             onChange={(e) => handlePermissionChange(area.id, e.target.value as string)}
