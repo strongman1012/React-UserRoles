@@ -261,7 +261,7 @@ const Users: FC = () => {
                 </Box>
                 <Chart id="chart" dataSource={loginMetrics}>
                     <ArgumentAxis title="Date" />
-                    <ValueAxis title="Count" tickInterval={1} label={{ format: { type: 'fixedPoint', precision: 0 } }} />
+                    <ValueAxis title="Count" />
                     <Series
                         valueField="login_count"
                         argumentField="login_date"
