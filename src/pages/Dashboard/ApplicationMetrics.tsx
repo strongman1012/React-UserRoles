@@ -30,8 +30,8 @@ const ApplicationMetrics: FC = () => {
     const applications = useSelector((state: RootState) => state.applications.allApplications); // application names
     const roles = useSelector((state: RootState) => state.roles.allRoles); // roles
     const perDayMin = useSelector((state: RootState) => state.loginReports.applicationPerDayMin); // Metrics top-left
-    const perDayNumber = useSelector((state: RootState) => state.loginReports.applicationPerDayNumber); // Metrics top-right
-    const totalPercent = useSelector((state: RootState) => state.loginReports.applicationPercent); // Metrics bottom-left
+    const perDayNumber = useSelector((state: RootState) => state.loginReports.applicationPerDayNumber); // Metrics bottom-left
+    const totalPercent = useSelector((state: RootState) => state.loginReports.applicationPercent); // Metrics top-right
     const roleApplications = useSelector((state: RootState) => state.loginReports.applicationRoles); // Metrics bottom-right
     const users = useSelector((state: RootState) => state.loginReports.applicationUsers); // Metrics bottom-right
 
@@ -39,8 +39,8 @@ const ApplicationMetrics: FC = () => {
     const [applicationNames, setApplicationNames] = useState<any[]>([]);
     const [roleNames, setRoleNames] = useState<any[]>([]);
     const [metricsPerDayMin, setMetricsPerDayMin] = useState<MetricsData[]>([]); // Chart top-left
-    const [metricsPerDayNumber, setMetricsPerDayNumber] = useState<MetricsData[]>([]); // Chart top-right
-    const [metricsTotalPercent, setMetricsTotalPercent] = useState<MetricsData[]>([]); // Chart bottom-left
+    const [metricsPerDayNumber, setMetricsPerDayNumber] = useState<MetricsData[]>([]); // Chart bottom-left
+    const [metricsTotalPercent, setMetricsTotalPercent] = useState<MetricsData[]>([]); // Chart top-right
     const [metricsCategory, setMetricsCategory] = useState<MetricsData[]>([]); // Chart bottom-right
 
     useEffect(() => {
@@ -120,7 +120,7 @@ const ApplicationMetrics: FC = () => {
             <LoadingScreen show={isLoading} />
             <Box sx={{ pt: 3 }}>
                 <Card variant="outlined">
-                    <CardHeader title="Application Access Metrics" />
+                    <CardHeader title="Access Metrics" />
                     <Divider />
                     <CardContent>
                         <Grid container spacing={4}>
@@ -128,7 +128,7 @@ const ApplicationMetrics: FC = () => {
                                 {metricsPerDayMin.length > 0 && (
                                     <Chart dataSource={metricsPerDayMin}
                                         title={{
-                                            text: 'Total Application Usage Per Day (min)',
+                                            text: 'Application Usage Time (Min/Day)',
                                             font: {
                                                 weight: 500,
                                                 family: "sans-serif",
@@ -160,6 +160,33 @@ const ApplicationMetrics: FC = () => {
                                     </Chart>
                                 )}
                             </Grid>
+                            <Grid item xs={6}>
+                                {metricsTotalPercent.length > 0 && (
+                                    <PieChart
+                                        id="pie"
+                                        title={{
+                                            text: 'Total Application Usage Time (T%)',
+                                            font: {
+                                                weight: 500,
+                                                family: "sans-serif",
+                                                size: 20,
+                                                color: '#206c91'
+                                            },
+                                            horizontalAlignment: 'center'
+                                        }}
+                                        dataSource={metricsTotalPercent}
+                                    >
+                                        <Series argumentField="application" valueField="percent">
+                                            <Label visible={true}>
+                                                <Connector visible={true} width={1} />
+                                            </Label>
+                                        </Series>
+                                        <Export enabled={true} />
+                                    </PieChart>
+                                )}
+                            </Grid>
+                        </Grid>
+                        <Grid container spacing={4} mt={2}>
                             <Grid item xs={6}>
                                 {metricsPerDayNumber.length > 0 && (
                                     <Chart dataSource={metricsPerDayNumber}
@@ -196,38 +223,11 @@ const ApplicationMetrics: FC = () => {
                                     </Chart>
                                 )}
                             </Grid>
-                        </Grid>
-                        <Grid container spacing={4} mt={2}>
-                            <Grid item xs={6}>
-                                {metricsTotalPercent.length > 0 && (
-                                    <PieChart
-                                        id="pie"
-                                        title={{
-                                            text: 'Total Application Usage (%)',
-                                            font: {
-                                                weight: 500,
-                                                family: "sans-serif",
-                                                size: 20,
-                                                color: '#206c91'
-                                            },
-                                            horizontalAlignment: 'center'
-                                        }}
-                                        dataSource={metricsTotalPercent}
-                                    >
-                                        <Series argumentField="application" valueField="percent">
-                                            <Label visible={true}>
-                                                <Connector visible={true} width={1} />
-                                            </Label>
-                                        </Series>
-                                        <Export enabled={true} />
-                                    </PieChart>
-                                )}
-                            </Grid>
                             <Grid item xs={6}>
                                 {metricsCategory.length > 0 && (
                                     <Chart dataSource={metricsCategory}
                                         title={{
-                                            text: 'Users Under Each Application',
+                                            text: 'Users Per Application',
                                             font: {
                                                 weight: 500,
                                                 family: "sans-serif",

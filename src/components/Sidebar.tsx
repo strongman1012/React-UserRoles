@@ -143,12 +143,12 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                         <ListItemText primary="Login Reports" />
                                     </ListItemButton>
                                 )}
-                                {systemMenus.includes('Application Access Metrics') && (
+                                {systemMenus.includes('Application Metrics') && (
                                     <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/application-metrics')}>
                                         <ListItemIcon>
                                             <AutoGraphIcon />
                                         </ListItemIcon>
-                                        <ListItemText primary="Application Access Metrics" />
+                                        <ListItemText primary="Application Metrics" />
                                     </ListItemButton>
                                 )}
                             </List>
