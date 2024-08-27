@@ -107,6 +107,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                             top: '48px !Important',
                             borderRight: '1px solid #ddd',
                             position: 'absolute',
+                            zIndex: 1
                         }
                     }}
                     open={open}>

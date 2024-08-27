@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState, useCallback } from 'react';
 import { useAppDispatch } from '../../../store/hooks';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/store';
@@ -6,10 +6,10 @@ import { fetchRoleById } from '../../../reducers/roles/rolesSlice';
 import { fetchApplications } from 'src/reducers/applications/applicationsSlice';
 import { fetchAreas } from 'src/reducers/areas/areasSlice';
 import { fetchDataAccesses } from 'src/reducers/dataAccesses/dataAccessesSlice';
-import { getAreaLists, saveAreaList } from '../../../reducers/areaList/areaListSlice';
+import { getAreaLists, saveAreaList, getApplicationRoles, saveApplicationRole } from '../../../reducers/areaList/areaListSlice';
 import {
     Tabs, Tab, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-    Paper, Select, MenuItem, Checkbox,
+    Paper, Select, MenuItem, Checkbox, FormLabel,
     Container, Divider, Card, CardHeader, CardContent
 } from '@mui/material';
 import LoadingScreen from 'src/components/Basic/LoadingScreen';
@@ -24,6 +24,7 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
     const role = useSelector((state: RootState) => state.roles.currentRole);
     const editable = useSelector((state: RootState) => state.areaList.editable);
     const selectedAreaLists = useSelector((state: RootState) => state.areaList.selectedAreaLists);
+    const applicationRoles = useSelector((state: RootState) => state.areaList.applicationRoles);
     const dataAccessLists = useSelector((state: RootState) => state.dataAccesses.allDataAccesses);
     const allApplications = useSelector((state: RootState) => state.applications.allApplications);
     const allAreas = useSelector((state: RootState) => state.areas.allAreas);
@@ -44,6 +45,7 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
         if (roleId) {
             dispatch(fetchRoleById(roleId));
             dispatch(getAreaLists(roleId));
+            dispatch(getApplicationRoles(roleId));
         }
     }, [dispatch, roleId]);
 
@@ -75,7 +77,7 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
         const permission = newPermission === 'true';
         try {
             await dispatch(saveAreaList(roleId, { area_id: areaId, permission: permission }));
-            setConfirmTitle('Permission updated successfully');
+            setConfirmTitle('Area permission updated successfully');
             setConfirmDescription('');
             setConfirmModalOpen(true);
         } catch (error: any) {
@@ -86,6 +88,26 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
             setIsLoading(false);
         }
     };
+
+    const handleApplicationRoleChange = useCallback(
+        async (newPermission: string) => {
+            setIsLoading(true);
+            const permission = newPermission === 'true';
+            try {
+                await dispatch(saveApplicationRole(roleId, tabValue, permission));
+                setConfirmTitle('Application permission updated successfully');
+                setConfirmDescription('');
+                setConfirmModalOpen(true);
+            } catch (error: any) {
+                setConfirmTitle(error.message);
+                setConfirmDescription('');
+                setConfirmModalOpen(true);
+            } finally {
+                setIsLoading(false);
+            }
+        },
+        [dispatch, roleId, tabValue]
+    );
 
     const handleDataAccessChange = async (areaId: number, data_access_id: number) => {
         setIsLoading(true);
@@ -108,10 +130,29 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
         return area ? area.permission : false;
     };
 
+    const getApplicationRole = (tabId: number) => {
+        const applicationRole = applicationRoles.find(row => row.application_id === tabId);
+        return applicationRole ? applicationRole.permission : false;
+    };
+
     const getDataAccess = (areaId: number) => {
         const area = filteredSelectedAreaLists[0]?.data.find(area => area.area_id === areaId);
         return area ? area.data_access_id : '';
     };
+
+    const applicationRoleValue = getApplicationRole(tabValue).toString();
+
+    const memoizedSelect = useMemo(() => (
+        <Select
+            value={applicationRoleValue}
+            onChange={(e) => handleApplicationRoleChange(e.target.value as string)}
+            size="small"
+            disabled={!editable}
+        >
+            <MenuItem value="true">Yes</MenuItem>
+            <MenuItem value="false">No</MenuItem>
+        </Select>
+    ), [applicationRoleValue, editable, handleApplicationRoleChange]);
 
     if (!role) {
         return <div>Loading...</div>;
@@ -122,7 +163,14 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
             <LoadingScreen show={isLoading} />
             <Box sx={{ pt: 3 }}>
                 <Card variant="outlined">
-                    <CardHeader title={`Security Role: ${role.name}`} />
+                    <CardHeader title={`Security Role: ${role.name}`}
+                        action={
+                            <>
+                                <FormLabel style={{ marginRight: '8px' }}>Application Permission:</FormLabel>
+                                {memoizedSelect}
+                            </>
+                        }
+                    />
                     <Divider />
                     <CardContent>
                         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -139,7 +187,7 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
                                         <TableHead>
                                             <TableRow>
                                                 <TableCell sx={{ borderRight: 1, borderColor: '#DDDDDD' }}>Area / Feature</TableCell>
-                                                <TableCell sx={{ borderRight: 1, borderColor: '#DDDDDD', textAlign: 'center' }}>Application Access</TableCell>
+                                                <TableCell sx={{ borderRight: 1, borderColor: '#DDDDDD', textAlign: 'center' }}>Area Access</TableCell>
                                                 <TableCell colSpan={5} align="center">Data Access</TableCell>
                                             </TableRow>
                                             <TableRow>
