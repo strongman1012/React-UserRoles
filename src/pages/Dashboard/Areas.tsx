@@ -163,7 +163,7 @@ const Areas: FC = () => {
                 show={deleteModalOpen}
                 onConfirm={doDelete}
                 onClose={() => setDeleteModalOpen(false)}
-                title={'Remove a selected user!'}
+                title={'Remove a selected area!'}
                 description={'You are not able to revert after removed! Please confirm.'}
             />
         </Container>
