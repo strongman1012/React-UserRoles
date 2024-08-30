@@ -21,7 +21,7 @@ const initialFormData: Omit<User, 'id'> = {
     mobilePhone: '',
     mainPhone: '',
     status: false,
-    role_ids: null,
+    role_ids: '5', // default user
     business_unit_id: null,
     team_ids: null,
 };
