@@ -1,5 +1,6 @@
 import React, { FC, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { Box, Container, Card, CardHeader, CardContent, Divider, Typography, Grid } from '@mui/material';
 import { RootState } from '../../store/store';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -12,17 +13,28 @@ interface Application {
 }
 
 const Home: FC = () => {
+    const navigate = useNavigate();
     const areaLists = useSelector((state: RootState) => state.areaList.areaLists);
     const [applications, setApplications] = useState<(Application | null)[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
+        const areaURLs = [
+            { name: "Security Roles", url: "/dashboard/security-roles" },
+            { name: "Users", url: "/dashboard/users" },
+            { name: "Teams", url: "/dashboard/teams" },
+            { name: "Applications", url: "/dashboard/applications" },
+            { name: "Areas", url: "/dashboard/areas" },
+            { name: "Data Accesses", url: "/dashboard/data-access" },
+            { name: "Login Reports", url: "/dashboard/login-reports" }
+        ];
         if (areaLists.length > 0) {
             const temp_applications = areaLists.map(row => {
                 if (row.permission === true) {
+                    const area_names = row.data.map(area => area.area_name);
                     if (row.application_name === "System")
                         return {
-                            name: row.application_name, url: '#'
+                            name: row.application_name, url: area_names.includes("Application Metrics") ? '/dashboard/application-metrics' : (areaURLs.find(item => item.name === area_names[0])?.url || '#')
                         }
                     else if (row.application_name === "Application A")
                         return {
@@ -41,6 +53,8 @@ const Home: FC = () => {
     }, [areaLists]);
 
     const handleCardClick = (app: Application | null) => {
+        if (app && app.name === "System")
+            navigate(app.url);
         if (app && app.name !== "System") {
             window.open(app.url, '_blank');
         }

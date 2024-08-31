@@ -77,7 +77,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState<boolean>(true);
     const [systemMenus, setSystemMenus] = useState<string[]>([]);
-    const [collapse, setCollapse] = useState<CollapseState>({ 'metrics': false, 'users': false, 'organizations': false, 'assets': false });
+    const [collapse, setCollapse] = useState<CollapseState>({ 'metrics': true, 'users': true, 'organizations': true, 'assets': true });
     const areaList = useSelector((state: RootState) => state.areaList.areaLists);
 
     useEffect(() => {
@@ -112,185 +112,202 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                     }}
                     open={open}>
                     <List>
-                        <ListItem disablePadding sx={{ display: 'block' }}>
-                            <ListItemButton
-                                onClick={() => handleClick('metrics')}
-                                sx={{
-                                    minHeight: 48,
-                                    justifyContent: open ? 'initial' : 'center',
-                                    px: 2.5,
-                                }}
-                            >
-                                <ListItemIcon
-                                    sx={{
-                                        minWidth: 0,
-                                        mr: open ? 3 : 'auto',
-                                        justifyContent: 'center',
-                                    }}
-                                >
-                                    <AddchartOutlinedIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Metrics & Logs" sx={{ opacity: open ? 1 : 0 }} />
-                                {collapse['metrics'] ? <ExpandLess /> : <ExpandMore />}
-                            </ListItemButton>
-                        </ListItem>
-                        <Collapse in={collapse['metrics']} timeout="auto" unmountOnExit>
-                            <List component="div" disablePadding>
-                                {systemMenus.includes('Login Reports') && (
-                                    <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/login-reports')}>
-                                        <ListItemIcon>
-                                            <SummarizeIcon />
+                        {(systemMenus.includes('Login Reports') || systemMenus.includes('Application Metrics')) && (
+                            <>
+                                <ListItem disablePadding sx={{ display: 'block' }}>
+                                    <ListItemButton
+                                        onClick={() => handleClick('metrics')}
+                                        sx={{
+                                            minHeight: 48,
+                                            justifyContent: open ? 'initial' : 'center',
+                                            px: 2.5,
+                                        }}
+                                    >
+                                        <ListItemIcon
+                                            sx={{
+                                                minWidth: 0,
+                                                mr: open ? 3 : 'auto',
+                                                justifyContent: 'center',
+                                            }}
+                                        >
+                                            <AddchartOutlinedIcon />
                                         </ListItemIcon>
-                                        <ListItemText primary="Login Reports" />
+                                        <ListItemText primary="Metrics & Logs" sx={{ opacity: open ? 1 : 0 }} />
+                                        {collapse['metrics'] ? <ExpandLess /> : <ExpandMore />}
                                     </ListItemButton>
-                                )}
-                                {systemMenus.includes('Application Metrics') && (
-                                    <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/application-metrics')}>
-                                        <ListItemIcon>
-                                            <AutoGraphIcon />
+                                </ListItem>
+                                <Collapse in={collapse['metrics']} timeout="auto" unmountOnExit>
+                                    <List component="div" disablePadding>
+                                        {systemMenus.includes('Login Reports') && (
+                                            <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/login-reports')}>
+                                                <ListItemIcon>
+                                                    <SummarizeIcon />
+                                                </ListItemIcon>
+                                                <ListItemText primary="Login Reports" />
+                                            </ListItemButton>
+                                        )}
+                                        {systemMenus.includes('Application Metrics') && (
+                                            <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/application-metrics')}>
+                                                <ListItemIcon>
+                                                    <AutoGraphIcon />
+                                                </ListItemIcon>
+                                                <ListItemText primary="Application Metrics" />
+                                            </ListItemButton>
+                                        )}
+                                    </List>
+                                </Collapse>
+                                <Divider />
+                            </>
+                        )}
+
+                        {(systemMenus.includes('Users') || systemMenus.includes('Security Roles')) && (
+                            <>
+                                <ListItem disablePadding sx={{ display: 'block' }}>
+                                    <ListItemButton
+                                        onClick={() => handleClick('users')}
+                                        sx={{
+                                            minHeight: 48,
+                                            justifyContent: open ? 'initial' : 'center',
+                                            px: 2.5,
+                                        }}
+                                    >
+                                        <ListItemIcon
+                                            sx={{
+                                                minWidth: 0,
+                                                mr: open ? 3 : 'auto',
+                                                justifyContent: 'center',
+                                            }}
+                                        >
+                                            <PeopleAltOutlinedIcon />
                                         </ListItemIcon>
-                                        <ListItemText primary="Application Metrics" />
+                                        <ListItemText primary="Users & Roles" sx={{ opacity: open ? 1 : 0 }} />
+                                        {collapse['users'] ? <ExpandLess /> : <ExpandMore />}
                                     </ListItemButton>
-                                )}
-                            </List>
-                        </Collapse>
-                        <Divider />
-                        <ListItem disablePadding sx={{ display: 'block' }}>
-                            <ListItemButton
-                                onClick={() => handleClick('users')}
-                                sx={{
-                                    minHeight: 48,
-                                    justifyContent: open ? 'initial' : 'center',
-                                    px: 2.5,
-                                }}
-                            >
-                                <ListItemIcon
-                                    sx={{
-                                        minWidth: 0,
-                                        mr: open ? 3 : 'auto',
-                                        justifyContent: 'center',
-                                    }}
-                                >
-                                    <PeopleAltOutlinedIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Users & Roles" sx={{ opacity: open ? 1 : 0 }} />
-                                {collapse['users'] ? <ExpandLess /> : <ExpandMore />}
-                            </ListItemButton>
-                        </ListItem>
-                        <Collapse in={collapse['users']} timeout="auto" unmountOnExit>
-                            <List component="div" disablePadding>
-                                {systemMenus.includes('Users') && (
-                                    <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/users')}>
-                                        <ListItemIcon>
-                                            <RecentActorsIcon />
+                                </ListItem>
+                                <Collapse in={collapse['users']} timeout="auto" unmountOnExit>
+                                    <List component="div" disablePadding>
+                                        {systemMenus.includes('Users') && (
+                                            <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/users')}>
+                                                <ListItemIcon>
+                                                    <RecentActorsIcon />
+                                                </ListItemIcon>
+                                                <ListItemText primary="Users" />
+                                            </ListItemButton>
+                                        )}
+                                        {systemMenus.includes('Security Roles') && (
+                                            <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/security-roles')}>
+                                                <ListItemIcon>
+                                                    <AddModeratorIcon />
+                                                </ListItemIcon>
+                                                <ListItemText primary="Security Roles" />
+                                            </ListItemButton>
+                                        )}
+                                    </List>
+                                </Collapse>
+                                <Divider />
+                            </>)
+                        }
+
+                        {(systemMenus.includes('Business Units') || systemMenus.includes('Teams')) && (
+                            <>
+                                <ListItem disablePadding sx={{ display: 'block' }}>
+                                    <ListItemButton
+                                        onClick={() => handleClick('organizations')}
+                                        sx={{
+                                            minHeight: 48,
+                                            justifyContent: open ? 'initial' : 'center',
+                                            px: 2.5,
+                                        }}
+                                    >
+                                        <ListItemIcon
+                                            sx={{
+                                                minWidth: 0,
+                                                mr: open ? 3 : 'auto',
+                                                justifyContent: 'center',
+                                            }}
+                                        >
+                                            <CorporateFareOutlinedIcon />
                                         </ListItemIcon>
-                                        <ListItemText primary="Users" />
+                                        <ListItemText primary="Organizations" sx={{ opacity: open ? 1 : 0 }} />
+                                        {collapse['organizations'] ? <ExpandLess /> : <ExpandMore />}
                                     </ListItemButton>
-                                )}
-                                {systemMenus.includes('Security Roles') && (
-                                    <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/security-roles')}>
-                                        <ListItemIcon>
-                                            <AddModeratorIcon />
+                                </ListItem>
+                                <Collapse in={collapse['organizations']} timeout="auto" unmountOnExit>
+                                    <List component="div" disablePadding>
+                                        {systemMenus.includes('Business Units') && (
+                                            <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/business-units')}>
+                                                <ListItemIcon>
+                                                    <AddBusinessIcon />
+                                                </ListItemIcon>
+                                                <ListItemText primary="Business Units" />
+                                            </ListItemButton>
+                                        )}
+                                        {systemMenus.includes('Teams') && (
+                                            <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/teams')}>
+                                                <ListItemIcon>
+                                                    <GroupsIcon />
+                                                </ListItemIcon>
+                                                <ListItemText primary="Teams" />
+                                            </ListItemButton>
+                                        )}
+                                    </List>
+                                </Collapse>
+                                <Divider />
+                            </>)}
+
+                        {(systemMenus.includes('Applications') || systemMenus.includes('Areas') || systemMenus.includes('Data Accesses')) && (
+                            <>
+                                <ListItem disablePadding sx={{ display: 'block' }}>
+                                    <ListItemButton
+                                        onClick={() => handleClick('assets')}
+                                        sx={{
+                                            minHeight: 48,
+                                            justifyContent: open ? 'initial' : 'center',
+                                            px: 2.5,
+                                        }}
+                                    >
+                                        <ListItemIcon
+                                            sx={{
+                                                minWidth: 0,
+                                                mr: open ? 3 : 'auto',
+                                                justifyContent: 'center',
+                                            }}
+                                        >
+                                            <AccountBalanceOutlinedIcon />
                                         </ListItemIcon>
-                                        <ListItemText primary="Security Roles" />
+                                        <ListItemText primary="Assets" sx={{ opacity: open ? 1 : 0 }} />
+                                        {collapse['assets'] ? <ExpandLess /> : <ExpandMore />}
                                     </ListItemButton>
-                                )}
-                            </List>
-                        </Collapse>
-                        <Divider />
-                        <ListItem disablePadding sx={{ display: 'block' }}>
-                            <ListItemButton
-                                onClick={() => handleClick('organizations')}
-                                sx={{
-                                    minHeight: 48,
-                                    justifyContent: open ? 'initial' : 'center',
-                                    px: 2.5,
-                                }}
-                            >
-                                <ListItemIcon
-                                    sx={{
-                                        minWidth: 0,
-                                        mr: open ? 3 : 'auto',
-                                        justifyContent: 'center',
-                                    }}
-                                >
-                                    <CorporateFareOutlinedIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Organizations" sx={{ opacity: open ? 1 : 0 }} />
-                                {collapse['organizations'] ? <ExpandLess /> : <ExpandMore />}
-                            </ListItemButton>
-                        </ListItem>
-                        <Collapse in={collapse['organizations']} timeout="auto" unmountOnExit>
-                            <List component="div" disablePadding>
-                                {systemMenus.includes('Business Units') && (
-                                    <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/business-units')}>
-                                        <ListItemIcon>
-                                            <AddBusinessIcon />
-                                        </ListItemIcon>
-                                        <ListItemText primary="Business Units" />
-                                    </ListItemButton>
-                                )}
-                                {systemMenus.includes('Teams') && (
-                                    <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/teams')}>
-                                        <ListItemIcon>
-                                            <GroupsIcon />
-                                        </ListItemIcon>
-                                        <ListItemText primary="Teams" />
-                                    </ListItemButton>
-                                )}
-                            </List>
-                        </Collapse>
-                        <Divider />
-                        <ListItem disablePadding sx={{ display: 'block' }}>
-                            <ListItemButton
-                                onClick={() => handleClick('assets')}
-                                sx={{
-                                    minHeight: 48,
-                                    justifyContent: open ? 'initial' : 'center',
-                                    px: 2.5,
-                                }}
-                            >
-                                <ListItemIcon
-                                    sx={{
-                                        minWidth: 0,
-                                        mr: open ? 3 : 'auto',
-                                        justifyContent: 'center',
-                                    }}
-                                >
-                                    <AccountBalanceOutlinedIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Assets" sx={{ opacity: open ? 1 : 0 }} />
-                                {collapse['assets'] ? <ExpandLess /> : <ExpandMore />}
-                            </ListItemButton>
-                        </ListItem>
-                        <Collapse in={collapse['assets']} timeout="auto" unmountOnExit>
-                            <List component="div" disablePadding>
-                                {systemMenus.includes('Applications') && (
-                                    <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/applications')}>
-                                        <ListItemIcon>
-                                            <AppsIcon />
-                                        </ListItemIcon>
-                                        <ListItemText primary="Applications" />
-                                    </ListItemButton>
-                                )}
-                                {systemMenus.includes('Areas') && (
-                                    <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/areas')}>
-                                        <ListItemIcon>
-                                            <BorderOuterIcon />
-                                        </ListItemIcon>
-                                        <ListItemText primary="Areas/Modules" />
-                                    </ListItemButton>
-                                )}
-                                {systemMenus.includes('Data Accesses') && (
-                                    <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/data-access')}>
-                                        <ListItemIcon>
-                                            <SettingsAccessibilityIcon />
-                                        </ListItemIcon>
-                                        <ListItemText primary="Data Access" />
-                                    </ListItemButton>
-                                )}
-                            </List>
-                        </Collapse>
+                                </ListItem>
+                                <Collapse in={collapse['assets']} timeout="auto" unmountOnExit>
+                                    <List component="div" disablePadding>
+                                        {systemMenus.includes('Applications') && (
+                                            <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/applications')}>
+                                                <ListItemIcon>
+                                                    <AppsIcon />
+                                                </ListItemIcon>
+                                                <ListItemText primary="Applications" />
+                                            </ListItemButton>
+                                        )}
+                                        {systemMenus.includes('Areas') && (
+                                            <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/areas')}>
+                                                <ListItemIcon>
+                                                    <BorderOuterIcon />
+                                                </ListItemIcon>
+                                                <ListItemText primary="Areas/Modules" />
+                                            </ListItemButton>
+                                        )}
+                                        {systemMenus.includes('Data Accesses') && (
+                                            <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/data-access')}>
+                                                <ListItemIcon>
+                                                    <SettingsAccessibilityIcon />
+                                                </ListItemIcon>
+                                                <ListItemText primary="Data Access" />
+                                            </ListItemButton>
+                                        )}
+                                    </List>
+                                </Collapse>
+                            </>)}
                     </List>
                 </Drawer>
             )}
