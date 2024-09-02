@@ -4,8 +4,7 @@ import {
     SearchPanel, Paging, Pager, Export, DataGridTypes, Button as GridButton
 } from 'devextreme-react/data-grid';
 import {
-    Button, MenuItem, Select, FormControl, SelectChangeEvent,
-    Container, Box, Divider, Card, CardHeader, CardContent
+    Button, Container, Box, Divider, Card, CardHeader, CardContent
 } from '@mui/material';
 import { RootState } from '../../store/store';
 import { useAppDispatch } from '../../store/hooks';
@@ -43,7 +42,6 @@ const BusinessUnits: FC = () => {
     const dispatch = useAppDispatch();
     const businessUnits = useSelector((state: RootState) => state.businessUnits.allBusinessUnits);
     const editable = useSelector((state: RootState) => state.businessUnits.editable);
-    const [statusFilter, setStatusFilter] = useState('All');
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [modalType, setModalType] = useState<string>(ModalTypes.new);
     const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
@@ -58,10 +56,6 @@ const BusinessUnits: FC = () => {
         if (businessUnits.length > 0)
             setIsLoading(false);
     }, [businessUnits]);
-
-    const handleStatusFilterChange = (event: SelectChangeEvent<string>) => {
-        setStatusFilter(event.target.value);
-    };
 
     const handleCreate = () => {
         setModalType(ModalTypes.new);
@@ -100,13 +94,6 @@ const BusinessUnits: FC = () => {
                                     onClick={handleCreate} disabled={editable ? false : true}>
                                     New
                                 </Button>
-                                <FormControl style={{ minWidth: 200, marginBottom: 16 }}>
-                                    <Select value={statusFilter} onChange={handleStatusFilterChange} size='small'>
-                                        <MenuItem value="All">All</MenuItem>
-                                        <MenuItem value="Active Business Unit">Active Business Unit</MenuItem>
-                                        <MenuItem value="Deactive Business Unit">Deactive Business Unit</MenuItem>
-                                    </Select>
-                                </FormControl>
                             </>
                         }
                     />
