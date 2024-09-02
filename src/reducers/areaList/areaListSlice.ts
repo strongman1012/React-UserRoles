@@ -7,12 +7,14 @@ interface AreaListState {
     selectedAreaLists: ApplicationAreaList[];
     applicationRoles: ApplicationRoleList[];
     editable?: boolean;
+    sidebarVisible: boolean;
 }
 
 const initialState: AreaListState = {
     areaLists: [],
     selectedAreaLists: [],
-    applicationRoles: []
+    applicationRoles: [],
+    sidebarVisible: false
 };
 
 const areaListSlice = createSlice({
@@ -46,10 +48,13 @@ const areaListSlice = createSlice({
             else
                 state.applicationRoles.push(updatedApplicationRole[0]);
         },
+        setSidebarVisible(state, action: PayloadAction<boolean>) {
+            state.sidebarVisible = action.payload;
+        }
     },
 });
 
-export const { resetAreaLists, setAreaLists, selectedAreaLists, updateAreaList, setApplicationRoles, updateApplicationRole } = areaListSlice.actions;
+export const { resetAreaLists, setAreaLists, selectedAreaLists, updateAreaList, setApplicationRoles, updateApplicationRole, setSidebarVisible } = areaListSlice.actions;
 
 export const fetchAreaLists = () => async (dispatch: AppDispatch) => {
     try {

@@ -2,8 +2,6 @@ import React, { FC, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from 'src/store/store';
-import { fetchAreaLists } from 'src/reducers/areaList/areaListSlice';
-import { useAppDispatch } from 'src/store/hooks';
 import { styled, Theme, CSSObject } from '@mui/material/styles';
 import { Box, List, Divider, ListItem, ListItemButton, ListItemIcon, ListItemText, Collapse } from '@mui/material';
 import MuiDrawer from '@mui/material/Drawer';
@@ -73,16 +71,11 @@ interface CollapseState {
 }
 
 const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
-    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const [loading, setLoading] = useState<boolean>(true);
     const [systemMenus, setSystemMenus] = useState<string[]>([]);
     const [collapse, setCollapse] = useState<CollapseState>({ 'metrics': true, 'users': true, 'organizations': true, 'assets': true });
     const areaList = useSelector((state: RootState) => state.areaList.areaLists);
-
-    useEffect(() => {
-        dispatch(fetchAreaLists());
-    }, [dispatch]);
 
     useEffect(() => {
         if (areaList.length > 0) {

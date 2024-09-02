@@ -109,7 +109,6 @@ const Teams: FC = () => {
             <Column dataField='name' caption='Name' allowHiding={false} />
             <Column dataField='description' caption='Description' />
             <Column dataField='business_name' caption='Business Unit' />
-            <Column dataField='admin_name' caption='Team Administrator' />
             <Column dataField='is_default' caption='Default Team' />
             <Column caption="Actions" type="buttons" alignment="center" allowHiding={false}>
                 <GridButton icon="edit" text="Edit" onClick={handleEdit} cssClass="text-secondary" disabled={!editable} />

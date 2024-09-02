@@ -59,26 +59,9 @@ const BusinessUnits: FC = () => {
             setIsLoading(false);
     }, [businessUnits]);
 
-    const renderStatusCell = (cellData: any) => {
-        const isSuccessful = cellData.value;
-        const statusText = isSuccessful ? "✔" : "X";
-        const statusStyle = {
-            color: isSuccessful ? 'green' : 'red'
-        };
-
-        return (
-            <span style={statusStyle}>{statusText}</span>
-        );
-    };
-
     const handleStatusFilterChange = (event: SelectChangeEvent<string>) => {
         setStatusFilter(event.target.value);
     };
-
-    const filteredBusinessUnits = businessUnits.filter(businessUnit => {
-        if (statusFilter === 'All') return true;
-        return statusFilter === 'Active Business Unit' ? businessUnit.status === true : businessUnit.status === false;
-    });
 
     const handleCreate = () => {
         setModalType(ModalTypes.new);
@@ -131,7 +114,7 @@ const BusinessUnits: FC = () => {
                     <CardContent>
                         <DataGrid
                             id="businessUnits"
-                            dataSource={filteredBusinessUnits}
+                            dataSource={businessUnits}
                             keyExpr="id"
                             columnAutoWidth={true}
                             showRowLines={true}
@@ -154,6 +137,7 @@ const BusinessUnits: FC = () => {
                             <Column dataField='website' caption='Website' />
                             <Column dataField='mainPhone' caption='Main Phone' />
                             <Column dataField='parent_name' caption='Parent Business' />
+                            <Column dataField='admin_name' caption='Administrator' />
                             <Column dataField='otherPhone' caption='Other Phone' />
                             <Column dataField='fax' caption='Fax' />
                             <Column dataField='email' caption='Email' />
@@ -164,11 +148,6 @@ const BusinessUnits: FC = () => {
                             <Column dataField='state' caption='State' />
                             <Column dataField='zipCode' caption='Zip Code' />
                             <Column dataField='region' caption='Region' />
-                            <Column
-                                dataField='status'
-                                caption='Status'
-                                cellRender={renderStatusCell}
-                            />
                             <Column caption="Actions" type="buttons" alignment="center" allowHiding={false}>
                                 <GridButton icon="edit" text="Edit" onClick={handleEdit} cssClass="text-secondary" disabled={editable ? false : true} />
                                 <GridButton icon="trash" text="Delete" onClick={handleDelete} cssClass="text-secondary" disabled={editable ? false : true} />

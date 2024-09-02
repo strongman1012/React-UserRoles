@@ -29,7 +29,6 @@ const NewTeam: FC<NewTeamProps> = ({ onClose }) => {
         name: '',
         description: '',
         business_unit_id: null,
-        admin_id: null,
         is_default: false,
     };
 
@@ -73,7 +72,6 @@ const NewTeam: FC<NewTeamProps> = ({ onClose }) => {
         let tempErrors: { [key: string]: string } = {};
         if (!formData.name) tempErrors.name = "Team name is required";
         if (!formData.business_unit_id) tempErrors.business_unit_id = "Business unit is required";
-        if (!formData.admin_id) tempErrors.admin_id = "Administrator is required";
         setErrors(tempErrors);
         return Object.keys(tempErrors).length === 0;
     };
@@ -162,17 +160,6 @@ const NewTeam: FC<NewTeamProps> = ({ onClose }) => {
                                         onChange={(event, value) => handleAutocompleteChange(event, value, 'business_unit_id')}
                                         renderInput={(params) => (
                                             <TextField {...params} label="Business Unit" fullWidth error={!!errors.business_unit_id} helperText={errors.business_unit_id} />
-                                        )}
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <Autocomplete
-                                        options={allUsers}
-                                        getOptionLabel={(option) => option.userName}
-                                        value={allUsers.find(user => user.id === formData.admin_id) || null}
-                                        onChange={(event, value) => handleAutocompleteChange(event, value, 'admin_id')}
-                                        renderInput={(params) => (
-                                            <TextField {...params} label="Administrator" fullWidth error={!!errors.admin_id} helperText={errors.admin_id} />
                                         )}
                                     />
                                 </Grid>

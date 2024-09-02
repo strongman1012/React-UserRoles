@@ -1,10 +1,13 @@
-import React, { FC, useState, MouseEvent } from 'react';
+import React, { FC, useState, MouseEvent, useEffect } from 'react';
 import AppBar from '@mui/material/AppBar';
 import { useNavigate } from 'react-router-dom';
 import { Box, Toolbar, IconButton, Typography, Menu, MenuItem } from '@mui/material';
 import { AccountCircle, MenuOutlined } from '@mui/icons-material';
 import { useAppDispatch } from '../store/hooks';
 import { logout } from '../reducers/auth/authSlice';
+import { fetchAreaLists } from 'src/reducers/areaList/areaListSlice';
+import { RootState } from "src/store/store";
+import { useSelector } from "react-redux";
 
 interface DashboardNavbarProps {
     open: boolean;
@@ -15,6 +18,11 @@ const DashboardNavbar: FC<DashboardNavbarProps> = ({ open, toggleSidebar }) => {
     const dispatch = useAppDispatch();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const navigate = useNavigate();
+    const sidebarVisible = useSelector((state: RootState) => state.areaList.sidebarVisible);
+
+    useEffect(() => {
+        dispatch(fetchAreaLists());
+    }, [dispatch]);
 
     const handleMenu = (event: MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -28,16 +36,18 @@ const DashboardNavbar: FC<DashboardNavbarProps> = ({ open, toggleSidebar }) => {
         <>
             <AppBar elevation={0}>
                 <Toolbar variant="dense">
-                    <IconButton
-                        color='inherit'
-                        aria-label='open sidebar'
-                        size='large'
-                        edge="start"
-                        sx={{ mr: 2 }}
-                        onClick={toggleSidebar}
-                    >
-                        <MenuOutlined />
-                    </IconButton>
+                    {sidebarVisible && (
+                        <IconButton
+                            color='inherit'
+                            aria-label='open sidebar'
+                            size='large'
+                            edge="start"
+                            sx={{ mr: 2 }}
+                            onClick={toggleSidebar}
+                        >
+                            <MenuOutlined />
+                        </IconButton>
+                    )}
                     <IconButton
                         color="inherit"
                         onClick={() => navigate('/')}

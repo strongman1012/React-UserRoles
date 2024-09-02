@@ -6,6 +6,8 @@ import { RootState } from '../../store/store';
 import SettingsIcon from '@mui/icons-material/Settings';
 import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
 import LoadingScreen from 'src/components/Basic/LoadingScreen';
+import { useAppDispatch } from 'src/store/hooks';
+import { setSidebarVisible } from 'src/reducers/areaList/areaListSlice';
 
 interface Application {
     name: string;
@@ -13,10 +15,15 @@ interface Application {
 }
 
 const Home: FC = () => {
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const areaLists = useSelector((state: RootState) => state.areaList.areaLists);
     const [applications, setApplications] = useState<(Application | null)[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+
+    useEffect(() => {
+        dispatch(setSidebarVisible(false));
+    }, [dispatch]);
 
     useEffect(() => {
         const areaURLs = [
@@ -53,8 +60,10 @@ const Home: FC = () => {
     }, [areaLists]);
 
     const handleCardClick = (app: Application | null) => {
-        if (app && app.name === "System")
+        if (app && app.name === "System") {
+            dispatch(setSidebarVisible(true));
             navigate(app.url);
+        }
         if (app && app.name !== "System") {
             window.open(app.url, '_blank');
         }
@@ -70,7 +79,7 @@ const Home: FC = () => {
                     <CardContent>
                         <Grid container spacing={3} pt={2}>
                             {applications.map((app, index) => (
-                                <Grid item xs={12} sm={6} md={3} key={index}>
+                                <Grid item xs={12} sm={6} md={3} xl={2} key={index}>
                                     <Card
                                         onClick={() => handleCardClick(app)}
                                         sx={{

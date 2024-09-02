@@ -3,6 +3,8 @@ import { Outlet } from "react-router-dom";
 import { styled } from '@mui/system';
 import DashboardNavbar from "./Navbar";
 import DashboardSidebar from "./Sidebar";
+import { RootState } from "src/store/store";
+import { useSelector } from "react-redux";
 
 interface DashboardProps {
     children?: ReactNode;
@@ -16,19 +18,20 @@ const DashboardContainer = styled('div')({
 
 const DashboardMainArea = styled('div', {
     shouldForwardProp: (prop) => prop !== 'open'
-})<{ open: boolean }>(({ theme, open }) => ({
+})<{ open: boolean, sidebarVisible: boolean }>(({ theme, open, sidebarVisible }) => ({
     marginTop: '48px',
     paddingBottom: '12px',
     display: 'flex',
     flexGrow: 1,
-    marginLeft: open ? 250 : `calc(${theme.spacing(7)} + 1px)`,
+    marginLeft: !sidebarVisible ? 0 : (open ? 250 : `calc(${theme.spacing(7)} + 1px)`),
     [theme.breakpoints.up('sm')]: {
-        marginLeft: open ? 250 : `calc(${theme.spacing(8)} + 1px)`,
+        marginLeft: !sidebarVisible ? 0 : (open ? 250 : `calc(${theme.spacing(8)} + 1px)`),
     }
 }));
 
 const Dashboard: FC<DashboardProps> = () => {
     const [open, setOpen] = useState<boolean>(true);
+    const sidebarVisible = useSelector((state: RootState) => state.areaList.sidebarVisible);
 
     const toggleSidebar = () => {
         setOpen(!open);
@@ -38,8 +41,8 @@ const Dashboard: FC<DashboardProps> = () => {
         <>
             <DashboardContainer>
                 <DashboardNavbar open={open} toggleSidebar={toggleSidebar} />
-                <DashboardSidebar open={open} />
-                <DashboardMainArea open={open}>
+                {sidebarVisible === true && <DashboardSidebar open={open} />}
+                <DashboardMainArea open={open} sidebarVisible={sidebarVisible}>
                     <Outlet />
                 </DashboardMainArea>
             </DashboardContainer>

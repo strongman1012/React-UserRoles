@@ -5,6 +5,7 @@ export interface BusinessUnit {
     id: number;
     name: string;
     parent_id?: number | null;
+    admin_id?: number | null;
     website?: string;
     mainPhone?: string;
     otherPhone?: string;
@@ -17,8 +18,8 @@ export interface BusinessUnit {
     state?: string;
     zipCode?: string;
     region?: string;
-    status?: boolean;
     parent_name?: string;
+    admin_name?: string;
 }
 
 // Fetch business units list

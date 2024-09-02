@@ -6,10 +6,8 @@ export interface Team {
     name: string;
     description?: string;
     business_unit_id?: number | null;
-    admin_id?: number | null;
     is_default: boolean;
     business_name?: string;
-    admin_name?: string;
     ids?: number[];
     removeIds?: number[];
     role_ids?: string | null;

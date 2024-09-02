@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import {
-    TextField, Typography, Button, FormControlLabel, Switch, Grid, Autocomplete,
+    TextField, Typography, Button, Grid, Autocomplete,
     Container, Box, Divider, Card, CardHeader, CardContent
 } from '@mui/material';
 import { RootState } from '../../../store/store';
@@ -10,6 +10,7 @@ import { fetchBusinessUnitById, updateBusinessUnitById, fetchBusinessUnitsList }
 import { BusinessUnit } from '../../../reducers/businessUnits/businessUnitsAPI';
 import LoadingScreen from 'src/components/Basic/LoadingScreen';
 import AlertModal from 'src/components/Basic/Alert';
+import { fetchUsersList } from 'src/reducers/users/usersSlice';
 
 interface EditBusinessUnitProps {
     businessUnitId: number;
@@ -21,8 +22,10 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
     const editable = useSelector((state: RootState) => state.businessUnits.editable);
     const businessUnit = useSelector((state: RootState) => state.businessUnits.currentBusinessUnit);
     const allBusinessUnits = useSelector((state: RootState) => state.businessUnits.businessUnitsList);
+    const allUsers = useSelector((state: RootState) => state.users.allUsers);
     const [formData, setFormData] = useState<BusinessUnit | null>(null);
     const [selectedParentBusinessUnit, setSelectedParentBusinessUnit] = useState<any | null>(null);
+    const [selectedAdministrator, setSelectedAdministrator] = useState<any | null>(null);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false);
@@ -33,6 +36,7 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
         if (businessUnitId) {
             dispatch(fetchBusinessUnitById(businessUnitId));
             dispatch(fetchBusinessUnitsList());
+            dispatch(fetchUsersList());
         }
     }, [dispatch, businessUnitId]);
 
@@ -42,22 +46,18 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
             setSelectedParentBusinessUnit(
                 allBusinessUnits.find(unit => unit.id === businessUnit.parent_id) || null
             );
+            setSelectedAdministrator(
+                allUsers.find(user => user.id === businessUnit.admin_id) || null
+            );
             setIsLoading(false);
         }
-    }, [businessUnit, allBusinessUnits]);
+    }, [businessUnit, allBusinessUnits, allUsers]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData({
             ...formData!,
             [name]: value,
-        });
-    };
-
-    const handleStatusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({
-            ...formData!,
-            status: e.target.checked,
         });
     };
 
@@ -95,6 +95,14 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
         setFormData((prevData) => ({
             ...prevData!,
             parent_id: value?.id || null,
+        }));
+    };
+
+    const handleAdministratorChange = (event: any, value: any) => {
+        setSelectedAdministrator(value);
+        setFormData((prevData) => ({
+            ...prevData!,
+            admin_id: value?.id || null,
         }));
     };
 
@@ -147,6 +155,17 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
                                             onChange={handleParentBusinessUnitChange}
                                             renderInput={(params) => (
                                                 <TextField {...params} label="Parent Business" fullWidth />
+                                            )}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <Autocomplete
+                                            options={allUsers}
+                                            getOptionLabel={(option) => option.userName}
+                                            value={selectedAdministrator}
+                                            onChange={handleAdministratorChange}
+                                            renderInput={(params) => (
+                                                <TextField {...params} label="Administrator" fullWidth />
                                             )}
                                         />
                                     </Grid>
@@ -277,18 +296,6 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
                                         />
                                     </Grid>
                                 </Grid>
-                            </Grid>
-                            <Grid item xs={12}>
-                                <FormControlLabel
-                                    control={
-                                        <Switch
-                                            checked={formData.status || false}
-                                            onChange={handleStatusChange}
-                                            name="status"
-                                        />
-                                    }
-                                    label="Status"
-                                />
                             </Grid>
                         </Grid>
                     </CardContent>
