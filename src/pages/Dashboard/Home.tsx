@@ -33,7 +33,8 @@ const Home: FC = () => {
             { name: "Applications", url: "/dashboard/applications" },
             { name: "Areas", url: "/dashboard/areas" },
             { name: "Data Accesses", url: "/dashboard/data-access" },
-            { name: "Login Reports", url: "/dashboard/login-reports" }
+            { name: "Login Reports", url: "/dashboard/login-reports" },
+            { name: "Organization Chart", url: "/dashboard/organization-chart" }
         ];
         if (areaLists.length > 0) {
             const temp_applications = areaLists.map(row => {

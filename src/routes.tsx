@@ -18,6 +18,7 @@ import Areas from './pages/Dashboard/Areas';
 import DataAccess from './pages/Dashboard/DataAccess';
 import LoginReports from './pages/Dashboard/LoginReports';
 import ApplicationMetrics from './pages/Dashboard/ApplicationMetrics';
+import OrganizationChart from './pages/Dashboard/OrgChart';
 
 const routes: RouteObject[] = [
     {
@@ -100,6 +101,10 @@ const routes: RouteObject[] = [
                 path: 'application-metrics',
                 element: <ApplicationMetrics />,
             },
+            {
+                path: 'organization-chart',
+                element: <OrganizationChart />
+            }
         ],
     },
 ];

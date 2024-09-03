@@ -75,6 +75,8 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
         let tempErrors: { [key: string]: string } = {};
         if (!formData?.name) tempErrors.name = "Name is required";
         if (!formData?.email) tempErrors.email = "Email is required";
+        if (!formData?.parent_id) tempErrors.parent_id = "Parent Business is required";
+        if (!formData?.admin_id) tempErrors.admin_id = "Administrator is required";
         setErrors(tempErrors);
         return Object.keys(tempErrors).length === 0;
     };
@@ -181,7 +183,7 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
                                                 value={selectedParentBusinessUnit}
                                                 onChange={handleParentBusinessUnitChange}
                                                 renderInput={(params) => (
-                                                    <TextField {...params} label="Parent Business" fullWidth />
+                                                    <TextField {...params} label="Parent Business" fullWidth error={!!errors.parent_id} helperText={errors.parent_id} />
                                                 )}
                                             />
                                         </Grid>
@@ -192,7 +194,7 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
                                                 value={selectedAdministrator}
                                                 onChange={handleAdministratorChange}
                                                 renderInput={(params) => (
-                                                    <TextField {...params} label="Administrator" fullWidth />
+                                                    <TextField {...params} label="Administrator" fullWidth error={!!errors.admin_id} helperText={errors.admin_id} />
                                                 )}
                                             />
                                         </Grid>

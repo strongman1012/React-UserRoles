@@ -17,7 +17,7 @@ const DashboardContainer = styled('div')({
 });
 
 const DashboardMainArea = styled('div', {
-    shouldForwardProp: (prop) => prop !== 'open'
+    shouldForwardProp: (prop) => prop !== 'open' && prop !== 'sidebarVisible'
 })<{ open: boolean, sidebarVisible: boolean }>(({ theme, open, sidebarVisible }) => ({
     marginTop: '48px',
     paddingBottom: '12px',

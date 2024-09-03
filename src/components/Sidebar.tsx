@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from 'src/store/store';
 import { styled, Theme, CSSObject } from '@mui/material/styles';
@@ -20,6 +20,7 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import AppsIcon from '@mui/icons-material/Apps';
 import BorderOuterIcon from '@mui/icons-material/BorderOuter';
 import SettingsAccessibilityIcon from '@mui/icons-material/SettingsAccessibility';
+import TableChartIcon from '@mui/icons-material/TableChart';
 import LoadingScreen from './Basic/LoadingScreen';
 
 const drawerWidth = 250;
@@ -72,6 +73,7 @@ interface CollapseState {
 
 const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
     const navigate = useNavigate();
+    const location = useLocation();
     const [loading, setLoading] = useState<boolean>(true);
     const [systemMenus, setSystemMenus] = useState<string[]>([]);
     const [collapse, setCollapse] = useState<CollapseState>({ 'metrics': true, 'users': true, 'organizations': true, 'assets': true });
@@ -87,6 +89,14 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
 
     const handleClick = (name: string) => {
         setCollapse((prevState) => ({ ...prevState, [name]: !prevState[name] }));
+    };
+
+    const getPathnameMatch = (pathname: string) => {
+        return pathname.split('/').pop();
+    };
+
+    const isActive = (menuItem: string) => {
+        return getPathnameMatch(location.pathname) === getPathnameMatch(menuItem);
     };
 
     return (
@@ -132,7 +142,10 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                 <Collapse in={collapse['metrics']} timeout="auto" unmountOnExit>
                                     <List component="div" disablePadding>
                                         {systemMenus.includes('Login Reports') && (
-                                            <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/login-reports')}>
+                                            <ListItemButton
+                                                sx={{ pl: 4, bgcolor: isActive('login-reports') ? '#dde5e5' : 'inherit' }}
+                                                onClick={() => navigate('/dashboard/login-reports')}
+                                            >
                                                 <ListItemIcon>
                                                     <SummarizeIcon />
                                                 </ListItemIcon>
@@ -140,7 +153,10 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                             </ListItemButton>
                                         )}
                                         {systemMenus.includes('Application Metrics') && (
-                                            <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/application-metrics')}>
+                                            <ListItemButton
+                                                sx={{ pl: 4, bgcolor: isActive('application-metrics') ? '#dde5e5' : 'inherit' }}
+                                                onClick={() => navigate('/dashboard/application-metrics')}
+                                            >
                                                 <ListItemIcon>
                                                     <AutoGraphIcon />
                                                 </ListItemIcon>
@@ -180,7 +196,10 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                 <Collapse in={collapse['users']} timeout="auto" unmountOnExit>
                                     <List component="div" disablePadding>
                                         {systemMenus.includes('Users') && (
-                                            <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/users')}>
+                                            <ListItemButton
+                                                sx={{ pl: 4, bgcolor: isActive('users') ? '#dde5e5' : 'inherit' }}
+                                                onClick={() => navigate('/dashboard/users')}
+                                            >
                                                 <ListItemIcon>
                                                     <RecentActorsIcon />
                                                 </ListItemIcon>
@@ -188,7 +207,10 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                             </ListItemButton>
                                         )}
                                         {systemMenus.includes('Security Roles') && (
-                                            <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/security-roles')}>
+                                            <ListItemButton
+                                                sx={{ pl: 4, bgcolor: isActive('security-roles') ? '#dde5e5' : 'inherit' }}
+                                                onClick={() => navigate('/dashboard/security-roles')}
+                                            >
                                                 <ListItemIcon>
                                                     <AddModeratorIcon />
                                                 </ListItemIcon>
@@ -198,10 +220,10 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                     </List>
                                 </Collapse>
                                 <Divider />
-                            </>)
-                        }
+                            </>
+                        )}
 
-                        {(systemMenus.includes('Business Units') || systemMenus.includes('Teams')) && (
+                        {(systemMenus.includes('Business Units') || systemMenus.includes('Teams') || systemMenus.includes('Organization Chart')) && (
                             <>
                                 <ListItem disablePadding sx={{ display: 'block' }}>
                                     <ListItemButton
@@ -228,7 +250,10 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                 <Collapse in={collapse['organizations']} timeout="auto" unmountOnExit>
                                     <List component="div" disablePadding>
                                         {systemMenus.includes('Business Units') && (
-                                            <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/business-units')}>
+                                            <ListItemButton
+                                                sx={{ pl: 4, bgcolor: isActive('business-units') ? '#dde5e5' : 'inherit' }}
+                                                onClick={() => navigate('/dashboard/business-units')}
+                                            >
                                                 <ListItemIcon>
                                                     <AddBusinessIcon />
                                                 </ListItemIcon>
@@ -236,17 +261,32 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                             </ListItemButton>
                                         )}
                                         {systemMenus.includes('Teams') && (
-                                            <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/teams')}>
+                                            <ListItemButton
+                                                sx={{ pl: 4, bgcolor: isActive('teams') ? '#dde5e5' : 'inherit' }}
+                                                onClick={() => navigate('/dashboard/teams')}
+                                            >
                                                 <ListItemIcon>
                                                     <GroupsIcon />
                                                 </ListItemIcon>
                                                 <ListItemText primary="Teams" />
                                             </ListItemButton>
                                         )}
+                                        {systemMenus.includes('Organization Chart') && (
+                                            <ListItemButton
+                                                sx={{ pl: 4, bgcolor: isActive('organization-chart') ? '#dde5e5' : 'inherit' }}
+                                                onClick={() => navigate('/dashboard/organization-chart')}
+                                            >
+                                                <ListItemIcon>
+                                                    <TableChartIcon />
+                                                </ListItemIcon>
+                                                <ListItemText primary="Organization Chart" />
+                                            </ListItemButton>
+                                        )}
                                     </List>
                                 </Collapse>
                                 <Divider />
-                            </>)}
+                            </>
+                        )}
 
                         {(systemMenus.includes('Applications') || systemMenus.includes('Areas') || systemMenus.includes('Data Accesses')) && (
                             <>
@@ -268,14 +308,17 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                         >
                                             <AccountBalanceOutlinedIcon />
                                         </ListItemIcon>
-                                        <ListItemText primary="Assets" sx={{ opacity: open ? 1 : 0 }} />
+                                        <ListItemText primary="Applications" sx={{ opacity: open ? 1 : 0 }} />
                                         {collapse['assets'] ? <ExpandLess /> : <ExpandMore />}
                                     </ListItemButton>
                                 </ListItem>
                                 <Collapse in={collapse['assets']} timeout="auto" unmountOnExit>
                                     <List component="div" disablePadding>
                                         {systemMenus.includes('Applications') && (
-                                            <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/applications')}>
+                                            <ListItemButton
+                                                sx={{ pl: 4, bgcolor: isActive('applications') ? '#dde5e5' : 'inherit' }}
+                                                onClick={() => navigate('/dashboard/applications')}
+                                            >
                                                 <ListItemIcon>
                                                     <AppsIcon />
                                                 </ListItemIcon>
@@ -283,7 +326,10 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                             </ListItemButton>
                                         )}
                                         {systemMenus.includes('Areas') && (
-                                            <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/areas')}>
+                                            <ListItemButton
+                                                sx={{ pl: 4, bgcolor: isActive('areas') ? '#dde5e5' : 'inherit' }}
+                                                onClick={() => navigate('/dashboard/areas')}
+                                            >
                                                 <ListItemIcon>
                                                     <BorderOuterIcon />
                                                 </ListItemIcon>
@@ -291,21 +337,25 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                             </ListItemButton>
                                         )}
                                         {systemMenus.includes('Data Accesses') && (
-                                            <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/data-access')}>
+                                            <ListItemButton
+                                                sx={{ pl: 4, bgcolor: isActive('data-access') ? '#dde5e5' : 'inherit' }}
+                                                onClick={() => navigate('/dashboard/data-access')}
+                                            >
                                                 <ListItemIcon>
                                                     <SettingsAccessibilityIcon />
                                                 </ListItemIcon>
-                                                <ListItemText primary="Data Access" />
+                                                <ListItemText primary="Data Accesses" />
                                             </ListItemButton>
                                         )}
                                     </List>
                                 </Collapse>
-                            </>)}
+                            </>
+                        )}
                     </List>
                 </Drawer>
             )}
         </Box>
     );
-}
+};
 
 export default DashboardSidebar;
