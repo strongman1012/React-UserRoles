@@ -36,6 +36,7 @@ const Home: FC = () => {
             { name: "Login Reports", url: "/dashboard/login-reports" },
             { name: "Organization Chart", url: "/dashboard/organization-chart" }
         ];
+        const jwtToken = localStorage.getItem("token"); // Getting jwtToken
         if (areaLists.length > 0) {
             const temp_applications = areaLists.map(row => {
                 if (row.permission === true) {
@@ -46,11 +47,11 @@ const Home: FC = () => {
                         }
                     else if (row.application_name === "Application A")
                         return {
-                            name: row.application_name, url: 'https://react-booking-henna.vercel.app/'
+                            name: row.application_name, url: `https://react-booking-henna.vercel.app/login?token=${jwtToken}`
                         }
                     else if (row.application_name === "Application B")
                         return {
-                            name: row.application_name, url: 'https://react-real-estate-one.vercel.app/'
+                            name: row.application_name, url: `https://react-real-estate-one.vercel.app/login?token=${jwtToken}`
                         }
                 }
                 return null;
