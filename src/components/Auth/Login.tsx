@@ -70,7 +70,7 @@ const Login: React.FC = () => {
                         boxSizing: 'border-box',
                     }}
                 >
-                    <Typography variant="h5" align="center" gutterBottom color={'primary.main'}>
+                    <Typography variant="h5" align="center" gutterBottom>
                         Login
                     </Typography>
                     <form onSubmit={formik.handleSubmit}>
@@ -110,11 +110,11 @@ const Login: React.FC = () => {
                             Login
                         </Button>
                     </form>
-                    <Typography align="center" sx={{ mt: 2 }} color={'primary.main'}>
-                        <Link to="/forgot-password" style={{ textDecoration: 'none' }}>Forgot password?</Link>
+                    <Typography align="center" sx={{ mt: 2 }}>
+                        <Link to="/forgot-password">Forgot password?</Link>
                     </Typography>
-                    <Typography align="center" sx={{ mt: 1 }} color={'primary.main'}>
-                        Don't have an account? <Link to="/register" style={{ textDecoration: 'none' }}>Register</Link>
+                    <Typography align="center" sx={{ mt: 1 }}>
+                        Don't have an account? <Link to="/register">Register</Link>
                     </Typography>
                 </Box>
             </Container>

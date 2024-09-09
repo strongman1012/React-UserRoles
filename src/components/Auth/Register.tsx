@@ -79,7 +79,7 @@ const Register: React.FC = () => {
                         boxSizing: 'border-box',
                     }}
                 >
-                    <Typography variant="h5" align="center" gutterBottom color={'primary.main'}>
+                    <Typography variant="h5" align="center" gutterBottom>
                         Register
                     </Typography>
                     <form onSubmit={formik.handleSubmit}>
@@ -145,7 +145,7 @@ const Register: React.FC = () => {
                         </Button>
                     </form>
                     <Typography align="center" sx={{ mt: 2 }}>
-                        <Link to="/login" style={{ textDecoration: 'none' }}>Already have an account? Login</Link>
+                        Already have an account? <Link to="/login">Login</Link>
                     </Typography>
                 </Box>
             </Container>

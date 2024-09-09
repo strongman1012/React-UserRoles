@@ -42,7 +42,7 @@ const DashboardNavbar: FC<DashboardNavbarProps> = ({ open, toggleSidebar }) => {
                             aria-label='open sidebar'
                             size='large'
                             edge="start"
-                            sx={{ mr: 2 }}
+                            sx={{ mr: 1 }}
                             onClick={toggleSidebar}
                         >
                             <MenuOutlined />
@@ -57,13 +57,12 @@ const DashboardNavbar: FC<DashboardNavbarProps> = ({ open, toggleSidebar }) => {
                             noWrap
                             component="div"
                             color={'primary.contrastText'}
-                            sx={{ display: { xs: 'none', sm: 'block' } }}
                         >
                             System
                         </Typography>
                     </IconButton>
                     <Box sx={{ flexGrow: 1 }} />
-                    <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                    <Box>
                         <IconButton
                             size="large"
                             edge="end"

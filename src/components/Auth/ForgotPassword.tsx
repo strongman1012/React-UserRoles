@@ -69,7 +69,7 @@ const ForgotPassword: React.FC = () => {
                         boxSizing: 'border-box',
                     }}
                 >
-                    <Typography variant="h5" align="center" gutterBottom color={'primary.main'}>
+                    <Typography variant="h5" align="center" gutterBottom>
                         Forgot Password
                     </Typography>
                     <form onSubmit={formik.handleSubmit}>
@@ -97,7 +97,7 @@ const ForgotPassword: React.FC = () => {
                         </Button>
                     </form>
                     <Typography align="center" sx={{ mt: 2 }}>
-                        <Link to="/login" style={{ textDecoration: 'none' }}>Back to Login</Link>
+                        Back to <Link to="/login">Login</Link>
                     </Typography>
                 </Box>
             </Container>
