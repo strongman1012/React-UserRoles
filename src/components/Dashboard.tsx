@@ -25,7 +25,7 @@ const DashboardMainArea = styled('div', {
     flexGrow: 1,
     marginLeft: !sidebarVisible ? 0 : (open ? 250 : `calc(${theme.spacing(7)} + 1px)`),
     [theme.breakpoints.up('sm')]: {
-        marginLeft: !sidebarVisible ? 0 : (open ? 250 : `calc(${theme.spacing(8)} + 1px)`),
+        marginLeft: !sidebarVisible ? 0 : (open ? 250 : `calc(${theme.spacing(12)} + 1px)`),
     }
 }));
 
