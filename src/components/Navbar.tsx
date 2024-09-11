@@ -34,7 +34,7 @@ const DashboardNavbar: FC<DashboardNavbarProps> = ({ open, toggleSidebar }) => {
 
     return (
         <>
-            <AppBar elevation={0}>
+            <AppBar elevation={0} sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}`, }}>
                 <Toolbar variant="dense">
                     {sidebarVisible && (
                         <IconButton
@@ -42,7 +42,7 @@ const DashboardNavbar: FC<DashboardNavbarProps> = ({ open, toggleSidebar }) => {
                             aria-label='open sidebar'
                             size='large'
                             edge="start"
-                            sx={{ mr: 1 }}
+                            sx={{ mr: 1, color: (theme) => `${theme.palette.primary.main}` }}
                             onClick={toggleSidebar}
                         >
                             <MenuOutlined />
@@ -56,7 +56,7 @@ const DashboardNavbar: FC<DashboardNavbarProps> = ({ open, toggleSidebar }) => {
                             variant="h6"
                             noWrap
                             component="div"
-                            color={'primary.contrastText'}
+                            sx={{ color: (theme) => `${theme.palette.primary.dark}` }}
                         >
                             System
                         </Typography>
@@ -70,7 +70,7 @@ const DashboardNavbar: FC<DashboardNavbarProps> = ({ open, toggleSidebar }) => {
                             aria-controls="menu-appbar"
                             aria-haspopup="true"
                             onClick={handleMenu}
-                            color="inherit"
+                            sx={{ color: (theme) => `${theme.palette.primary.main}` }}
                         >
                             <AccountCircle />
                         </IconButton>

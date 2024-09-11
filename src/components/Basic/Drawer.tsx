@@ -17,19 +17,19 @@ const ReusableDrawer: React.FC<ReusableDrawerProps> = ({ open, onClose, onOpen, 
             onClose={onClose}
             onOpen={onOpen || (() => { })}
         >
-            <Box p={2} sx={{ display: 'flex', alignItems: 'center' }}>
+            <Box p={2} sx={{ display: 'flex', alignItems: 'center', background: (theme) => `${theme.palette.primary.main}` }}>
                 <IconButton
                     size="small"
                     onClick={onClose}
                     sx={{
                         border: 1,
                         mr: 2,
-                        color: (theme) => theme.palette.grey[500],
+                        color: '#f7f7f7'
                     }}
                 >
                     <ArrowForwardIcon />
                 </IconButton>
-                <Typography variant="h6" component="b" sx={{ margin: 0 }}>
+                <Typography variant="h6" component="b" sx={{ margin: 0, color: '#f7f7f7' }}>
                     Close
                 </Typography>
             </Box>

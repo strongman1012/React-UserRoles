@@ -156,16 +156,17 @@ const Users: FC = () => {
         <Container maxWidth={false}>
             <LoadingScreen show={isLoading} />
             <Box sx={{ pt: 3 }}>
-                <Card variant="outlined">
+                <Card variant="outlined" sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}` }}>
                     <CardHeader title="Users"
+                        sx={{ background: (theme) => `${theme.palette.primary.main}`, color: '#f7f7f7' }}
                         action={
                             <>
-                                <Button startIcon={<AddIcon />} variant="contained" color="primary" sx={{ mr: 2 }}
+                                <Button startIcon={<AddIcon />} variant="contained" sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper}`, color: (theme) => `${theme.palette.primary.dark}` }}
                                     onClick={handleCreate} disabled={editable ? false : true}>
                                     New
                                 </Button>
                                 <FormControl style={{ minWidth: 200 }}>
-                                    <Select value={statusFilter} onChange={handleStatusFilterChange} size='small'>
+                                    <Select value={statusFilter} onChange={handleStatusFilterChange} size='small' sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper} !important`, color: (theme) => `${theme.palette.primary.dark}` }}>
                                         <MenuItem value="All">All</MenuItem>
                                         <MenuItem value="Active">Active</MenuItem>
                                         <MenuItem value="Inactive">Inactive</MenuItem>

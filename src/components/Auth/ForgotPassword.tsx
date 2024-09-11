@@ -62,19 +62,21 @@ const ForgotPassword: React.FC = () => {
                 <Box
                     sx={{
                         width: '100%',
-                        padding: 3,
-                        border: '1px solid #ddd',
-                        borderRadius: 2,
+                        padding: 4,
+                        border: (theme) => `1px solid ${theme.palette.primary.main}`,
+                        borderRadius: 1,
                         boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
                         boxSizing: 'border-box',
+                        background: (theme) => `${theme.palette.primary.light}`,
                     }}
                 >
-                    <Typography variant="h5" align="center" gutterBottom>
+                    <Typography variant="h4" align="center" gutterBottom>
                         Forgot Password
                     </Typography>
                     <form onSubmit={formik.handleSubmit}>
                         <TextField
                             fullWidth
+                            size='small'
                             margin="normal"
                             id="email"
                             name="email"
@@ -90,14 +92,14 @@ const ForgotPassword: React.FC = () => {
                             variant="contained"
                             fullWidth
                             type="submit"
-                            disabled={formik.isSubmitting}
+                            disabled={!formik.values.email}
                             sx={{ mt: 2 }}
                         >
-                            Submit
+                            Forgot Password
                         </Button>
                     </form>
-                    <Typography align="center" sx={{ mt: 2 }}>
-                        Back to <Link to="/login">Login</Link>
+                    <Typography align="center" sx={{ mt: 2, fontStyle: 'oblique', color: (theme) => `${theme.palette.primary.main}` }}>
+                        Back to <Link to="/login" style={{ textDecoration: 'none', color: '#e34747' }}>Login</Link>
                     </Typography>
                 </Box>
             </Container>

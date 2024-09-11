@@ -87,10 +87,11 @@ const DataAccess: FC = () => {
         <Container maxWidth={false}>
             <LoadingScreen show={isLoading} />
             <Box sx={{ pt: 3 }}>
-                <Card variant="outlined">
+                <Card variant="outlined" sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}` }}>
                     <CardHeader title="Data Accesses"
+                        sx={{ background: (theme) => `${theme.palette.primary.main}`, color: '#f7f7f7' }}
                         action={
-                            <Button startIcon={<AddIcon />} variant="contained" color="primary" sx={{ mr: 2 }}
+                            <Button startIcon={<AddIcon />} variant="contained" color="primary" sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper} !important`, color: (theme) => `${theme.palette.primary.dark}` }}
                                 onClick={handleCreate} disabled={editable ? false : true}>
                                 New
                             </Button>

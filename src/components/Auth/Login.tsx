@@ -63,19 +63,21 @@ const Login: React.FC = () => {
                 <Box
                     sx={{
                         width: '100%',
-                        padding: 3,
-                        border: '1px solid #ddd',
-                        borderRadius: 2,
+                        padding: 4,
+                        border: (theme) => `1px solid ${theme.palette.primary.main}`,
+                        borderRadius: 1,
                         boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
                         boxSizing: 'border-box',
+                        background: (theme) => `${theme.palette.primary.light}`,
                     }}
                 >
-                    <Typography variant="h5" align="center" gutterBottom>
+                    <Typography variant="h4" align="center" gutterBottom>
                         Login
                     </Typography>
                     <form onSubmit={formik.handleSubmit}>
                         <TextField
                             fullWidth
+                            size='small'
                             margin="normal"
                             id="email"
                             name="email"
@@ -88,6 +90,7 @@ const Login: React.FC = () => {
                         />
                         <TextField
                             fullWidth
+                            size='small'
                             margin="normal"
                             id="password"
                             name="password"
@@ -104,17 +107,17 @@ const Login: React.FC = () => {
                             variant="contained"
                             fullWidth
                             type="submit"
-                            disabled={formik.isSubmitting}
+                            disabled={!formik.values.email || !formik.values.password}
                             sx={{ mt: 2 }}
                         >
                             Login
                         </Button>
                     </form>
-                    <Typography align="center" sx={{ mt: 2 }}>
-                        <Link to="/forgot-password">Forgot password?</Link>
+                    <Typography align="center" sx={{ mt: 2, fontStyle: 'oblique' }}>
+                        <Link to="/forgot-password" style={{ textDecoration: 'none', color: '#e34747' }}>Forgot password?</Link>
                     </Typography>
-                    <Typography align="center" sx={{ mt: 1 }}>
-                        Don't have an account? <Link to="/register">Register</Link>
+                    <Typography align="center" sx={{ mt: 1, fontStyle: 'oblique', color: (theme) => `${theme.palette.primary.main}` }}>
+                        Don't have an account? <Link to="/register" style={{ textDecoration: 'none', color: '#e34747' }}>Register</Link>
                     </Typography>
                 </Box>
             </Container>

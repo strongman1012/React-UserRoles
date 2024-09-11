@@ -148,6 +148,7 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
             onChange={(e) => handleApplicationRoleChange(e.target.value as string)}
             size="small"
             disabled={!editable}
+            sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper} !important`, color: (theme) => `${theme.palette.primary.dark}` }}
         >
             <MenuItem value="true">Yes</MenuItem>
             <MenuItem value="false">No</MenuItem>
@@ -162,11 +163,12 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
         <Container maxWidth={false}>
             <LoadingScreen show={isLoading} />
             <Box sx={{ pt: 3 }}>
-                <Card variant="outlined">
+                <Card variant="outlined" sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}` }}>
                     <CardHeader title={`Security Role: ${role.name}`}
+                        sx={{ background: (theme) => `${theme.palette.primary.main}`, color: '#f7f7f7' }}
                         action={
                             <>
-                                <FormLabel style={{ marginRight: '8px' }}>Application Permission:</FormLabel>
+                                <FormLabel style={{ marginRight: '8px', color: '#f7f7f7' }}>Application Permission:</FormLabel>
                                 {memoizedSelect}
                             </>
                         }
@@ -204,7 +206,7 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
                                             {filteredAreas.map((area, index) => (
                                                 <TableRow
                                                     key={area.id}
-                                                    sx={{ backgroundColor: index % 2 === 0 ? '#F5F5F5' : 'white' }}
+                                                    sx={{ backgroundColor: index % 2 === 0 ? '#f0f1f3' : '#f7f7f7' }}
                                                 >
                                                     <TableCell sx={{ borderRight: 1, borderColor: '#DDDDDD' }}>{area.name}</TableCell>
                                                     <TableCell sx={{ borderRight: 1, borderColor: '#DDDDDD', display: 'flex', justifyContent: 'center' }}>

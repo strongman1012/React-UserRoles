@@ -108,7 +108,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                         sx: {
                             height: 'calc(100% - 48px) !important',
                             top: '48px !Important',
-                            borderRight: '1px solid #ddd',
+                            border: (theme) => `1px solid ${theme.palette.primary.main}`,
                             position: 'absolute',
                             zIndex: 1
                         }
@@ -131,6 +131,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                                 minWidth: 0,
                                                 mr: open ? 3 : 'auto',
                                                 justifyContent: 'center',
+                                                color: (theme) => `${theme.palette.primary.main}`
                                             }}
                                         >
                                             <AddchartOutlinedIcon />
@@ -143,10 +144,10 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                     <List component="div" disablePadding>
                                         {systemMenus.includes('Login Reports') && (
                                             <ListItemButton
-                                                sx={{ pl: 4, bgcolor: isActive('login-reports') ? '#dde5e5' : 'inherit' }}
+                                                sx={{ pl: 4, bgcolor: (theme) => isActive('login-reports') ? `${theme.palette.secondary.main}` : 'inherit' }}
                                                 onClick={() => navigate('/dashboard/login-reports')}
                                             >
-                                                <ListItemIcon>
+                                                <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
                                                     <SummarizeIcon />
                                                 </ListItemIcon>
                                                 <ListItemText primary="Login Reports" />
@@ -154,10 +155,10 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                         )}
                                         {systemMenus.includes('Application Metrics') && (
                                             <ListItemButton
-                                                sx={{ pl: 4, bgcolor: isActive('application-metrics') ? '#dde5e5' : 'inherit' }}
+                                                sx={{ pl: 4, bgcolor: (theme) => isActive('application-metrics') ? `${theme.palette.secondary.main}` : 'inherit' }}
                                                 onClick={() => navigate('/dashboard/application-metrics')}
                                             >
-                                                <ListItemIcon>
+                                                <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
                                                     <AutoGraphIcon />
                                                 </ListItemIcon>
                                                 <ListItemText primary="Application Metrics" />
@@ -165,7 +166,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                         )}
                                     </List>
                                 </Collapse>
-                                <Divider />
+                                <Divider sx={{ background: (theme) => `${theme.palette.primary.main}` }} />
                             </>
                         )}
 
@@ -177,7 +178,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                         sx={{
                                             minHeight: 48,
                                             justifyContent: open ? 'initial' : 'center',
-                                            px: 2.5,
+                                            px: 2.5
                                         }}
                                     >
                                         <ListItemIcon
@@ -185,6 +186,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                                 minWidth: 0,
                                                 mr: open ? 3 : 'auto',
                                                 justifyContent: 'center',
+                                                color: (theme) => `${theme.palette.primary.main}`
                                             }}
                                         >
                                             <PeopleAltOutlinedIcon />
@@ -197,10 +199,10 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                     <List component="div" disablePadding>
                                         {systemMenus.includes('Users') && (
                                             <ListItemButton
-                                                sx={{ pl: 4, bgcolor: isActive('users') ? '#dde5e5' : 'inherit' }}
+                                                sx={{ pl: 4, bgcolor: (theme) => isActive('users') ? `${theme.palette.secondary.main}` : 'inherit' }}
                                                 onClick={() => navigate('/dashboard/users')}
                                             >
-                                                <ListItemIcon>
+                                                <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
                                                     <RecentActorsIcon />
                                                 </ListItemIcon>
                                                 <ListItemText primary="Users" />
@@ -208,10 +210,10 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                         )}
                                         {systemMenus.includes('Security Roles') && (
                                             <ListItemButton
-                                                sx={{ pl: 4, bgcolor: isActive('security-roles') ? '#dde5e5' : 'inherit' }}
+                                                sx={{ pl: 4, bgcolor: (theme) => isActive('security-roles') ? `${theme.palette.secondary.main}` : 'inherit' }}
                                                 onClick={() => navigate('/dashboard/security-roles')}
                                             >
-                                                <ListItemIcon>
+                                                <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
                                                     <AddModeratorIcon />
                                                 </ListItemIcon>
                                                 <ListItemText primary="Security Roles" />
@@ -219,7 +221,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                         )}
                                     </List>
                                 </Collapse>
-                                <Divider />
+                                <Divider sx={{ background: (theme) => `${theme.palette.primary.main}` }} />
                             </>
                         )}
 
@@ -239,6 +241,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                                 minWidth: 0,
                                                 mr: open ? 3 : 'auto',
                                                 justifyContent: 'center',
+                                                color: (theme) => `${theme.palette.primary.main}`
                                             }}
                                         >
                                             <CorporateFareOutlinedIcon />
@@ -251,10 +254,10 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                     <List component="div" disablePadding>
                                         {systemMenus.includes('Business Units') && (
                                             <ListItemButton
-                                                sx={{ pl: 4, bgcolor: isActive('business-units') ? '#dde5e5' : 'inherit' }}
+                                                sx={{ pl: 4, bgcolor: (theme) => isActive('business-units') ? `${theme.palette.secondary.main}` : 'inherit' }}
                                                 onClick={() => navigate('/dashboard/business-units')}
                                             >
-                                                <ListItemIcon>
+                                                <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
                                                     <AddBusinessIcon />
                                                 </ListItemIcon>
                                                 <ListItemText primary="Business Units" />
@@ -262,10 +265,10 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                         )}
                                         {systemMenus.includes('Teams') && (
                                             <ListItemButton
-                                                sx={{ pl: 4, bgcolor: isActive('teams') ? '#dde5e5' : 'inherit' }}
+                                                sx={{ pl: 4, bgcolor: (theme) => isActive('teams') ? `${theme.palette.secondary.main}` : 'inherit' }}
                                                 onClick={() => navigate('/dashboard/teams')}
                                             >
-                                                <ListItemIcon>
+                                                <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
                                                     <GroupsIcon />
                                                 </ListItemIcon>
                                                 <ListItemText primary="Teams" />
@@ -273,10 +276,10 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                         )}
                                         {systemMenus.includes('Organization Chart') && (
                                             <ListItemButton
-                                                sx={{ pl: 4, bgcolor: isActive('organization-chart') ? '#dde5e5' : 'inherit' }}
+                                                sx={{ pl: 4, bgcolor: (theme) => isActive('organization-chart') ? `${theme.palette.secondary.main}` : 'inherit' }}
                                                 onClick={() => navigate('/dashboard/organization-chart')}
                                             >
-                                                <ListItemIcon>
+                                                <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
                                                     <TableChartIcon />
                                                 </ListItemIcon>
                                                 <ListItemText primary="Organization Chart" />
@@ -284,7 +287,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                         )}
                                     </List>
                                 </Collapse>
-                                <Divider />
+                                <Divider sx={{ background: (theme) => `${theme.palette.primary.main}` }} />
                             </>
                         )}
 
@@ -304,6 +307,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                                 minWidth: 0,
                                                 mr: open ? 3 : 'auto',
                                                 justifyContent: 'center',
+                                                color: (theme) => `${theme.palette.primary.main}`
                                             }}
                                         >
                                             <AccountBalanceOutlinedIcon />
@@ -316,10 +320,10 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                     <List component="div" disablePadding>
                                         {systemMenus.includes('Applications') && (
                                             <ListItemButton
-                                                sx={{ pl: 4, bgcolor: isActive('applications') ? '#dde5e5' : 'inherit' }}
+                                                sx={{ pl: 4, bgcolor: (theme) => isActive('applications') ? `${theme.palette.secondary.main}` : 'inherit' }}
                                                 onClick={() => navigate('/dashboard/applications')}
                                             >
-                                                <ListItemIcon>
+                                                <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
                                                     <AppsIcon />
                                                 </ListItemIcon>
                                                 <ListItemText primary="Applications" />
@@ -327,10 +331,10 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                         )}
                                         {systemMenus.includes('Areas') && (
                                             <ListItemButton
-                                                sx={{ pl: 4, bgcolor: isActive('areas') ? '#dde5e5' : 'inherit' }}
+                                                sx={{ pl: 4, bgcolor: (theme) => isActive('areas') ? `${theme.palette.secondary.main}` : 'inherit' }}
                                                 onClick={() => navigate('/dashboard/areas')}
                                             >
-                                                <ListItemIcon>
+                                                <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
                                                     <BorderOuterIcon />
                                                 </ListItemIcon>
                                                 <ListItemText primary="Areas/Modules" />
@@ -338,10 +342,10 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                         )}
                                         {systemMenus.includes('Data Accesses') && (
                                             <ListItemButton
-                                                sx={{ pl: 4, bgcolor: isActive('data-access') ? '#dde5e5' : 'inherit' }}
+                                                sx={{ pl: 4, bgcolor: (theme) => isActive('data-access') ? `${theme.palette.secondary.main}` : 'inherit' }}
                                                 onClick={() => navigate('/dashboard/data-access')}
                                             >
-                                                <ListItemIcon>
+                                                <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
                                                     <SettingsAccessibilityIcon />
                                                 </ListItemIcon>
                                                 <ListItemText primary="Data Accesses" />

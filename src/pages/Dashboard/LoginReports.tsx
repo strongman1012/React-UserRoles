@@ -63,8 +63,8 @@ const LoginReports: FC = () => {
         <Container maxWidth={false}>
             <LoadingScreen show={isLoading} />
             <Box sx={{ pt: 3 }}>
-                <Card variant="outlined">
-                    <CardHeader title="Login Reports" />
+                <Card variant="outlined" sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}` }}>
+                    <CardHeader title="Login Reports" sx={{ background: (theme) => `${theme.palette.primary.main}`, color: '#f7f7f7' }} />
                     <Divider />
                     <CardContent>
                         <DataGrid

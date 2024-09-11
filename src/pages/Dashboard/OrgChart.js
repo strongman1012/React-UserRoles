@@ -60,10 +60,11 @@ const OrgChart = () => {
       <Container maxWidth={false}>
         <LoadingScreen show={isLoading} />
         <Box sx={{ pt: 3 }}>
-          <Card variant="outlined">
+          <Card variant="outlined" sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}` }}>
             <CardHeader title="Organization Chart"
+              sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}` }}
               action={
-                <>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                   <TextField
                     id="txt-filename"
                     label="Filename"
@@ -87,10 +88,11 @@ const OrgChart = () => {
                     variant="contained"
                     color="primary"
                     onClick={exportTo}
+                    sx={{ mr: 2 }}
                   >
                     Export
                   </Button>
-                </>
+                </div>
               }
             />
             <Divider />
