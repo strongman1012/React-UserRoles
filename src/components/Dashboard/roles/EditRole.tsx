@@ -86,9 +86,8 @@ const EditRole: FC<EditRoleProps> = ({ roleId, onClose }) => {
         <Container maxWidth={false}>
             <LoadingScreen show={isLoading} />
             <Box sx={{ pt: 3 }}>
-                <Card variant="outlined" sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}` }}>
+                <Card variant="outlined">
                     <CardHeader title="Edit Role"
-                        sx={{ background: (theme) => `${theme.palette.primary.main}`, color: '#f7f7f7' }}
                         action={
                             <>
                                 <Button variant="contained" color="primary" onClick={handleSave} disabled={editable ? false : true} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper}`, color: (theme) => `${theme.palette.primary.dark}` }}>

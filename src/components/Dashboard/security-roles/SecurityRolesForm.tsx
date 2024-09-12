@@ -163,9 +163,8 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
         <Container maxWidth={false}>
             <LoadingScreen show={isLoading} />
             <Box sx={{ pt: 3 }}>
-                <Card variant="outlined" sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}` }}>
+                <Card variant="outlined">
                     <CardHeader title={`Security Role: ${role.name}`}
-                        sx={{ background: (theme) => `${theme.palette.primary.main}`, color: '#f7f7f7' }}
                         action={
                             <>
                                 <FormLabel style={{ marginRight: '8px', color: '#f7f7f7' }}>Application Permission:</FormLabel>
@@ -184,7 +183,7 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
                         </Box>
                         {allApplications.map(application => (
                             <TabPanel key={application.id} value={tabValue} index={application.id}>
-                                <TableContainer component={Paper}>
+                                <TableContainer component={Paper} sx={{ border: 0 }}>
                                     <Table>
                                         <TableHead>
                                             <TableRow>

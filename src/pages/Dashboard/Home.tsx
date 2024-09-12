@@ -75,8 +75,8 @@ const Home: FC = () => {
         <Container maxWidth={false}>
             <LoadingScreen show={isLoading} />
             <Box sx={{ pt: 3 }}>
-                <Card variant="outlined" sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}` }}>
-                    <CardHeader title="Home" sx={{ background: (theme) => `${theme.palette.primary.main}`, color: '#f7f7f7' }} />
+                <Card variant="outlined">
+                    <CardHeader title="Home" />
                     <Divider />
                     <CardContent>
                         <Grid container spacing={3} pt={2}>
@@ -93,10 +93,16 @@ const Home: FC = () => {
                                             }
                                         }}
                                     >
-                                        <CardContent style={{ textAlign: 'center' }} sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}`, borderRadius: 1 }}>
+                                        <CardContent style={{ textAlign: 'center' }}>
                                             {app?.name === "System"
-                                                ? <SettingsIcon style={{ width: '60px', height: '60px' }} sx={{ color: (theme) => `${theme.palette.primary.main}` }} />
-                                                : <DisplaySettingsIcon style={{ width: '60px', height: '60px' }} sx={{ color: (theme) => `${theme.palette.primary.main}` }} />
+                                                ? <SettingsIcon sx={{
+                                                    width: '60px', height: '60px', color: (theme) => `${theme.palette.primary.main}`,
+                                                    border: (theme) => `1px solid ${theme.palette.primary.main}`, borderRadius: 1
+                                                }} />
+                                                : <DisplaySettingsIcon sx={{
+                                                    width: '60px', height: '60px', color: (theme) => `${theme.palette.primary.main}`,
+                                                    border: (theme) => `1px solid ${theme.palette.primary.main}`, borderRadius: 1
+                                                }} />
                                             }
                                             <Typography variant="h6" component="div">
                                                 {app?.name}

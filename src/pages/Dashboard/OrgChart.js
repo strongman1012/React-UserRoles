@@ -60,9 +60,8 @@ const OrgChart = () => {
       <Container maxWidth={false}>
         <LoadingScreen show={isLoading} />
         <Box sx={{ pt: 3 }}>
-          <Card variant="outlined" sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}` }}>
+          <Card variant="outlined">
             <CardHeader title="Organization Chart"
-              sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}` }}
               action={
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <TextField
@@ -72,7 +71,15 @@ const OrgChart = () => {
                     onChange={onNameChange}
                     variant="outlined"
                     size="small"
-                    style={{ marginRight: "2rem" }}
+                    sx={{
+                      marginRight: "2rem", background: (theme) => `${theme.palette.background.paper}`, borderRadius: '4px',
+                      '& .MuiInputLabel-root': {
+                        color: '#2d2d2d',
+                      },
+                      '& .MuiInputLabel-root.Mui-focused': {
+                        color: '#f7f7f7',
+                      }
+                    }}
                   />
                   <FormControl component="fieldset" style={{ marginRight: "2rem" }}>
                     <RadioGroup
@@ -80,15 +87,25 @@ const OrgChart = () => {
                       value={fileextension}
                       onChange={onExtensionChange}
                     >
-                      <FormControlLabel value="png" control={<Radio />} label="png" />
-                      <FormControlLabel value="pdf" control={<Radio />} label="pdf" />
+                      <FormControlLabel value="png" control={<Radio sx={{
+                        '& .MuiSvgIcon-root': {
+                          background: (theme) => `${theme.palette.background.paper}`,
+                          borderRadius: '10px'
+                        }
+                      }} />} label="png" />
+                      <FormControlLabel value="pdf" control={<Radio sx={{
+                        '& .MuiSvgIcon-root': {
+                          background: (theme) => `${theme.palette.background.paper}`,
+                          borderRadius: '10px'
+                        }
+                      }} />} label="pdf" />
                     </RadioGroup>
                   </FormControl>
                   <Button
                     variant="contained"
                     color="primary"
                     onClick={exportTo}
-                    sx={{ mr: 2 }}
+                    sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper}`, color: (theme) => `${theme.palette.primary.dark}` }}
                   >
                     Export
                   </Button>

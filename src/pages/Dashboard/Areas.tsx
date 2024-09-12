@@ -1,7 +1,7 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState, useMemo } from 'react';
 import {
     DataGrid, Column, ColumnChooser, ColumnChooserSearch, ColumnChooserSelection, Position, SearchPanel, Paging, Pager,
-    Export, DataGridTypes, Button as GridButton
+    Export, DataGridTypes, Button as GridButton, FilterRow
 } from 'devextreme-react/data-grid';
 import {
     Button, Container, Box, Divider, Card, CardHeader, CardContent
@@ -42,6 +42,7 @@ const Areas: FC = () => {
     const dispatch = useAppDispatch();
     const areas = useSelector((state: RootState) => state.areas.allAreas);
     const editable = useSelector((state: RootState) => state.areas.editable);
+    const setting = useSelector((state: RootState) => state.settings.setting);
     const [selectedAreaId, setSelectedAreaId] = useState<number>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [modalType, setModalType] = useState<string>(ModalTypes.new);
@@ -56,6 +57,16 @@ const Areas: FC = () => {
         if (areas.length > 0)
             setIsLoading(false);
     }, [areas]);
+
+    // Memoizing defaultPageSize based on the setting
+    const defaultPageSize = useMemo(() => {
+        return setting?.rowsPerPage ? setting.rowsPerPage : 20;
+    }, [setting]);
+
+    // Memoizing allowedPageSizes based on defaultPageSize
+    const allowedPageSizes = useMemo(() => {
+        return [defaultPageSize, 2 * defaultPageSize, 3 * defaultPageSize];
+    }, [defaultPageSize]);
 
     const handleCreate = () => {
         setModalType(ModalTypes.new);
@@ -85,9 +96,8 @@ const Areas: FC = () => {
         <Container maxWidth={false}>
             <LoadingScreen show={isLoading} />
             <Box sx={{ pt: 3 }}>
-                <Card variant="outlined" sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}` }}>
+                <Card variant="outlined">
                     <CardHeader title="Areas"
-                        sx={{ background: (theme) => `${theme.palette.primary.main}`, color: '#f7f7f7' }}
                         action={
                             <Button startIcon={<AddIcon />} variant="contained" color="primary" sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper}`, color: (theme) => `${theme.palette.primary.dark}` }}
                                 onClick={handleCreate} disabled={editable ? false : true}>
@@ -97,8 +107,9 @@ const Areas: FC = () => {
                     />
                     <Divider />
                     <CardContent>
-                        <DataGrid
+                        {setting && defaultPageSize && allowedPageSizes && (<DataGrid
                             id="areas"
+                            key={defaultPageSize}
                             dataSource={areas}
                             keyExpr="id"
                             columnAutoWidth={true}
@@ -108,15 +119,16 @@ const Areas: FC = () => {
                             rowAlternationEnabled={true}
                             onExporting={onExporting}
                         >
+                            <FilterRow visible={true} />
                             <SearchPanel
                                 visible={true}
                                 width={240}
                                 placeholder="Search..." />
                             <Export enabled={true} />
-                            <Paging defaultPageSize={10} />
+                            <Paging defaultPageSize={defaultPageSize} />
                             <Pager
                                 showPageSizeSelector={true}
-                                allowedPageSizes={[5, 10]}
+                                allowedPageSizes={allowedPageSizes}
                                 showInfo={true} />
                             <Column dataField='id' caption='Area ID' allowHiding={false} alignment='left' />
                             <Column dataField='name' caption='Area Name' allowHiding={false} />
@@ -145,7 +157,7 @@ const Areas: FC = () => {
                                     selectByClick={true}
                                     recursive={true} />
                             </ColumnChooser>
-                        </DataGrid>
+                        </DataGrid>)}
                     </CardContent>
                 </Card>
             </Box>

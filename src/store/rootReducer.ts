@@ -9,6 +9,7 @@ import businessUnitsSlice from 'src/reducers/businessUnits/businessUnitsSlice';
 import teamsSlice from 'src/reducers/teams/teamsSlice';
 import dataAccessesSlice from 'src/reducers/dataAccesses/dataAccessesSlice';
 import loginReportsSlice from 'src/reducers/loginReports/loginReportsSlice';
+import settingsSlice from 'src/reducers/settings/settingsSlice';
 
 const rootReducer = combineReducers({
     auth: authReducer,
@@ -20,7 +21,8 @@ const rootReducer = combineReducers({
     businessUnits: businessUnitsSlice,
     teams: teamsSlice,
     dataAccesses: dataAccessesSlice,
-    loginReports: loginReportsSlice
+    loginReports: loginReportsSlice,
+    settings: settingsSlice
 });
 
 export default rootReducer;

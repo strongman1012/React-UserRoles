@@ -105,7 +105,7 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
                     team_ids: selectedTeams.length > 0 ? selectedTeams.map(team => team?.id).join(',') : null,
                 };
 
-                const message = await dispatch(updateUserById(userId, updatedFormData)); console.log(message, 'mesage')
+                const message = await dispatch(updateUserById(userId, updatedFormData));
                 if (message) {
                     setConfirmTitle(message);
                     setConfirmDescription('');
@@ -158,9 +158,8 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
         <Container maxWidth={false}>
             <LoadingScreen show={isLoading} />
             <Box sx={{ pt: 3 }}>
-                <Card variant="outlined" sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}` }}>
+                <Card variant="outlined">
                     <CardHeader title="Edit User"
-                        sx={{ background: (theme) => `${theme.palette.primary.main}`, color: '#f7f7f7' }}
                         action={
                             <>
                                 <Button variant="contained" color="primary" onClick={handleSave} disabled={editable ? false : true} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper} !important`, color: (theme) => `${theme.palette.primary.dark}` }}>
@@ -288,7 +287,7 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
             </Box>
 
             <Dialog open={rolesModalOpen} onClose={handleRolesModalClose}>
-                <DialogTitle>Manage User Roles</DialogTitle>
+                <DialogTitle sx={{ width: '475px', background: (theme) => `${theme.palette.primary.main}`, color: '#f7f7f7', height: '45px' }}>Manage User Roles</DialogTitle>
                 <DialogContent>
                     <FormGroup>
                         {roles.map((role) => (
@@ -306,10 +305,10 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
                     </FormGroup>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleRolesModalClose} color="primary">
+                    <Button onClick={handleRolesModalClose} variant="contained" sx={{ '&:hover': { background: (theme) => `${theme.palette.secondary.dark}` } }}>
                         OK
                     </Button>
-                    <Button onClick={handleRolesModalClose} color="secondary">
+                    <Button onClick={handleRolesModalClose} variant="contained" sx={{ '&:hover': { background: (theme) => `${theme.palette.secondary.dark}` } }}>
                         Cancel
                     </Button>
                 </DialogActions>

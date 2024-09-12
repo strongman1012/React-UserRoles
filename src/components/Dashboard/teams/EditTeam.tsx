@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState, useMemo } from 'react';
 import {
     TextField, Typography, Button, FormControlLabel, Switch, Grid, Autocomplete,
     Checkbox, Chip, Dialog, DialogTitle, DialogContent, DialogActions, FormGroup, FormControlLabel as MuiFormControlLabel,
@@ -13,7 +13,7 @@ import { fetchUsersList } from '../../../reducers/users/usersSlice';
 import { fetchRoles } from '../../../reducers/roles/rolesSlice';
 import { Team } from '../../../reducers/teams/teamsAPI';
 import { User } from 'src/reducers/users/usersAPI';
-import { DataGrid, Column, SearchPanel, Paging, Pager } from 'devextreme-react/data-grid';
+import { DataGrid, Column, SearchPanel, Paging, Pager, FilterRow } from 'devextreme-react/data-grid';
 import LoadingScreen from 'src/components/Basic/LoadingScreen';
 import AlertModal from 'src/components/Basic/Alert';
 
@@ -29,6 +29,7 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
     const allBusinessUnits = useSelector((state: RootState) => state.businessUnits.businessUnitsList);
     const allUsers = useSelector((state: RootState) => state.users.usersList);
     const roles = useSelector((state: RootState) => state.roles.allRoles);
+    const setting = useSelector((state: RootState) => state.settings.setting);
 
     const [formData, setFormData] = useState<Team | null>(null);
     const [selectedMembers, setSelectedMembers] = useState<User[]>([]);
@@ -65,6 +66,16 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
             setIsLoading(false);
         }
     }, [teamId, allUsers, team]);
+
+    // Memoizing defaultPageSize based on the setting
+    const defaultPageSize = useMemo(() => {
+        return setting?.rowsPerPage ? setting.rowsPerPage : 20;
+    }, [setting]);
+
+    // Memoizing allowedPageSizes based on defaultPageSize
+    const allowedPageSizes = useMemo(() => {
+        return [defaultPageSize, 2 * defaultPageSize, 3 * defaultPageSize];
+    }, [defaultPageSize]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -157,9 +168,8 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
         <Container maxWidth={false}>
             <LoadingScreen show={isLoading} />
             <Box sx={{ pt: 3 }}>
-                <Card variant="outlined" sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}` }}>
+                <Card variant="outlined">
                     <CardHeader title="Edit Team"
-                        sx={{ background: (theme) => `${theme.palette.primary.main}`, color: '#f7f7f7' }}
                         action={
                             <>
                                 <Button variant="contained" color="primary" onClick={handleSave} disabled={editable ? false : true} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper}`, color: (theme) => `${theme.palette.primary.dark}` }}>
@@ -265,8 +275,9 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <DataGrid
+                                    {setting && defaultPageSize && allowedPageSizes && (<DataGrid
                                         dataSource={selectedMembers}
+                                        key={defaultPageSize}
                                         keyExpr="id"
                                         columnAutoWidth={true}
                                         showRowLines={true}
@@ -274,13 +285,14 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
                                         allowColumnResizing={true}
                                         rowAlternationEnabled={true}
                                     >
+                                        <FilterRow visible={true} />
                                         <SearchPanel visible={true} />
-                                        <Paging defaultPageSize={10} />
-                                        <Pager showPageSizeSelector={true} allowedPageSizes={[5, 10]} />
+                                        <Paging defaultPageSize={defaultPageSize} />
+                                        <Pager showPageSizeSelector={true} allowedPageSizes={allowedPageSizes} />
                                         <Column dataField="userName" caption="User Name" />
                                         <Column dataField="fullName" caption="Full Name" />
                                         <Column dataField="business_name" caption="Business Unit" />
-                                    </DataGrid>
+                                    </DataGrid>)}
                                 </Grid>
                             </Grid>
                         </TabPanel>
@@ -289,7 +301,7 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
             </Box>
 
             <Dialog open={rolesModalOpen} onClose={handleRolesModalClose}>
-                <DialogTitle>Manage Team Roles</DialogTitle>
+                <DialogTitle sx={{ width: '475px', background: (theme) => `${theme.palette.primary.main}`, color: '#f7f7f7', height: '45px' }}>Manage Team Roles</DialogTitle>
                 <DialogContent>
                     <FormGroup>
                         {roles.map((role) => (
@@ -307,10 +319,10 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
                     </FormGroup>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleRolesModalClose} color="primary">
+                    <Button onClick={handleRolesModalClose} variant="contained" sx={{ '&:hover': { background: (theme) => `${theme.palette.secondary.dark}` } }}>
                         OK
                     </Button>
-                    <Button onClick={handleRolesModalClose} color="secondary">
+                    <Button onClick={handleRolesModalClose} variant="contained" sx={{ '&:hover': { background: (theme) => `${theme.palette.secondary.dark}` } }}>
                         Cancel
                     </Button>
                 </DialogActions>

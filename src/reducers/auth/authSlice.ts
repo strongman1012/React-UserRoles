@@ -14,6 +14,7 @@ import { resetApplications } from '../applications/applicationsSlice';
 import { resetDataAccesses } from '../dataAccesses/dataAccessesSlice';
 import { resetAreas } from '../areas/areasSlice';
 import { resetLoginReports } from '../loginReports/loginReportsSlice';
+import { resetSetting } from '../settings/settingsSlice';
 
 export const initializeAuth = () => (dispatch: AppDispatch) => {
     const token = localStorage.getItem('token');
@@ -106,6 +107,7 @@ export const logout = () => async (dispatch: AppDispatch) => {
         dispatch(resetDataAccesses());
         dispatch(resetAreas());
         dispatch(resetLoginReports());
+        dispatch(resetSetting());
     }
     return response.message;
 };

@@ -23,7 +23,7 @@ const AlertModal: FC<ModalProps> = (props: ModalProps) => {
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
         >
-            <DialogTitle sx={{ width: '475px' }}>
+            <DialogTitle sx={{ width: '475px', background: (theme) => `${theme.palette.primary.main}`, color: '#f7f7f7', height: '45px' }}>
                 {props.title}
             </DialogTitle>
             {props.description &&
@@ -32,8 +32,8 @@ const AlertModal: FC<ModalProps> = (props: ModalProps) => {
                 </DialogContent>}
 
             <DialogActions>
-                {props.onConfirm && <Button variant="contained" onClick={props.onConfirm}>{'Confirm'}</Button>}
-                <Button variant="contained" onClick={props.onClose}>{'Close'}</Button>
+                {props.onConfirm && <Button variant="contained" sx={{ '&:hover': { background: (theme) => `${theme.palette.secondary.dark}` } }} onClick={props.onConfirm}>{'Confirm'}</Button>}
+                <Button variant="contained" sx={{ '&:hover': { background: (theme) => `${theme.palette.secondary.dark}` } }} onClick={props.onClose}>{'Close'}</Button>
             </DialogActions>
         </Dialog>
     );

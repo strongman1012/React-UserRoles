@@ -1,6 +1,7 @@
 import { createTheme, ThemeOptions } from '@mui/material/styles';
 
 const COSMOS_RED = '#e34747';
+const LIGHT_COSMOS_RED = '#f69696';
 
 
 function createShadow(px: number) {
@@ -27,6 +28,13 @@ const lightTheme: ThemeOptions = {
             styleOverrides: {
                 '.text-secondary': {
                     color: `${COSMOS_RED} !important`
+                },
+                '.dx-datagrid .dx-column-lines>td': {
+                    borderLeft: 0,
+                    borderRight: 0
+                },
+                '.orgchart-container': {
+                    background: '#f7f7f7',
                 }
             },
         },
@@ -39,11 +47,44 @@ const lightTheme: ThemeOptions = {
                 },
             },
         },
+        MuiCard: {
+            styleOverrides: {
+                root: {
+                    border: `2px solid ${COSMOS_RED}`,
+                    borderRadius: '8px 8px 0px 0px'
+                },
+            }
+        },
         MuiCardHeader: {
             defaultProps: {
-                titleTypographyProps: { variant: 'h6' }
+                titleTypographyProps: { variant: 'h3' }
+            },
+            styleOverrides: {
+                root: {
+                    height: '45px !important',
+                    padding: '10px',
+                    background: COSMOS_RED,
+                    color: '#f7f7f7',
+                    boxShadow: '0px 4px 14px rgba(0, 0, 0, 0.1)'
+                }
             }
-        }
+        },
+        MuiDivider: {
+            styleOverrides: {
+                root: {
+                    height: '2px',
+                    background: COSMOS_RED
+                }
+            }
+        },
+        MuiPaper: {
+            styleOverrides: {
+                root: {
+                    border: `2px solid ${COSMOS_RED}`,
+                    borderRadius: '8px 8px 0px 0px'
+                }
+            }
+        },
     },
     breakpoints: {
         values: {
@@ -177,7 +218,7 @@ const lightTheme: ThemeOptions = {
         },
         secondary: {
             main: '#e8e9ea',
-            dark: '#e34748'
+            dark: LIGHT_COSMOS_RED
         },
         background: {
             default: '#ffffff',
@@ -224,6 +265,23 @@ const darkTheme: ThemeOptions = {
                 },
                 '.text-secondary': {
                     color: `${COSMOS_RED} !important`
+                },
+                '.dx-datagrid .dx-column-lines>td': {
+                    borderLeft: 0,
+                    borderRight: 0
+                },
+                '.dx-texteditor-input-container input': {
+                    background: '#2d2d2d !important',
+                    color: '#f7f7f7'
+                },
+                '.dx-datagrid-filter-row input': {
+                    borderRadius: 0
+                },
+                '.dx-datagrid-filter-row': {
+                    background: '#2d2d2d !important'
+                },
+                '.orgchart-container': {
+                    background: '#2d2d2d',
                 }
             },
         },
@@ -241,9 +299,43 @@ const darkTheme: ThemeOptions = {
                 },
             },
         },
+        MuiCard: {
+            styleOverrides: {
+                root: {
+                    border: `2px solid ${COSMOS_RED}`,
+                    borderRadius: '8px 8px 0px 0px'
+                },
+            }
+        },
         MuiCardHeader: {
             defaultProps: {
-                titleTypographyProps: { variant: 'h6' }
+                titleTypographyProps: { variant: 'h3' }
+            },
+            styleOverrides: {
+                root: {
+                    height: '45px !important',
+                    padding: '10px',
+                    background: COSMOS_RED,
+                    color: '#f7f7f7',
+                    boxShadow: '0px 4px 14px rgba(0, 0, 0, 0.1)'
+                },
+            }
+        },
+        MuiDivider: {
+            styleOverrides: {
+                root: {
+                    height: '2px',
+                    background: COSMOS_RED,
+                    color: `${COSMOS_RED}`
+                }
+            }
+        },
+        MuiPaper: {
+            styleOverrides: {
+                root: {
+                    border: `2px solid ${COSMOS_RED}`,
+                    borderRadius: '8px 8px 0px 0px'
+                }
             }
         },
         MuiTableBody: {
@@ -388,7 +480,7 @@ const darkTheme: ThemeOptions = {
         },
         secondary: {
             main: '#323232',
-            dark: '#e34748'
+            dark: LIGHT_COSMOS_RED
         },
         background: {
             default: '#232323',

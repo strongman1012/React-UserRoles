@@ -29,7 +29,7 @@ const ReusableDrawer: React.FC<ReusableDrawerProps> = ({ open, onClose, onOpen, 
                 >
                     <ArrowForwardIcon />
                 </IconButton>
-                <Typography variant="h6" component="b" sx={{ margin: 0, color: '#f7f7f7' }}>
+                <Typography variant="h4" sx={{ margin: 0, color: '#f7f7f7' }}>
                     Close
                 </Typography>
             </Box>

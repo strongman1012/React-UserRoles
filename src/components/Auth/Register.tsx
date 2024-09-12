@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
-import { TextField, Button, Container, Typography, Box } from '@mui/material';
+import { TextField, Button, Container, Typography, Card, CardHeader, CardContent, Divider } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import LoadingScreen from '../Basic/LoadingScreen';
 import AlertModal from '../Basic/Alert';
@@ -69,90 +69,81 @@ const Register: React.FC = () => {
                 }}
             >
                 <LoadingScreen show={isLoading} />
-                <Box
-                    sx={{
-                        width: '100%',
-                        padding: 4,
-                        border: (theme) => `1px solid ${theme.palette.primary.main}`,
-                        borderRadius: 1,
-                        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-                        boxSizing: 'border-box',
-                        background: (theme) => `${theme.palette.primary.light}`,
-                    }}
-                >
-                    <Typography variant="h4" align="center" gutterBottom>
-                        Register
-                    </Typography>
-                    <form onSubmit={formik.handleSubmit}>
-                        <TextField
-                            fullWidth
-                            size='small'
-                            margin="normal"
-                            id="userName"
-                            name="userName"
-                            label="User Name"
-                            value={formik.values.userName}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={formik.touched.userName && Boolean(formik.errors.userName)}
-                            helperText={formik.touched.userName && formik.errors.userName}
-                        />
-                        <TextField
-                            fullWidth
-                            size='small'
-                            margin="normal"
-                            id="email"
-                            name="email"
-                            label="Email address"
-                            value={formik.values.email}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={formik.touched.email && Boolean(formik.errors.email)}
-                            helperText={formik.touched.email && formik.errors.email}
-                        />
-                        <TextField
-                            fullWidth
-                            size='small'
-                            margin="normal"
-                            id="password"
-                            name="password"
-                            label="Password"
-                            type="password"
-                            value={formik.values.password}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={formik.touched.password && Boolean(formik.errors.password)}
-                            helperText={formik.touched.password && formik.errors.password}
-                        />
-                        <TextField
-                            fullWidth
-                            size='small'
-                            margin="normal"
-                            id="confirmPassword"
-                            name="confirmPassword"
-                            label="Confirm Password"
-                            type="password"
-                            value={formik.values.confirmPassword}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
-                            helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
-                        />
-                        <Button
-                            color="primary"
-                            variant="contained"
-                            fullWidth
-                            type="submit"
-                            disabled={!formik.values.userName || !formik.values.email || !formik.values.password || !formik.values.confirmPassword}
-                            sx={{ mt: 2 }}
-                        >
-                            Register
-                        </Button>
-                    </form>
-                    <Typography align="center" sx={{ mt: 2, fontStyle: 'oblique', color: (theme) => `${theme.palette.primary.main}` }}>
-                        Already have an account? <Link to="/login" style={{ textDecoration: 'none', color: '#e34747' }}>Login</Link>
-                    </Typography>
-                </Box>
+                <Card>
+                    <CardHeader title="Register" sx={{ textAlign: 'center' }} />
+                    <Divider />
+                    <CardContent>
+                        <form onSubmit={formik.handleSubmit}>
+                            <TextField
+                                fullWidth
+                                size='small'
+                                margin="normal"
+                                id="userName"
+                                name="userName"
+                                label="User Name"
+                                value={formik.values.userName}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.userName && Boolean(formik.errors.userName)}
+                                helperText={formik.touched.userName && formik.errors.userName}
+                            />
+                            <TextField
+                                fullWidth
+                                size='small'
+                                margin="normal"
+                                id="email"
+                                name="email"
+                                label="Email address"
+                                value={formik.values.email}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.email && Boolean(formik.errors.email)}
+                                helperText={formik.touched.email && formik.errors.email}
+                            />
+                            <TextField
+                                fullWidth
+                                size='small'
+                                margin="normal"
+                                id="password"
+                                name="password"
+                                label="Password"
+                                type="password"
+                                value={formik.values.password}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.password && Boolean(formik.errors.password)}
+                                helperText={formik.touched.password && formik.errors.password}
+                            />
+                            <TextField
+                                fullWidth
+                                size='small'
+                                margin="normal"
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                label="Confirm Password"
+                                type="password"
+                                value={formik.values.confirmPassword}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
+                                helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
+                            />
+                            <Button
+                                color="primary"
+                                variant="contained"
+                                fullWidth
+                                type="submit"
+                                disabled={!formik.values.userName || !formik.values.email || !formik.values.password || !formik.values.confirmPassword}
+                                sx={{ mt: 2, '&:hover': { background: (theme) => `${theme.palette.secondary.dark}` } }}
+                            >
+                                Register
+                            </Button>
+                        </form>
+                        <Typography align="center" sx={{ mt: 2, fontStyle: 'oblique', color: (theme) => `${theme.palette.primary.main}` }}>
+                            Already have an account? <Link to="/login" style={{ textDecoration: 'none', color: '#e34747' }}>Login</Link>
+                        </Typography>
+                    </CardContent>
+                </Card>
             </Container>
             <AlertModal
                 show={confirmModalOpen}

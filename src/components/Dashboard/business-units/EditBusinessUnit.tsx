@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState, useMemo } from 'react';
 import {
     TextField, Typography, Button, Grid, Autocomplete,
     Container, Box, Divider, Card, CardHeader, CardContent, Tabs, Tab
@@ -13,7 +13,7 @@ import AlertModal from 'src/components/Basic/Alert';
 import { fetchUsersList } from 'src/reducers/users/usersSlice';
 import { fetchTeamsList } from 'src/reducers/teams/teamsSlice';
 import { User } from 'src/reducers/users/usersAPI';
-import { DataGrid, Column, SearchPanel, Paging, Pager } from 'devextreme-react/data-grid';
+import { DataGrid, Column, SearchPanel, Paging, Pager, FilterRow } from 'devextreme-react/data-grid';
 
 interface EditBusinessUnitProps {
     businessUnitId: number;
@@ -27,6 +27,7 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
     const allBusinessUnits = useSelector((state: RootState) => state.businessUnits.businessUnitsList);
     const allUsers = useSelector((state: RootState) => state.users.usersList);
     const teams = useSelector((state: RootState) => state.teams.teamsList);
+    const setting = useSelector((state: RootState) => state.settings.setting);
 
     const [formData, setFormData] = useState<BusinessUnit | null>(null);
     const [selectedMembers, setSelectedMembers] = useState<User[]>([]);
@@ -62,6 +63,16 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
             setIsLoading(false);
         }
     }, [businessUnit, allBusinessUnits, allUsers, businessUnitId]);
+
+    // Memoizing defaultPageSize based on the setting
+    const defaultPageSize = useMemo(() => {
+        return setting?.rowsPerPage ? setting.rowsPerPage : 20;
+    }, [setting]);
+
+    // Memoizing allowedPageSizes based on defaultPageSize
+    const allowedPageSizes = useMemo(() => {
+        return [defaultPageSize, 2 * defaultPageSize, 3 * defaultPageSize];
+    }, [defaultPageSize]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -136,9 +147,8 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
         <Container maxWidth={false}>
             <LoadingScreen show={isLoading} />
             <Box sx={{ pt: 3 }}>
-                <Card variant="outlined" sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}` }}>
+                <Card variant="outlined">
                     <CardHeader title="Edit Business Unit"
-                        sx={{ background: (theme) => `${theme.palette.primary.main}`, color: '#f7f7f7' }}
                         action={
                             <>
                                 <Button variant="contained" color="primary" onClick={handleSave} disabled={editable ? false : true} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper}`, color: (theme) => `${theme.palette.primary.dark}` }}>
@@ -332,8 +342,9 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
                         <TabPanel value={tabValue} index={1}>
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>
-                                    <DataGrid
+                                    {setting && defaultPageSize && allowedPageSizes && (<DataGrid
                                         dataSource={selectedMembers}
+                                        key={defaultPageSize}
                                         keyExpr="id"
                                         columnAutoWidth={true}
                                         showRowLines={true}
@@ -341,9 +352,10 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
                                         allowColumnResizing={true}
                                         rowAlternationEnabled={true}
                                     >
+                                        <FilterRow visible={true} />
                                         <SearchPanel visible={true} />
-                                        <Paging defaultPageSize={10} />
-                                        <Pager showPageSizeSelector={true} allowedPageSizes={[5, 10]} />
+                                        <Paging defaultPageSize={defaultPageSize} />
+                                        <Pager showPageSizeSelector={true} allowedPageSizes={allowedPageSizes} />
                                         <Column dataField="userName" caption="User Name" />
                                         <Column dataField="fullName" caption="Full Name" />
                                         <Column
@@ -351,7 +363,7 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
                                             caption='Teams'
                                             cellRender={(cellData) => getTeamNames(cellData.value)}
                                         />
-                                    </DataGrid>
+                                    </DataGrid>)}
                                 </Grid>
                             </Grid>
                         </TabPanel>

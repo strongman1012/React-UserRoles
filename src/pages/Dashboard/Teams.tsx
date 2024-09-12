@@ -1,7 +1,7 @@
 import React, { FC, useState, useEffect, useMemo } from 'react';
 import {
     DataGrid, Column, ColumnChooser, ColumnChooserSearch, ColumnChooserSelection, Position,
-    SearchPanel, Paging, Pager, Export, DataGridTypes, Button as GridButton
+    SearchPanel, Paging, Pager, Export, DataGridTypes, Button as GridButton, FilterRow
 } from 'devextreme-react/data-grid';
 import {
     Button, Container, Box, Divider, Card, CardHeader, CardContent
@@ -42,6 +42,7 @@ const Teams: FC = () => {
     const dispatch = useAppDispatch();
     const teams = useSelector((state: RootState) => state.teams.allTeams);
     const editable = useSelector((state: RootState) => state.teams.editable);
+    const setting = useSelector((state: RootState) => state.settings.setting);
     const [selectedTeamId, setSelectedTeamId] = useState<number>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [modalType, setModalType] = useState<string>(ModalTypes.new);
@@ -56,6 +57,16 @@ const Teams: FC = () => {
         if (teams.length > 0)
             setIsLoading(false);
     }, [teams]);
+
+    // Memoizing defaultPageSize based on the setting
+    const defaultPageSize = useMemo(() => {
+        return setting?.rowsPerPage ? setting.rowsPerPage : 20;
+    }, [setting]);
+
+    // Memoizing allowedPageSizes based on defaultPageSize
+    const allowedPageSizes = useMemo(() => {
+        return [defaultPageSize, 2 * defaultPageSize, 3 * defaultPageSize];
+    }, [defaultPageSize]);
 
     const handleCreate = () => {
         setModalType(ModalTypes.new);
@@ -85,6 +96,7 @@ const Teams: FC = () => {
     const memoizedDataGrid = useMemo(() => (
         <DataGrid
             id="teams"
+            key={defaultPageSize}
             dataSource={teams}
             keyExpr="id"
             columnAutoWidth={true}
@@ -94,16 +106,17 @@ const Teams: FC = () => {
             rowAlternationEnabled={true}
             onExporting={onExporting}
         >
+            <FilterRow visible={true} />
             <SearchPanel
                 visible={true}
                 width={240}
                 placeholder="Search..."
             />
             <Export enabled={true} />
-            <Paging defaultPageSize={10} />
+            <Paging defaultPageSize={defaultPageSize} />
             <Pager
                 showPageSizeSelector={true}
-                allowedPageSizes={[5, 10]}
+                allowedPageSizes={allowedPageSizes}
                 showInfo={true}
             />
             <Column dataField='name' caption='Name' allowHiding={false} />
@@ -135,16 +148,15 @@ const Teams: FC = () => {
                 />
             </ColumnChooser>
         </DataGrid>
-    ), [teams, editable]);
+    ), [teams, editable, defaultPageSize, allowedPageSizes]);
 
     return (
 
         <Container maxWidth={false}>
             <LoadingScreen show={isLoading} />
             <Box sx={{ pt: 3 }}>
-                <Card variant="outlined" sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}` }}>
+                <Card variant="outlined">
                     <CardHeader title="Teams"
-                        sx={{ background: (theme) => `${theme.palette.primary.main}`, color: '#f7f7f7' }}
                         action={
                             <Button startIcon={<AddIcon />} variant="contained" color="primary"
                                 sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper}`, color: (theme) => `${theme.palette.primary.dark}` }}

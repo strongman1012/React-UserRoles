@@ -1,7 +1,7 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState, useMemo } from 'react';
 import {
     DataGrid, Column, ColumnChooser, ColumnChooserSearch, ColumnChooserSelection,
-    Position, SearchPanel, Paging, Pager, Export, DataGridTypes, Button as GridButton
+    Position, SearchPanel, Paging, Pager, Export, DataGridTypes, Button as GridButton, FilterRow
 } from 'devextreme-react/data-grid';
 import {
     Box, Container, Button, MenuItem, Select, FormControl,
@@ -60,6 +60,7 @@ const Users: FC = () => {
     const teams = useSelector((state: RootState) => state.teams.teamsList);
     const roles = useSelector((state: RootState) => state.roles.allRoles);
     const editable = useSelector((state: RootState) => state.users.editable);
+    const setting = useSelector((state: RootState) => state.settings.setting);
     const loginMetrics = useSelector((state: RootState) => state.loginReports.currentLoginMetrics);
     const [statusFilter, setStatusFilter] = useState('All');
     const [openMetricsDialog, setOpenMetricsDialog] = useState(false);
@@ -79,6 +80,16 @@ const Users: FC = () => {
         if (users.length > 0)
             setIsLoading(false);
     }, [users]);
+
+    // Memoizing defaultPageSize based on the setting
+    const defaultPageSize = useMemo(() => {
+        return setting?.rowsPerPage ? setting.rowsPerPage : 20;
+    }, [setting]);
+
+    // Memoizing allowedPageSizes based on defaultPageSize
+    const allowedPageSizes = useMemo(() => {
+        return [defaultPageSize, 2 * defaultPageSize, 3 * defaultPageSize];
+    }, [defaultPageSize]);
 
     const renderStatusCell = (cellData: any) => {
         const isSuccessful = cellData.value;
@@ -156,9 +167,8 @@ const Users: FC = () => {
         <Container maxWidth={false}>
             <LoadingScreen show={isLoading} />
             <Box sx={{ pt: 3 }}>
-                <Card variant="outlined" sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}` }}>
+                <Card variant="outlined">
                     <CardHeader title="Users"
-                        sx={{ background: (theme) => `${theme.palette.primary.main}`, color: '#f7f7f7' }}
                         action={
                             <>
                                 <Button startIcon={<AddIcon />} variant="contained" sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper}`, color: (theme) => `${theme.palette.primary.dark}` }}
@@ -177,8 +187,9 @@ const Users: FC = () => {
                     />
                     <Divider />
                     <CardContent>
-                        <DataGrid
+                        {setting && defaultPageSize && allowedPageSizes && (<DataGrid
                             id="users"
+                            key={defaultPageSize}
                             dataSource={filteredUsers}
                             keyExpr="id"
                             columnAutoWidth={true}
@@ -189,15 +200,16 @@ const Users: FC = () => {
                             className={classes.dataGrid}
                             onExporting={onExporting}
                         >
+                            <FilterRow visible={true} />
                             <SearchPanel
                                 visible={true}
                                 width={240}
                                 placeholder="Search..." />
                             <Export enabled={true} />
-                            <Paging defaultPageSize={10} />
+                            <Paging defaultPageSize={defaultPageSize} />
                             <Pager
                                 showPageSizeSelector={true}
-                                allowedPageSizes={[5, 10]}
+                                allowedPageSizes={allowedPageSizes}
                                 showInfo={true} />
                             <Column dataField='userName' caption='Username' allowHiding={false} />
                             <Column dataField='email' caption='Email' allowHiding={false} />
@@ -246,7 +258,7 @@ const Users: FC = () => {
                                     selectByClick={true}
                                     recursive={true} />
                             </ColumnChooser>
-                        </DataGrid>
+                        </DataGrid>)}
                     </CardContent>
                 </Card>
             </Box>

@@ -119,8 +119,8 @@ const ApplicationMetrics: FC = () => {
         <Container maxWidth={false}>
             <LoadingScreen show={isLoading} />
             <Box sx={{ pt: 3 }}>
-                <Card variant="outlined" sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}` }}>
-                    <CardHeader title="Access Metrics" sx={{ background: (theme) => `${theme.palette.primary.main}`, color: '#f7f7f7' }} />
+                <Card variant="outlined">
+                    <CardHeader title="Access Metrics" />
                     <Divider />
                     <CardContent>
                         <Grid container spacing={4}>

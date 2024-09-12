@@ -1,7 +1,7 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState, useMemo } from 'react';
 import {
     DataGrid, Column, ColumnChooser, ColumnChooserSearch, ColumnChooserSelection, Position, SearchPanel, Paging, Pager,
-    Export, DataGridTypes, Button as GridButton
+    Export, DataGridTypes, Button as GridButton, FilterRow
 } from 'devextreme-react/data-grid';
 import {
     Button, Container, Box, Divider, Card, CardHeader, CardContent
@@ -42,6 +42,7 @@ const Applications: FC = () => {
     const dispatch = useAppDispatch();
     const applications = useSelector((state: RootState) => state.applications.allApplications);
     const editable = useSelector((state: RootState) => state.applications.editable);
+    const setting = useSelector((state: RootState) => state.settings.setting);
     const [selectedApplicationId, setSelectedApplicationId] = useState<number>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [modalType, setModalType] = useState<string>(ModalTypes.new);
@@ -56,6 +57,15 @@ const Applications: FC = () => {
         if (applications.length > 0)
             setIsLoading(false);
     }, [applications]);
+    // Memoizing defaultPageSize based on the setting
+    const defaultPageSize = useMemo(() => {
+        return setting?.rowsPerPage ? setting.rowsPerPage : 20;
+    }, [setting]);
+
+    // Memoizing allowedPageSizes based on defaultPageSize
+    const allowedPageSizes = useMemo(() => {
+        return [defaultPageSize, 2 * defaultPageSize, 3 * defaultPageSize];
+    }, [defaultPageSize]);
 
     const handleCreate = () => {
         setModalType(ModalTypes.new);
@@ -86,9 +96,8 @@ const Applications: FC = () => {
         <Container maxWidth={false}>
             <LoadingScreen show={isLoading} />
             <Box sx={{ pt: 3 }}>
-                <Card variant="outlined" sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}` }}>
+                <Card variant="outlined">
                     <CardHeader title="Applications"
-                        sx={{ background: (theme) => `${theme.palette.primary.main}`, color: '#f7f7f7' }}
                         action={
                             <Button startIcon={<AddIcon />} variant="contained" sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper}`, color: (theme) => `${theme.palette.primary.dark}` }}
                                 onClick={handleCreate} disabled={editable ? false : true}>
@@ -98,8 +107,9 @@ const Applications: FC = () => {
                     />
                     <Divider />
                     <CardContent>
-                        <DataGrid
+                        {setting && defaultPageSize && allowedPageSizes && (<DataGrid
                             id="applications"
+                            key={defaultPageSize}
                             dataSource={applications}
                             keyExpr="id"
                             columnAutoWidth={true}
@@ -109,15 +119,16 @@ const Applications: FC = () => {
                             rowAlternationEnabled={true}
                             onExporting={onExporting}
                         >
+                            <FilterRow visible={true} />
                             <SearchPanel
                                 visible={true}
                                 width={240}
                                 placeholder="Search..." />
                             <Export enabled={true} />
-                            <Paging defaultPageSize={10} />
+                            <Paging defaultPageSize={defaultPageSize} />
                             <Pager
                                 showPageSizeSelector={true}
-                                allowedPageSizes={[5, 10]}
+                                allowedPageSizes={allowedPageSizes}
                                 showInfo={true} />
                             <Column dataField='id' caption='Application ID' allowHiding={false} alignment='left' />
                             <Column dataField='name' caption='Application Name' allowHiding={false} />
@@ -145,7 +156,7 @@ const Applications: FC = () => {
                                     selectByClick={true}
                                     recursive={true} />
                             </ColumnChooser>
-                        </DataGrid>
+                        </DataGrid>)}
                     </CardContent>
                 </Card>
             </Box>

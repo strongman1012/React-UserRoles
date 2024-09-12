@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState, useMemo } from 'react';
 import {
     TextField, Typography, Button, FormControlLabel, Switch, Grid, Autocomplete, Checkbox, Chip,
     Container, Box, Card, CardHeader, CardContent, Divider, Tabs, Tab
@@ -11,7 +11,7 @@ import { fetchUsersList } from '../../../reducers/users/usersSlice';
 import { createTeam } from '../../../reducers/teams/teamsSlice';
 import { Team } from '../../../reducers/teams/teamsAPI';
 import { User } from '../../../reducers/users/usersAPI';
-import { DataGrid, Column, SearchPanel, Paging, Pager } from 'devextreme-react/data-grid';
+import { DataGrid, Column, SearchPanel, Paging, Pager, FilterRow } from 'devextreme-react/data-grid';
 import LoadingScreen from 'src/components/Basic/LoadingScreen';
 import AlertModal from 'src/components/Basic/Alert';
 
@@ -24,6 +24,7 @@ const NewTeam: FC<NewTeamProps> = ({ onClose }) => {
     const editable = useSelector((state: RootState) => state.teams.editable);
     const allBusinessUnits = useSelector((state: RootState) => state.businessUnits.businessUnitsList);
     const allUsers = useSelector((state: RootState) => state.users.usersList);
+    const setting = useSelector((state: RootState) => state.settings.setting);
 
     const initialFormData: Omit<Team, 'id'> = {
         name: '',
@@ -45,6 +46,16 @@ const NewTeam: FC<NewTeamProps> = ({ onClose }) => {
         dispatch(fetchBusinessUnitsList());
         dispatch(fetchUsersList());
     }, [dispatch]);
+
+    // Memoizing defaultPageSize based on the setting
+    const defaultPageSize = useMemo(() => {
+        return setting?.rowsPerPage ? setting.rowsPerPage : 20;
+    }, [setting]);
+
+    // Memoizing allowedPageSizes based on defaultPageSize
+    const allowedPageSizes = useMemo(() => {
+        return [defaultPageSize, 2 * defaultPageSize, 3 * defaultPageSize];
+    }, [defaultPageSize]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -117,9 +128,8 @@ const NewTeam: FC<NewTeamProps> = ({ onClose }) => {
         <Container maxWidth={false}>
             <LoadingScreen show={isLoading} />
             <Box sx={{ pt: 3 }}>
-                <Card variant="outlined" sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}` }}>
+                <Card variant="outlined">
                     <CardHeader title="New Team"
-                        sx={{ background: (theme) => `${theme.palette.primary.main}`, color: '#f7f7f7' }}
                         action={
                             <>
                                 <Button variant="contained" color="primary" onClick={handleSave} disabled={editable ? false : true} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper}`, color: (theme) => `${theme.palette.primary.dark}` }}>
@@ -222,8 +232,9 @@ const NewTeam: FC<NewTeamProps> = ({ onClose }) => {
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <DataGrid
+                                    {setting && defaultPageSize && allowedPageSizes && (<DataGrid
                                         dataSource={selectedMembers}
+                                        key={defaultPageSize}
                                         keyExpr="id"
                                         columnAutoWidth={true}
                                         showRowLines={true}
@@ -231,13 +242,14 @@ const NewTeam: FC<NewTeamProps> = ({ onClose }) => {
                                         allowColumnResizing={true}
                                         rowAlternationEnabled={true}
                                     >
+                                        <FilterRow visible={true} />
                                         <SearchPanel visible={true} />
-                                        <Paging defaultPageSize={10} />
-                                        <Pager showPageSizeSelector={true} allowedPageSizes={[5, 10]} />
+                                        <Paging defaultPageSize={defaultPageSize} />
+                                        <Pager showPageSizeSelector={true} allowedPageSizes={allowedPageSizes} />
                                         <Column dataField="userName" caption="User Name" />
                                         <Column dataField="fullName" caption="Full Name" />
                                         <Column dataField="business_name" caption="Business Unit" />
-                                    </DataGrid>
+                                    </DataGrid>)}
                                 </Grid>
                             </Grid>
                         </TabPanel>

@@ -108,7 +108,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                         sx: {
                             height: 'calc(100% - 48px) !important',
                             top: '48px !Important',
-                            border: (theme) => `1px solid ${theme.palette.primary.main}`,
+                            border: (theme) => `2px solid ${theme.palette.primary.main}`,
                             position: 'absolute',
                             zIndex: 1
                         }
@@ -134,7 +134,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                                 color: (theme) => `${theme.palette.primary.main}`
                                             }}
                                         >
-                                            <AddchartOutlinedIcon />
+                                            <AddchartOutlinedIcon sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}`, borderRadius: 1 }} />
                                         </ListItemIcon>
                                         <ListItemText primary="Metrics & Logs" sx={{ opacity: open ? 1 : 0 }} />
                                         {collapse['metrics'] ? <ExpandLess /> : <ExpandMore />}
@@ -148,7 +148,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                                 onClick={() => navigate('/dashboard/login-reports')}
                                             >
                                                 <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
-                                                    <SummarizeIcon />
+                                                    <SummarizeIcon sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}`, borderRadius: 1 }} />
                                                 </ListItemIcon>
                                                 <ListItemText primary="Login Reports" />
                                             </ListItemButton>
@@ -159,14 +159,14 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                                 onClick={() => navigate('/dashboard/application-metrics')}
                                             >
                                                 <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
-                                                    <AutoGraphIcon />
+                                                    <AutoGraphIcon sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}`, borderRadius: 1 }} />
                                                 </ListItemIcon>
                                                 <ListItemText primary="Application Metrics" />
                                             </ListItemButton>
                                         )}
                                     </List>
                                 </Collapse>
-                                <Divider sx={{ background: (theme) => `${theme.palette.primary.main}` }} />
+                                <Divider />
                             </>
                         )}
 
@@ -189,7 +189,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                                 color: (theme) => `${theme.palette.primary.main}`
                                             }}
                                         >
-                                            <PeopleAltOutlinedIcon />
+                                            <PeopleAltOutlinedIcon sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}`, borderRadius: 1 }} />
                                         </ListItemIcon>
                                         <ListItemText primary="Users & Roles" sx={{ opacity: open ? 1 : 0 }} />
                                         {collapse['users'] ? <ExpandLess /> : <ExpandMore />}
@@ -203,7 +203,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                                 onClick={() => navigate('/dashboard/users')}
                                             >
                                                 <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
-                                                    <RecentActorsIcon />
+                                                    <RecentActorsIcon sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}`, borderRadius: 1 }} />
                                                 </ListItemIcon>
                                                 <ListItemText primary="Users" />
                                             </ListItemButton>
@@ -214,14 +214,14 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                                 onClick={() => navigate('/dashboard/security-roles')}
                                             >
                                                 <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
-                                                    <AddModeratorIcon />
+                                                    <AddModeratorIcon sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}`, borderRadius: 1 }} />
                                                 </ListItemIcon>
                                                 <ListItemText primary="Security Roles" />
                                             </ListItemButton>
                                         )}
                                     </List>
                                 </Collapse>
-                                <Divider sx={{ background: (theme) => `${theme.palette.primary.main}` }} />
+                                <Divider />
                             </>
                         )}
 
@@ -244,7 +244,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                                 color: (theme) => `${theme.palette.primary.main}`
                                             }}
                                         >
-                                            <CorporateFareOutlinedIcon />
+                                            <CorporateFareOutlinedIcon sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}`, borderRadius: 1 }} />
                                         </ListItemIcon>
                                         <ListItemText primary="Organizations" sx={{ opacity: open ? 1 : 0 }} />
                                         {collapse['organizations'] ? <ExpandLess /> : <ExpandMore />}
@@ -258,7 +258,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                                 onClick={() => navigate('/dashboard/business-units')}
                                             >
                                                 <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
-                                                    <AddBusinessIcon />
+                                                    <AddBusinessIcon sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}`, borderRadius: 1 }} />
                                                 </ListItemIcon>
                                                 <ListItemText primary="Business Units" />
                                             </ListItemButton>
@@ -269,7 +269,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                                 onClick={() => navigate('/dashboard/teams')}
                                             >
                                                 <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
-                                                    <GroupsIcon />
+                                                    <GroupsIcon sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}`, borderRadius: 1 }} />
                                                 </ListItemIcon>
                                                 <ListItemText primary="Teams" />
                                             </ListItemButton>
@@ -280,14 +280,14 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                                 onClick={() => navigate('/dashboard/organization-chart')}
                                             >
                                                 <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
-                                                    <TableChartIcon />
+                                                    <TableChartIcon sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}`, borderRadius: 1 }} />
                                                 </ListItemIcon>
                                                 <ListItemText primary="Organization Chart" />
                                             </ListItemButton>
                                         )}
                                     </List>
                                 </Collapse>
-                                <Divider sx={{ background: (theme) => `${theme.palette.primary.main}` }} />
+                                <Divider />
                             </>
                         )}
 
@@ -310,7 +310,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                                 color: (theme) => `${theme.palette.primary.main}`
                                             }}
                                         >
-                                            <AccountBalanceOutlinedIcon />
+                                            <AccountBalanceOutlinedIcon sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}`, borderRadius: 1 }} />
                                         </ListItemIcon>
                                         <ListItemText primary="Applications" sx={{ opacity: open ? 1 : 0 }} />
                                         {collapse['assets'] ? <ExpandLess /> : <ExpandMore />}
@@ -324,7 +324,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                                 onClick={() => navigate('/dashboard/applications')}
                                             >
                                                 <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
-                                                    <AppsIcon />
+                                                    <AppsIcon sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}`, borderRadius: 1 }} />
                                                 </ListItemIcon>
                                                 <ListItemText primary="Applications" />
                                             </ListItemButton>
@@ -335,7 +335,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                                 onClick={() => navigate('/dashboard/areas')}
                                             >
                                                 <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
-                                                    <BorderOuterIcon />
+                                                    <BorderOuterIcon sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}`, borderRadius: 1 }} />
                                                 </ListItemIcon>
                                                 <ListItemText primary="Areas/Modules" />
                                             </ListItemButton>
@@ -346,7 +346,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                                 onClick={() => navigate('/dashboard/data-access')}
                                             >
                                                 <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
-                                                    <SettingsAccessibilityIcon />
+                                                    <SettingsAccessibilityIcon sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}`, borderRadius: 1 }} />
                                                 </ListItemIcon>
                                                 <ListItemText primary="Data Accesses" />
                                             </ListItemButton>
