@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppDispatch } from '../../store/store';
-import { loginAPI, registerAPI, forgotPasswordAPI, logoutAPI } from './authAPI';
+import { loginAPI, loginWithTokenAPI, registerAPI, forgotPasswordAPI, logoutAPI } from './authAPI';
 import getUserFromToken from '../../utills/getUserFromToken';
 import { jwtDecode } from 'jwt-decode';
 import { DecodedToken } from '../../utills/getUserFromToken';
@@ -73,6 +73,18 @@ export const login = (credentials: { email: string; password: string }) => async
         return err_message;
     }
 };
+
+export const loginWithToken = (token: string) => async (dispatch: AppDispatch) => {
+    try {
+        const response = await loginWithTokenAPI(token);
+        dispatch(loginSuccess({ token: response.token }));
+        return response.message;
+    } catch (error: any) {
+        dispatch(loginFailure());
+        const err_message = error.response?.data?.message || error.message;
+        return err_message;
+    }
+}
 
 export const register = (userInfo: { userName: string; email: string; password: string }) => async (dispatch: AppDispatch) => {
     try {

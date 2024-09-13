@@ -8,8 +8,8 @@ import {
 import { AccountCircle, MenuOutlined, Settings, ExitToApp } from '@mui/icons-material';
 import { useAppDispatch } from '../store/hooks';
 import { logout } from '../reducers/auth/authSlice';
-import { fetchAreaLists } from 'src/reducers/areaList/areaListSlice';
-import { fetchSettings, saveSettings } from 'src/reducers/settings/settingsSlice';
+import { fetchUserAccess } from 'src/reducers/areaList/areaListSlice';
+import { saveSettings } from 'src/reducers/settings/settingsSlice';
 import { RootState } from "src/store/store";
 import { useSelector } from "react-redux";
 import LoadingScreen from 'src/components/Basic/LoadingScreen';
@@ -35,8 +35,7 @@ const DashboardNavbar: FC<DashboardNavbarProps> = ({ open, toggleSidebar }) => {
     const [confirmDescription, setConfirmDescription] = useState<string>('');
 
     useEffect(() => {
-        dispatch(fetchAreaLists());
-        dispatch(fetchSettings());
+        dispatch(fetchUserAccess());
     }, [dispatch]);
 
     useEffect(() => {

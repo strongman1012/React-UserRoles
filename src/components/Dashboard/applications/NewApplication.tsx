@@ -18,6 +18,7 @@ const NewApplication: FC<NewApplicationProps> = ({ onClose }) => {
     const [formData, setFormData] = useState<Application>({
         id: 0,
         name: '',
+        url: '',
         description: '',
     });
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -60,7 +61,7 @@ const NewApplication: FC<NewApplicationProps> = ({ onClose }) => {
                 setConfirmModalOpen(true);
             }
             finally {
-                setFormData({ id: 0, name: '', description: '' });
+                setFormData({ id: 0, name: '', url: '', description: '' });
                 setIsLoading(false);
             }
         }
@@ -92,6 +93,16 @@ const NewApplication: FC<NewApplicationProps> = ({ onClose }) => {
                                 label="Application Name"
                                 name="name"
                                 value={formData.name}
+                                onChange={handleInputChange}
+                            />
+                        </Box>
+                        <Box sx={{ mb: 2 }}>
+                            <TextField
+                                fullWidth
+                                required
+                                label="Application URL"
+                                name="url"
+                                value={formData.url}
                                 onChange={handleInputChange}
                             />
                         </Box>

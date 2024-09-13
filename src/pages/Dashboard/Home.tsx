@@ -45,13 +45,9 @@ const Home: FC = () => {
                         return {
                             name: row.application_name, url: area_names.includes("Application Metrics") ? '/dashboard/application-metrics' : (areaURLs.find(item => item.name === area_names[0])?.url || '#')
                         }
-                    else if (row.application_name === "Application A")
+                    else
                         return {
-                            name: row.application_name, url: `https://react-booking-henna.vercel.app/login?token=${jwtToken}`
-                        }
-                    else if (row.application_name === "Application B")
-                        return {
-                            name: row.application_name, url: `https://react-real-estate-one.vercel.app/login?token=${jwtToken}`
+                            name: row.application_name, url: `${row.application_url}?token=${jwtToken}`
                         }
                 }
                 return null;

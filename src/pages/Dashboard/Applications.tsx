@@ -132,7 +132,8 @@ const Applications: FC = () => {
                                 showInfo={true} />
                             <Column dataField='id' caption='Application ID' allowHiding={false} alignment='left' />
                             <Column dataField='name' caption='Application Name' allowHiding={false} />
-                            <Column dataField='description' caption='Description' allowHiding={false} />
+                            <Column dataField='url' caption='Application URL' allowHiding={false} />
+                            <Column dataField='description' caption='Description' />
                             <Column caption="Actions" type="buttons" alignment="center" allowHiding={false}>
                                 <GridButton icon="edit" text="Edit" onClick={handleEdit} cssClass="text-secondary" disabled={editable ? false : true} />
                                 <GridButton icon="trash" text="Delete" onClick={handleDelete} cssClass="text-secondary" disabled={editable ? false : true} />

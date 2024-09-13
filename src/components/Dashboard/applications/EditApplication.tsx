@@ -52,8 +52,8 @@ const EditApplication: FC<EditApplicationProps> = ({ applicationId, onClose }) =
             setConfirmModalOpen(true);
             return false;
         }
-        if (!formData?.description) {
-            setConfirmTitle('Application Description is required');
+        if (!formData?.url) {
+            setConfirmTitle('Application URL is required');
             setConfirmDescription('');
             setConfirmModalOpen(true);
             return false;
@@ -111,7 +111,17 @@ const EditApplication: FC<EditApplicationProps> = ({ applicationId, onClose }) =
                                 required
                                 label="Application Name"
                                 name="name"
-                                value={formData.name}
+                                value={formData.name || ''}
+                                onChange={handleInputChange}
+                            />
+                        </Box>
+                        <Box sx={{ mb: 2 }}>
+                            <TextField
+                                fullWidth
+                                required
+                                label="Application URL"
+                                name="url"
+                                value={formData.url || ''}
                                 onChange={handleInputChange}
                             />
                         </Box>
@@ -120,7 +130,7 @@ const EditApplication: FC<EditApplicationProps> = ({ applicationId, onClose }) =
                                 fullWidth
                                 label="Description"
                                 name="description"
-                                value={formData.description}
+                                value={formData.description || ''}
                                 onChange={handleInputChange}
                                 multiline
                                 rows={4}

@@ -1,4 +1,5 @@
 import { apiClient } from '../../utills/config';
+import { Setting } from '../settings/settingsAPI';
 
 export interface AreaList {
     id: number;
@@ -18,6 +19,7 @@ export interface AreaList {
 export interface ApplicationAreaList {
     application_name: string;
     application_id: number;
+    application_url: string;
     permission: boolean;
     data: AreaList[];
 }
@@ -29,8 +31,13 @@ export interface ApplicationRoleList {
     permission: boolean;
 }
 
-export const fetchAreaListsAPI = async (): Promise<ApplicationAreaList[]> => {
-    const response = await apiClient.get<ApplicationAreaList[]>(`/areaList/getUserAreas`);
+export interface ApplicationAccess {
+    application_areas: ApplicationAreaList[];
+    setting: Setting;
+}
+
+export const fetchUserAccessAPI = async (): Promise<ApplicationAccess> => {
+    const response = await apiClient.get<ApplicationAccess>(`/areaList/getUserAccess`);
     return response.data;
 };
 

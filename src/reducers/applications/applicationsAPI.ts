@@ -4,6 +4,7 @@ import { apiClient } from '../../utills/config';
 export interface Application {
     id: number;
     name: string;
+    url: string;
     description: string;
 }
 
@@ -30,7 +31,7 @@ export const fetchApplicationByIdAPI = async (id: number): Promise<any> => {
 };
 
 // Create a new application
-export const createApplicationAPI = async (formData: { name: string, description: string }): Promise<any> => {
+export const createApplicationAPI = async (formData: { name: string, url: string, description: string }): Promise<any> => {
     try {
         const response = await apiClient.post<Application>('/applications', { ...formData });
         return response.data;
@@ -41,7 +42,7 @@ export const createApplicationAPI = async (formData: { name: string, description
 };
 
 // Update an application by ID
-export const updateApplicationAPI = async (id: number, formData: { name: string, description: string }): Promise<any> => {
+export const updateApplicationAPI = async (id: number, formData: { name: string, url: string, description: string }): Promise<any> => {
     try {
         const response = await apiClient.put<Application>(`/applications/${id}`, { ...formData });
         return response.data;

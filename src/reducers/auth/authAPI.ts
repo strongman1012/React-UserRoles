@@ -25,6 +25,11 @@ export const loginAPI = async (credentials: LoginCredentials): Promise<AuthRespo
     return response.data;
 };
 
+export const loginWithTokenAPI = async (token: string): Promise<AuthResponse> => {
+    const response = await apiClient.post<AuthResponse>('/loginWithToken', { token: token, application: "System" });
+    return response.data;
+};
+
 export const registerAPI = async (userInfo: RegisterInfo): Promise<AuthResponse> => {
     const response = await apiClient.post<AuthResponse>('/register', userInfo);
     return response.data;

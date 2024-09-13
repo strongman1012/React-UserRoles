@@ -67,7 +67,7 @@ export const fetchApplicationById = (id: number) => async (dispatch: AppDispatch
     }
 };
 
-export const createApplication = (formData: { name: string, description: string }) => async (dispatch: AppDispatch) => {
+export const createApplication = (formData: { name: string, url: string, description: string }) => async (dispatch: AppDispatch) => {
     try {
         const response = await createApplicationAPI(formData);
         dispatch(addApplication(response.application));
@@ -79,7 +79,7 @@ export const createApplication = (formData: { name: string, description: string 
     }
 };
 
-export const updateApplicationById = (id: number, formData: { name: string, description: string }) => async (dispatch: AppDispatch) => {
+export const updateApplicationById = (id: number, formData: { name: string, url: string, description: string }) => async (dispatch: AppDispatch) => {
     try {
         const response = await updateApplicationAPI(id, formData);
         dispatch(updateApplication(response.application));

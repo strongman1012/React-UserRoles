@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppDispatch } from '../../store/store';
-import { fetchSettingsAPI, saveSettingsAPI, Setting } from './settingsAPI';
+import { saveSettingsAPI, Setting } from './settingsAPI';
 
 interface SettingState {
     setting: Setting | undefined;
@@ -27,15 +27,6 @@ const settingsSlice = createSlice({
 });
 
 export const { setSetting, updateSetting, resetSetting } = settingsSlice.actions;
-
-export const fetchSettings = () => async (dispatch: AppDispatch) => {
-    try {
-        const response = await fetchSettingsAPI();
-        dispatch(setSetting(response));
-    } catch (error: any) {
-        console.error('Error fetching settings:', error.response?.data?.message || error.message);
-    }
-};
 
 export const saveSettings = (rowsPerpage: number) => async (dispatch: AppDispatch) => {
     try {
