@@ -13,6 +13,7 @@ const App: FC = () => {
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [darkMode, setDarkMode] = useState(false);
+  const pathName = window.location.pathname.split('/').pop();
 
   const loginToken = useCallback(async (token: string) => {
     setIsLoading(true);
@@ -51,7 +52,7 @@ const App: FC = () => {
     setDarkMode(!darkMode);
   };
 
-  if (isLoading) {
+  if (pathName === "login" && isLoading) {
     return <LoadingScreen show={true} />;
   }
 

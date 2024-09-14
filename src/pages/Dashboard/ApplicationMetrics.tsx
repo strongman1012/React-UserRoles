@@ -227,7 +227,7 @@ const ApplicationMetrics: FC = () => {
                                 {metricsCategory.length > 0 && (
                                     <Chart dataSource={metricsCategory}
                                         title={{
-                                            text: 'Users Per Application',
+                                            text: 'Roles Login Per Application',
                                             font: {
                                                 weight: 500,
                                                 family: "sans-serif",
