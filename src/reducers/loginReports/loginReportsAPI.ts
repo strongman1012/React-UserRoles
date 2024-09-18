@@ -6,6 +6,7 @@ export interface LoginReport {
     user_id: number;
     date: string;
     type: string;
+    application_id: number;
     application_name: string;
     status: boolean;
     userName: string;
@@ -19,7 +20,7 @@ export interface LoginMetrics {
 
 // Define the type for Application Metrics 1, 2, 3, 4
 export interface Metrics {
-    application_name?: string;
+    application_id?: number;
     usage_date?: string;
     usage_time?: number;
     usage_users?: number;

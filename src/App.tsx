@@ -8,12 +8,12 @@ import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import { getTheme } from './utills/theme';
 import ThemeSwitcher from 'src/components/Basic/ThemeSwitcher';
+import { setSidebarVisible } from 'src/reducers/areaList/areaListSlice';
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [darkMode, setDarkMode] = useState(false);
-  const pathName = window.location.pathname.split('/').pop();
 
   const loginToken = useCallback(async (token: string) => {
     setIsLoading(true);
@@ -27,6 +27,7 @@ const App: FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    dispatch(setSidebarVisible(false));
     // Check if token exists in localStorage
     const localStorageToken = localStorage.getItem('token');
 
@@ -52,7 +53,7 @@ const App: FC = () => {
     setDarkMode(!darkMode);
   };
 
-  if (pathName === "login" && isLoading) {
+  if (isLoading) {
     return <LoadingScreen show={true} />;
   }
 

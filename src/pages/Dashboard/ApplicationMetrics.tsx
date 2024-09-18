@@ -56,7 +56,7 @@ const ApplicationMetrics: FC = () => {
         if (applications.length > 0 && roles.length > 0 && perDayMin.length > 0 && perDayNumber.length > 0 &&
             totalPercent.length > 0 && roleApplications.length > 0 && users.length > 0) {
             const temp_applications = applications.map((row: Application, index) => {
-                return { value: "application" + index, name: row.name }
+                return { value: "application" + index, name: row.name, id: row.id }
             });
             const temp_roles = roles.map((row: Role, index) => {
                 return { value: "role" + index, name: row.name, id: row.id }
@@ -71,7 +71,7 @@ const ApplicationMetrics: FC = () => {
 
                 temp_applications.forEach(app => {
                     const appMetrics = perDayMin.find(
-                        (row: Metrics) => row.usage_date === date && row.application_name === app.name
+                        (row: Metrics) => row.usage_date === date && row.application_id === app.id
                     );
                     result[app.value] = appMetrics ? appMetrics.usage_time : 0;
                 });
@@ -83,7 +83,7 @@ const ApplicationMetrics: FC = () => {
 
                 temp_applications.forEach(app => {
                     const appMetrics = perDayNumber.find(
-                        (row: Metrics) => row.usage_date === date && row.application_name === app.name
+                        (row: Metrics) => row.usage_date === date && row.application_id === app.id
                     );
                     result[app.value] = appMetrics ? appMetrics.usage_users : 0;
                 });
@@ -91,7 +91,7 @@ const ApplicationMetrics: FC = () => {
             });
 
             const temp_totalPercent = temp_applications.map(app => {
-                return { application: app.name, percent: totalPercent.filter(row => row.application_name === app.name).map(row => row.usage_percent)[0] };
+                return { application: app.name, percent: totalPercent.filter(row => row.application_id === app.id).map(row => row.usage_percent)[0] };
             });
 
             const temp_category = temp_applications.map(app => {
