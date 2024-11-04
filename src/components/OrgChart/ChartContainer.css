@@ -3,7 +3,7 @@
   box-sizing: border-box;
   position: relative;
   margin: 10px;
-  height: 700px;
+  height: 100%;
   border: 2px dashed #aaa;
   border-radius: 5px;
   overflow: auto;
@@ -17,6 +17,34 @@
   background-size: 10px 10px;
   border: 1px dashed rgba(0, 0, 0, 0);
   padding: 20px 20px 0 20px;
+}
+
+.team-level .oc-heading {
+  background-color: #009933 !important;
+}
+
+.team-level .oc-content {
+  border-color: #009933 !important;
+}
+
+.user-level .oc-heading {
+  background-color: #2d20eb !important;
+}
+
+.user-level .oc-content {
+  border-color: #2d20eb !important;
+}
+
+#top_team {
+  display: none !important;
+}
+
+#top_team + ul > li::before {
+  display: none !important;
+}
+
+#top_team + ul > li > div::before {
+  display: none !important;
 }
 
 .orgchart-container .hidden {

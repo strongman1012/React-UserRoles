@@ -9,17 +9,20 @@ import { fetchDataAccesses } from 'src/reducers/dataAccesses/dataAccessesSlice';
 import { getAreaLists, saveAreaList, getApplicationRoles, saveApplicationRole } from '../../../reducers/areaList/areaListSlice';
 import {
     Tabs, Tab, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-    Paper, Select, MenuItem, Checkbox, FormLabel,
+    Paper, Select, MenuItem, Checkbox, FormLabel, IconButton,
     Container, Divider, Card, CardHeader, CardContent
 } from '@mui/material';
+import SaveIcon from '@mui/icons-material/Save';
 import LoadingScreen from 'src/components/Basic/LoadingScreen';
 import AlertModal from 'src/components/Basic/Alert';
+import { AreaList } from 'src/reducers/areaList/areaListAPI';
 
 interface SecurityRolesFormProps {
     roleId: number;
+    openStatus: boolean;
 }
 
-const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
+const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId, openStatus }) => {
     const dispatch = useAppDispatch();
     const role = useSelector((state: RootState) => state.roles.currentRole);
     const editable = useSelector((state: RootState) => state.areaList.editable);
@@ -34,6 +37,8 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
     const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false);
     const [confirmTitle, setConfirmTitle] = useState<string>('');
     const [confirmDescription, setConfirmDescription] = useState<string>('');
+    const [rowData, setRowData] = useState<{ [key: number]: AreaList }>({});
+    const [initialOpen, setInitialOpen] = useState<boolean>(openStatus);
 
     useEffect(() => {
         dispatch(fetchApplications());
@@ -60,24 +65,37 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
         }
     }, [allApplications]);
 
-    const filteredAreas = useMemo(() => {
-        return allAreas.filter(area => area.application_id === tabValue);
-    }, [allAreas, tabValue]);
+    useEffect(() => {
+        const initialData: { [key: number]: any } = {};
 
-    const filteredSelectedAreaLists = useMemo(() => {
-        return selectedAreaLists.filter(areaList => areaList.application_id === tabValue)
-    }, [selectedAreaLists, tabValue]);
+        allAreas.forEach((area) => {
+            const existingData = selectedAreaLists.find(areaList =>
+                areaList.data.some(item => item.area_id === area.id)
+            )?.data.find(item => item.area_id === area.id);
 
-    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-        setTabValue(newValue);
-    };
+            initialData[area.id] = {
+                area_id: area.id,
+                permission: existingData?.permission || false,
+                data_access_id: existingData?.data_access_id || 7, // Default User Level
+                read: existingData?.read || false,
+                create: existingData?.create || false,
+                update: existingData?.update || false,
+                delete: existingData?.delete || false,
+            };
+        });
 
-    const handlePermissionChange = async (areaId: number, newPermission: string) => {
+        setRowData(initialData);
+        setInitialOpen(false);
+    }, [allAreas, selectedAreaLists, initialOpen]);
+
+    const handleSave = async (areaId: number) => {
+        const currentRowData = rowData[areaId];
+        if (!currentRowData) return;
+
         setIsLoading(true);
-        const permission = newPermission === 'true';
         try {
-            await dispatch(saveAreaList(roleId, { area_id: areaId, permission: permission }));
-            setConfirmTitle('Area permission updated successfully');
+            await dispatch(saveAreaList(roleId, currentRowData));
+            setConfirmTitle('Changes saved successfully');
             setConfirmDescription('');
             setConfirmModalOpen(true);
         } catch (error: any) {
@@ -87,6 +105,24 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleInputChange = (areaId: number, field: string, value: any) => {
+        setRowData((prevData) => ({
+            ...prevData,
+            [areaId]: {
+                ...prevData[areaId],
+                [field]: value,
+            }
+        }));
+    };
+
+    const filteredAreas = useMemo(() => {
+        return allAreas.filter(area => area.application_id === tabValue);
+    }, [allAreas, tabValue]);
+
+    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+        setTabValue(newValue);
     };
 
     const handleApplicationRoleChange = useCallback(
@@ -109,35 +145,9 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
         [dispatch, roleId, tabValue]
     );
 
-    const handleDataAccessChange = async (areaId: number, data_access_id: number) => {
-        setIsLoading(true);
-        try {
-            await dispatch(saveAreaList(roleId, { area_id: areaId, data_access_id: data_access_id }));
-            setConfirmTitle('Data access updated successfully');
-            setConfirmDescription('');
-            setConfirmModalOpen(true);
-        } catch (error: any) {
-            setConfirmTitle(error.message);
-            setConfirmDescription('');
-            setConfirmModalOpen(true);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const getPermission = (areaId: number) => {
-        const area = filteredSelectedAreaLists[0]?.data.find(area => area.area_id === areaId);
-        return area ? area.permission : false;
-    };
-
     const getApplicationRole = (tabId: number) => {
         const applicationRole = applicationRoles.find(row => row.application_id === tabId);
         return applicationRole ? applicationRole.permission : false;
-    };
-
-    const getDataAccess = (areaId: number) => {
-        const area = filteredSelectedAreaLists[0]?.data.find(area => area.area_id === areaId);
-        return area ? area.data_access_id : '';
     };
 
     const applicationRoleValue = getApplicationRole(tabValue).toString();
@@ -147,7 +157,7 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
             value={applicationRoleValue}
             onChange={(e) => handleApplicationRoleChange(e.target.value as string)}
             size="small"
-            disabled={!editable}
+            disabled={!editable?.create && !editable?.update}
             sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper} !important`, color: (theme) => `${theme.palette.primary.dark}` }}
         >
             <MenuItem value="true">Yes</MenuItem>
@@ -189,7 +199,7 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
                                             <TableRow>
                                                 <TableCell sx={{ borderRight: 1, borderColor: '#DDDDDD' }}>Area / Feature</TableCell>
                                                 <TableCell sx={{ borderRight: 1, borderColor: '#DDDDDD', textAlign: 'center' }}>Area Access</TableCell>
-                                                <TableCell colSpan={5} align="center">Data Access</TableCell>
+                                                <TableCell colSpan={6} align="center">Data Access</TableCell>
                                             </TableRow>
                                             <TableRow>
                                                 <TableCell sx={{ borderRight: 1, borderColor: '#DDDDDD' }}></TableCell>
@@ -199,6 +209,7 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
                                                 <TableCell>Create</TableCell>
                                                 <TableCell>Update</TableCell>
                                                 <TableCell>Delete</TableCell>
+                                                <TableCell>Actions</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
@@ -210,9 +221,9 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
                                                     <TableCell sx={{ borderRight: 1, borderColor: '#DDDDDD' }}>{area.name}</TableCell>
                                                     <TableCell sx={{ borderRight: 1, borderColor: '#DDDDDD', display: 'flex', justifyContent: 'center' }}>
                                                         <Select
-                                                            value={getPermission(area.id).toString()}
-                                                            onChange={(e) => handlePermissionChange(area.id, e.target.value as string)}
-                                                            disabled={!editable}
+                                                            value={rowData[area.id]?.permission.toString() || 'false'}
+                                                            onChange={(e) => handleInputChange(area.id, 'permission', e.target.value === 'true' ? true : false)}
+                                                            disabled={!editable?.create && !editable?.update}
                                                         >
                                                             <MenuItem value={'true'}>Yes</MenuItem>
                                                             <MenuItem value={'false'}>No</MenuItem>
@@ -220,9 +231,9 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
                                                     </TableCell>
                                                     <TableCell>
                                                         <Select
-                                                            value={getDataAccess(area.id)}
-                                                            onChange={(e) => handleDataAccessChange(area.id, e.target.value as number)}
-                                                            disabled={!editable}
+                                                            value={rowData[area.id]?.data_access_id || 7}
+                                                            onChange={(e) => handleInputChange(area.id, 'data_access_id', e.target.value)}
+                                                            disabled={!editable?.create && !editable?.update}
                                                         >
                                                             {dataAccessLists.map(data => (
                                                                 <MenuItem key={data.id} value={data.id}>
@@ -233,27 +244,40 @@ const SecurityRolesForm: FC<SecurityRolesFormProps> = ({ roleId }) => {
                                                     </TableCell>
                                                     <TableCell>
                                                         <Checkbox
-                                                            checked={filteredSelectedAreaLists[0]?.data.filter(row => row.area_id === area.id).map(row => row.read)[0] || false}
-                                                            disabled
+                                                            checked={rowData[area.id]?.read || false}
+                                                            onChange={(e) => handleInputChange(area.id, 'read', e.target.checked)}
+                                                            disabled={!editable?.create && !editable?.update}
                                                         />
                                                     </TableCell>
                                                     <TableCell>
                                                         <Checkbox
-                                                            checked={filteredSelectedAreaLists[0]?.data.filter(row => row.area_id === area.id).map(row => row.create)[0] || false}
-                                                            disabled
+                                                            checked={rowData[area.id]?.create || false}
+                                                            onChange={(e) => handleInputChange(area.id, 'create', e.target.checked)}
+                                                            disabled={!editable?.create && !editable?.update}
                                                         />
                                                     </TableCell>
                                                     <TableCell>
                                                         <Checkbox
-                                                            checked={filteredSelectedAreaLists[0]?.data.filter(row => row.area_id === area.id).map(row => row.update)[0] || false}
-                                                            disabled
+                                                            checked={rowData[area.id]?.update || false}
+                                                            onChange={(e) => handleInputChange(area.id, 'update', e.target.checked)}
+                                                            disabled={!editable?.create && !editable?.update}
                                                         />
                                                     </TableCell>
                                                     <TableCell>
                                                         <Checkbox
-                                                            checked={filteredSelectedAreaLists[0]?.data.filter(row => row.area_id === area.id).map(row => row.delete)[0] || false}
-                                                            disabled
+                                                            checked={rowData[area.id]?.delete || false}
+                                                            onChange={(e) => handleInputChange(area.id, 'delete', e.target.checked)}
+                                                            disabled={!editable?.create && !editable?.update}
                                                         />
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <IconButton
+                                                            color="primary"
+                                                            onClick={() => handleSave(area.id)}
+                                                            disabled={!editable?.create && !editable?.update}
+                                                        >
+                                                            <SaveIcon />
+                                                        </IconButton>
                                                     </TableCell>
                                                 </TableRow>
                                             ))}

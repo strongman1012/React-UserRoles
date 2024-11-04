@@ -6,7 +6,7 @@ interface UserState {
     allUsers: User[];
     usersList: User[];
     currentUser?: User;
-    editable?: boolean;
+    editable?: { read: boolean, create: boolean, update: boolean, delete: boolean };
 }
 
 const initialState: UserState = {
@@ -21,7 +21,7 @@ const usersSlice = createSlice({
         resetUsers: (state) => {
             state.allUsers = [];
             state.currentUser = undefined;
-            state.editable = false;
+            state.editable = { read: false, create: false, update: false, delete: false };
         },
         setUsersList: (state, action: PayloadAction<User[]>) => {
             state.usersList = action.payload;
@@ -95,7 +95,7 @@ export const createUser = (user: Omit<User, 'id'>) => async (dispatch: AppDispat
 
 export const updateUserById = (id: number, user: Partial<User>) => async (dispatch: AppDispatch) => {
     try {
-        const response = await updateUserAPI(id, user);console.log(response,'response')
+        const response = await updateUserAPI(id, user);
         dispatch(updateUser(response));
         return response.message;
     } catch (error: any) {

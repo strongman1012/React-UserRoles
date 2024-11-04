@@ -90,7 +90,7 @@ const EditRole: FC<EditRoleProps> = ({ roleId, onClose }) => {
                     <CardHeader title="Edit Role"
                         action={
                             <>
-                                <Button variant="contained" color="primary" onClick={handleSave} disabled={editable ? false : true} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper}`, color: (theme) => `${theme.palette.primary.dark}` }}>
+                                <Button variant="contained" color="primary" onClick={handleSave} disabled={!editable?.update} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper}`, color: (theme) => `${theme.palette.primary.dark}` }}>
                                     Save
                                 </Button>
                                 <Button variant="outlined" color="secondary" onClick={onClose} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper}`, color: (theme) => `${theme.palette.primary.dark}` }}>

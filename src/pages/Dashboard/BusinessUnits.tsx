@@ -93,16 +93,80 @@ const BusinessUnits: FC = () => {
             dispatch(deleteBusinessUnitsById(selectedId))
     }
 
+    const memorizedDataGrid = useMemo(() => (
+        <DataGrid
+            id="businessUnits"
+            key={defaultPageSize}
+            dataSource={businessUnits}
+            keyExpr="id"
+            columnAutoWidth={true}
+            showRowLines={true}
+            showBorders={true}
+            allowColumnResizing={true}
+            rowAlternationEnabled={true}
+            onExporting={onExporting}
+        >
+            <FilterRow visible={true} />
+            <SearchPanel
+                visible={true}
+                width={240}
+                placeholder="Search..." />
+            <Export enabled={true} />
+            <Paging defaultPageSize={defaultPageSize} />
+            <Pager
+                showPageSizeSelector={true}
+                allowedPageSizes={allowedPageSizes}
+                showInfo={true} />
+            <Column dataField='name' caption='Name' allowHiding={false} />
+            <Column dataField='website' caption='Website' />
+            <Column dataField='mainPhone' caption='Main Phone' />
+            <Column dataField='parent_name' caption='Parent Organization' />
+            <Column dataField='admin_name' caption='Administrator' />
+            <Column dataField='otherPhone' caption='Other Phone' />
+            <Column dataField='fax' caption='Fax' />
+            <Column dataField='email' caption='Email' />
+            <Column dataField='street1' caption='Street 1' />
+            <Column dataField='street2' caption='Street 2' />
+            <Column dataField='street3' caption='Street 3' />
+            <Column dataField='city' caption='City' />
+            <Column dataField='state' caption='State' />
+            <Column dataField='zipCode' caption='Zip Code' />
+            <Column dataField='region' caption='Region' />
+            <Column caption="Actions" type="buttons" alignment="center" allowHiding={false}>
+                <GridButton icon="edit" text="Edit" onClick={handleEdit} cssClass="text-secondary" disabled={!editable?.update} />
+                <GridButton icon="trash" text="Delete" onClick={handleDelete} cssClass="text-secondary" disabled={!editable?.delete} />
+            </Column>
+            <ColumnChooser
+                height='340px'
+                enabled={true}
+                mode="select"
+            >
+                <Position
+                    my="right top"
+                    at="right bottom"
+                    of=".dx-datagrid-column-chooser-button"
+                />
+                <ColumnChooserSearch
+                    enabled={true}
+                    editorOptions={searchEditorOptions} />
+                <ColumnChooserSelection
+                    allowSelectAll={true}
+                    selectByClick={true}
+                    recursive={true} />
+            </ColumnChooser>
+        </DataGrid>
+    ), [businessUnits, editable, defaultPageSize, allowedPageSizes]);
+
     return (
         <Container maxWidth={false}>
             <LoadingScreen show={isLoading} />
             <Box sx={{ pt: 3 }}>
                 <Card variant="outlined">
-                    <CardHeader title="Business Units"
+                    <CardHeader title="Organizational Units"
                         action={
                             <>
                                 <Button startIcon={<AddIcon />} variant="contained" color="primary" sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper}`, color: (theme) => `${theme.palette.primary.dark}` }}
-                                    onClick={handleCreate} disabled={editable ? false : true}>
+                                    onClick={handleCreate} disabled={!editable?.create}>
                                     New
                                 </Button>
                             </>
@@ -110,67 +174,7 @@ const BusinessUnits: FC = () => {
                     />
                     <Divider />
                     <CardContent>
-                        {setting && defaultPageSize && allowedPageSizes && (<DataGrid
-                            id="businessUnits"
-                            key={defaultPageSize}
-                            dataSource={businessUnits}
-                            keyExpr="id"
-                            columnAutoWidth={true}
-                            showRowLines={true}
-                            showBorders={true}
-                            allowColumnResizing={true}
-                            rowAlternationEnabled={true}
-                            onExporting={onExporting}
-                        >
-                            <FilterRow visible={true} />
-                            <SearchPanel
-                                visible={true}
-                                width={240}
-                                placeholder="Search..." />
-                            <Export enabled={true} />
-                            <Paging defaultPageSize={defaultPageSize} />
-                            <Pager
-                                showPageSizeSelector={true}
-                                allowedPageSizes={allowedPageSizes}
-                                showInfo={true} />
-                            <Column dataField='name' caption='Name' allowHiding={false} />
-                            <Column dataField='website' caption='Website' />
-                            <Column dataField='mainPhone' caption='Main Phone' />
-                            <Column dataField='parent_name' caption='Parent Business' />
-                            <Column dataField='admin_name' caption='Administrator' />
-                            <Column dataField='otherPhone' caption='Other Phone' />
-                            <Column dataField='fax' caption='Fax' />
-                            <Column dataField='email' caption='Email' />
-                            <Column dataField='street1' caption='Street 1' />
-                            <Column dataField='street2' caption='Street 2' />
-                            <Column dataField='street3' caption='Street 3' />
-                            <Column dataField='city' caption='City' />
-                            <Column dataField='state' caption='State' />
-                            <Column dataField='zipCode' caption='Zip Code' />
-                            <Column dataField='region' caption='Region' />
-                            <Column caption="Actions" type="buttons" alignment="center" allowHiding={false}>
-                                <GridButton icon="edit" text="Edit" onClick={handleEdit} cssClass="text-secondary" disabled={editable ? false : true} />
-                                <GridButton icon="trash" text="Delete" onClick={handleDelete} cssClass="text-secondary" disabled={editable ? false : true} />
-                            </Column>
-                            <ColumnChooser
-                                height='340px'
-                                enabled={true}
-                                mode="select"
-                            >
-                                <Position
-                                    my="right top"
-                                    at="right bottom"
-                                    of=".dx-datagrid-column-chooser-button"
-                                />
-                                <ColumnChooserSearch
-                                    enabled={true}
-                                    editorOptions={searchEditorOptions} />
-                                <ColumnChooserSelection
-                                    allowSelectAll={true}
-                                    selectByClick={true}
-                                    recursive={true} />
-                            </ColumnChooser>
-                        </DataGrid>)}
+                        {memorizedDataGrid}
                     </CardContent>
                 </Card>
             </Box>

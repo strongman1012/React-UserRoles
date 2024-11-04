@@ -71,6 +71,67 @@ const LoginReports: FC = () => {
         return userName && userName.trim() !== '' ? userName : 'Deleted user';
     };
 
+    const memorizedDataGrid = useMemo(() => (
+        <DataGrid
+            id="loginReports"
+            key={defaultPageSize}
+            dataSource={loginReports}
+            keyExpr="id"
+            columnAutoWidth={true}
+            showRowLines={true}
+            showBorders={true}
+            allowColumnResizing={true}
+            rowAlternationEnabled={true}
+            onExporting={onExporting}
+        >
+            <FilterRow visible={true} />
+            <SearchPanel
+                visible={true}
+                width={240}
+                placeholder="Search..." />
+            <Export enabled={true} />
+            <Paging defaultPageSize={defaultPageSize} />
+            <Pager
+                showPageSizeSelector={true}
+                allowedPageSizes={allowedPageSizes}
+                showInfo={true} />
+            <Column dataField='user_id' caption='User ID' alignment='left' allowHiding={false} />
+            <Column
+                dataField='userName'
+                caption='User Name'
+                allowHiding={false}
+                cellRender={renderUserNameCell}
+            />
+            <Column dataField='date' caption='Date' />
+            <Column dataField='type' caption='Type' />
+            <Column dataField='application_name' caption='Application' />
+            <Column
+                dataField='status'
+                caption='Status'
+                cellRender={renderStatusCell}
+            />
+
+            <ColumnChooser
+                height='340px'
+                enabled={true}
+                mode="select"
+            >
+                <Position
+                    my="right top"
+                    at="right bottom"
+                    of=".dx-datagrid-column-chooser-button"
+                />
+                <ColumnChooserSearch
+                    enabled={true}
+                    editorOptions={searchEditorOptions} />
+                <ColumnChooserSelection
+                    allowSelectAll={true}
+                    selectByClick={true}
+                    recursive={true} />
+            </ColumnChooser>
+        </DataGrid>
+    ), [loginReports, defaultPageSize, allowedPageSizes]);
+
     return (
         <Container maxWidth={false}>
             <LoadingScreen show={isLoading} />
@@ -79,66 +140,7 @@ const LoginReports: FC = () => {
                     <CardHeader title="Login Reports" />
                     <Divider />
                     <CardContent>
-                        {setting && defaultPageSize && allowedPageSizes && (
-                            <DataGrid
-                                id="loginReports"
-                                key={defaultPageSize}
-                                dataSource={loginReports}
-                                keyExpr="id"
-                                columnAutoWidth={true}
-                                showRowLines={true}
-                                showBorders={true}
-                                allowColumnResizing={true}
-                                rowAlternationEnabled={true}
-                                onExporting={onExporting}
-                            >
-                                <FilterRow visible={true} />
-                                <SearchPanel
-                                    visible={true}
-                                    width={240}
-                                    placeholder="Search..." />
-                                <Export enabled={true} />
-                                <Paging defaultPageSize={defaultPageSize} />
-                                <Pager
-                                    showPageSizeSelector={true}
-                                    allowedPageSizes={allowedPageSizes}
-                                    showInfo={true} />
-                                <Column dataField='user_id' caption='User ID' alignment='left' allowHiding={false} />
-                                <Column
-                                    dataField='userName'
-                                    caption='User Name'
-                                    allowHiding={false}
-                                    cellRender={renderUserNameCell}
-                                />
-                                <Column dataField='date' caption='Date' />
-                                <Column dataField='type' caption='Type' />
-                                <Column dataField='application_name' caption='Application' />
-                                <Column
-                                    dataField='status'
-                                    caption='Status'
-                                    cellRender={renderStatusCell}
-                                />
-
-                                <ColumnChooser
-                                    height='340px'
-                                    enabled={true}
-                                    mode="select"
-                                >
-                                    <Position
-                                        my="right top"
-                                        at="right bottom"
-                                        of=".dx-datagrid-column-chooser-button"
-                                    />
-                                    <ColumnChooserSearch
-                                        enabled={true}
-                                        editorOptions={searchEditorOptions} />
-                                    <ColumnChooserSelection
-                                        allowSelectAll={true}
-                                        selectByClick={true}
-                                        recursive={true} />
-                                </ColumnChooser>
-                            </DataGrid>
-                        )}
+                        {memorizedDataGrid}
                     </CardContent>
                 </Card>
             </Box>

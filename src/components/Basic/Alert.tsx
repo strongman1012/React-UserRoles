@@ -23,7 +23,7 @@ const AlertModal: FC<ModalProps> = (props: ModalProps) => {
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
         >
-            <DialogTitle sx={{ width: '475px', background: (theme) => `${theme.palette.primary.main}`, color: '#f7f7f7', height: '45px' }}>
+            <DialogTitle sx={{ background: (theme) => `${theme.palette.primary.main}`, color: '#f7f7f7', height: '45px' }}>
                 {props.title}
             </DialogTitle>
             {props.description &&

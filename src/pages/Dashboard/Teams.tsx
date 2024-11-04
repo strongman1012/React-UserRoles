@@ -93,7 +93,7 @@ const Teams: FC = () => {
             dispatch(deleteTeamById(selectedTeamId))
     }
 
-    const memoizedDataGrid = useMemo(() => (
+    const memorizedDataGrid = useMemo(() => (
         <DataGrid
             id="teams"
             key={defaultPageSize}
@@ -121,11 +121,11 @@ const Teams: FC = () => {
             />
             <Column dataField='name' caption='Name' allowHiding={false} />
             <Column dataField='description' caption='Description' />
-            <Column dataField='business_name' caption='Business Unit' />
+            <Column dataField='business_name' caption='Organizational Unit' />
             <Column dataField='is_default' caption='Default Team' />
             <Column caption="Actions" type="buttons" alignment="center" allowHiding={false}>
-                <GridButton icon="edit" text="Edit" onClick={handleEdit} cssClass="text-secondary" disabled={!editable} />
-                <GridButton icon="trash" text="Delete" onClick={handleDelete} cssClass="text-secondary" disabled={!editable} />
+                <GridButton icon="edit" text="Edit" onClick={handleEdit} cssClass="text-secondary" disabled={!editable?.update} />
+                <GridButton icon="trash" text="Delete" onClick={handleDelete} cssClass="text-secondary" disabled={!editable?.delete} />
             </Column>
             <ColumnChooser
                 height='340px'
@@ -160,14 +160,14 @@ const Teams: FC = () => {
                         action={
                             <Button startIcon={<AddIcon />} variant="contained" color="primary"
                                 sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper}`, color: (theme) => `${theme.palette.primary.dark}` }}
-                                onClick={handleCreate} disabled={editable ? false : true}>
+                                onClick={handleCreate} disabled={!editable?.create}>
                                 New
                             </Button>
                         }
                     />
                     <Divider />
                     <CardContent>
-                        {memoizedDataGrid}
+                        {memorizedDataGrid}
                     </CardContent>
                 </Card>
             </Box>

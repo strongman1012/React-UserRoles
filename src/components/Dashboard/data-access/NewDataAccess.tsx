@@ -82,7 +82,7 @@ const NewDataAccess: FC<NewDataAccessProps> = ({ onClose }) => {
                     <CardHeader title="New Data Access"
                         action={
                             <>
-                                <Button variant="contained" color="primary" onClick={handleSave} disabled={editable ? false : true} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper} !important`, color: (theme) => `${theme.palette.primary.dark}` }}>
+                                <Button variant="contained" color="primary" onClick={handleSave} disabled={!editable?.create} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper} !important`, color: (theme) => `${theme.palette.primary.dark}` }}>
                                     Save
                                 </Button>
                                 <Button variant="outlined" color="secondary" onClick={onClose} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper} !important`, color: (theme) => `${theme.palette.primary.dark}` }}>

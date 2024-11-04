@@ -5,7 +5,7 @@ import { fetchApplicationsAPI, fetchApplicationByIdAPI, createApplicationAPI, up
 interface ApplicationState {
     allApplications: Application[];
     currentApplication?: Application;
-    editable?: boolean;
+    editable?: { read: boolean, create: boolean, update: boolean, delete: boolean };
 }
 
 const initialState: ApplicationState = {
@@ -19,7 +19,7 @@ const applicationsSlice = createSlice({
         resetApplications: (state) => {
             state.allApplications = [];
             state.currentApplication = undefined;
-            state.editable = false;
+            state.editable = { read: false, create: false, update: false, delete: false };
         },
         setApplications: (state, action: PayloadAction<any>) => {
             state.allApplications = action.payload.result;

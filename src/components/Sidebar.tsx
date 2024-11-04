@@ -225,7 +225,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                             </>
                         )}
 
-                        {(systemMenus.includes('Business Units') || systemMenus.includes('Teams') || systemMenus.includes('Organization Chart')) && (
+                        {(systemMenus.includes('Organizational Units') || systemMenus.includes('Teams') || systemMenus.includes('Organization Chart')) && (
                             <>
                                 <ListItem disablePadding sx={{ display: 'block' }}>
                                     <ListItemButton
@@ -252,15 +252,15 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                 </ListItem>
                                 <Collapse in={collapse['organizations']} timeout="auto" unmountOnExit>
                                     <List component="div" disablePadding>
-                                        {systemMenus.includes('Business Units') && (
+                                        {systemMenus.includes('Organizational Units') && (
                                             <ListItemButton
-                                                sx={{ pl: 4, bgcolor: (theme) => isActive('business-units') ? `${theme.palette.secondary.main}` : 'inherit' }}
-                                                onClick={() => navigate('/dashboard/business-units')}
+                                                sx={{ pl: 4, bgcolor: (theme) => isActive('organizational-units') ? `${theme.palette.secondary.main}` : 'inherit' }}
+                                                onClick={() => navigate('/dashboard/organizational-units')}
                                             >
                                                 <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
                                                     <AddBusinessIcon sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}`, borderRadius: 1 }} />
                                                 </ListItemIcon>
-                                                <ListItemText primary="Business Units" />
+                                                <ListItemText primary="Organizational Units" />
                                             </ListItemButton>
                                         )}
                                         {systemMenus.includes('Teams') && (

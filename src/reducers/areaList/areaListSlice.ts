@@ -7,7 +7,7 @@ interface AreaListState {
     areaLists: ApplicationAreaList[];
     selectedAreaLists: ApplicationAreaList[];
     applicationRoles: ApplicationRoleList[];
-    editable?: boolean;
+    editable?: { read: boolean, create: boolean, update: boolean, delete: boolean };
     sidebarVisible: boolean;
 }
 
@@ -25,7 +25,7 @@ const areaListSlice = createSlice({
         resetAreaLists: (state) => {
             state.areaLists = [];
             state.selectedAreaLists = [];
-            state.editable = false;
+            state.editable = { read: false, create: false, update: false, delete: false };
         },
         setAreaLists: (state, action: PayloadAction<ApplicationAreaList[]>) => {
             state.areaLists = action.payload;
@@ -75,7 +75,7 @@ export const getAreaLists = (roleId: number) => async (dispatch: AppDispatch) =>
     }
 };
 
-export const saveAreaList = (roleId: number, areaList: { area_id: number; permission?: boolean, data_access_id?: number }) => async (dispatch: AppDispatch) => {
+export const saveAreaList = (roleId: number, areaList: { area_id: number; permission?: boolean, data_access_id?: number, read?: boolean, create?: boolean, update?: boolean, delete?: boolean }) => async (dispatch: AppDispatch) => {
     try {
         const response = await saveAreaListAPI(roleId, areaList);
         dispatch(updateAreaList(response));

@@ -163,6 +163,81 @@ const Users: FC = () => {
             dispatch(deleteUserById(selectedUser.id))
     }
 
+    const memorizedDataGrid = useMemo(() => (
+        <DataGrid
+            id="users"
+            key={defaultPageSize}
+            dataSource={filteredUsers}
+            keyExpr="id"
+            columnAutoWidth={true}
+            showRowLines={true}
+            showBorders={true}
+            allowColumnResizing={true}
+            rowAlternationEnabled={true}
+            className={classes.dataGrid}
+            onExporting={onExporting}
+        >
+            <FilterRow visible={true} />
+            <SearchPanel
+                visible={true}
+                width={240}
+                placeholder="Search..." />
+            <Export enabled={true} />
+            <Paging defaultPageSize={defaultPageSize} />
+            <Pager
+                showPageSizeSelector={true}
+                allowedPageSizes={allowedPageSizes}
+                showInfo={true} />
+            <Column dataField='userName' caption='Username' allowHiding={false} />
+            <Column dataField='email' caption='Email' allowHiding={false} />
+            <Column dataField='fullName' caption='Full Name' />
+            <Column dataField='mobilePhone' caption='Mobile Phone' />
+            <Column dataField='mainPhone' caption='Main Phone' />
+            <Column
+                dataField='role_ids'
+                caption='Roles'
+                cellRender={(cellData) => getRoleNames(cellData.value)}
+            />
+            <Column
+                dataField='business_name'
+                caption='Organizational Unit'
+            />
+            <Column
+                dataField='team_ids'
+                caption='Teams'
+                cellRender={(cellData) => getTeamNames(cellData.value)}
+            />
+            <Column
+                dataField='status'
+                caption='Status'
+                cellRender={renderStatusCell}
+            />
+            <Column caption="Actions" type="buttons" alignment="center" allowHiding={false}>
+                <GridButton icon="eyeopen" text="Metrics" onClick={handleMetricsClick} cssClass="text-secondary" />
+                <GridButton icon="edit" text="Edit" onClick={handleEdit} cssClass="text-secondary" disabled={!editable?.update} />
+                <GridButton icon="trash" text="Delete" onClick={handleDelete} cssClass="text-secondary" disabled={!editable?.delete} />
+            </Column>
+            <ColumnChooser
+                height='340px'
+                enabled={true}
+                mode="select"
+            >
+                <Position
+                    my="right top"
+                    at="right bottom"
+                    of=".dx-datagrid-column-chooser-button"
+                />
+                <ColumnChooserSearch
+                    enabled={true}
+                    editorOptions={searchEditorOptions} />
+                <ColumnChooserSelection
+                    allowSelectAll={true}
+                    selectByClick={true}
+                    recursive={true} />
+            </ColumnChooser>
+        </DataGrid>
+    ), [filteredUsers, editable, defaultPageSize, allowedPageSizes]);
+
     return (
         <Container maxWidth={false}>
             <LoadingScreen show={isLoading} />
@@ -172,7 +247,7 @@ const Users: FC = () => {
                         action={
                             <>
                                 <Button startIcon={<AddIcon />} variant="contained" sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper}`, color: (theme) => `${theme.palette.primary.dark}` }}
-                                    onClick={handleCreate} disabled={editable ? false : true}>
+                                    onClick={handleCreate} disabled={!editable?.create}>
                                     New
                                 </Button>
                                 <FormControl style={{ minWidth: 200 }}>
@@ -187,78 +262,7 @@ const Users: FC = () => {
                     />
                     <Divider />
                     <CardContent>
-                        {setting && defaultPageSize && allowedPageSizes && (<DataGrid
-                            id="users"
-                            key={defaultPageSize}
-                            dataSource={filteredUsers}
-                            keyExpr="id"
-                            columnAutoWidth={true}
-                            showRowLines={true}
-                            showBorders={true}
-                            allowColumnResizing={true}
-                            rowAlternationEnabled={true}
-                            className={classes.dataGrid}
-                            onExporting={onExporting}
-                        >
-                            <FilterRow visible={true} />
-                            <SearchPanel
-                                visible={true}
-                                width={240}
-                                placeholder="Search..." />
-                            <Export enabled={true} />
-                            <Paging defaultPageSize={defaultPageSize} />
-                            <Pager
-                                showPageSizeSelector={true}
-                                allowedPageSizes={allowedPageSizes}
-                                showInfo={true} />
-                            <Column dataField='userName' caption='Username' allowHiding={false} />
-                            <Column dataField='email' caption='Email' allowHiding={false} />
-                            <Column dataField='fullName' caption='Full Name' />
-                            <Column dataField='mobilePhone' caption='Mobile Phone' />
-                            <Column dataField='mainPhone' caption='Main Phone' />
-                            <Column
-                                dataField='role_ids'
-                                caption='Roles'
-                                cellRender={(cellData) => getRoleNames(cellData.value)}
-                            />
-                            <Column
-                                dataField='business_name'
-                                caption='Business Unit'
-                            />
-                            <Column
-                                dataField='team_ids'
-                                caption='Teams'
-                                cellRender={(cellData) => getTeamNames(cellData.value)}
-                            />
-                            <Column
-                                dataField='status'
-                                caption='Status'
-                                cellRender={renderStatusCell}
-                            />
-                            <Column caption="Actions" type="buttons" alignment="center" allowHiding={false}>
-                                <GridButton icon="eyeopen" text="Metrics" onClick={handleMetricsClick} cssClass="text-secondary" />
-                                <GridButton icon="edit" text="Edit" onClick={handleEdit} cssClass="text-secondary" disabled={editable ? false : true} />
-                                <GridButton icon="trash" text="Delete" onClick={handleDelete} cssClass="text-secondary" disabled={editable ? false : true} />
-                            </Column>
-                            <ColumnChooser
-                                height='340px'
-                                enabled={true}
-                                mode="select"
-                            >
-                                <Position
-                                    my="right top"
-                                    at="right bottom"
-                                    of=".dx-datagrid-column-chooser-button"
-                                />
-                                <ColumnChooserSearch
-                                    enabled={true}
-                                    editorOptions={searchEditorOptions} />
-                                <ColumnChooserSelection
-                                    allowSelectAll={true}
-                                    selectByClick={true}
-                                    recursive={true} />
-                            </ColumnChooser>
-                        </DataGrid>)}
+                        {memorizedDataGrid}
                     </CardContent>
                 </Card>
             </Box>

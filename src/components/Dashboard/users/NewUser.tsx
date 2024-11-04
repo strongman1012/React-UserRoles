@@ -17,9 +17,12 @@ const initialFormData: Omit<User, 'id'> = {
     userName: '',
     email: '',
     password: '',
-    fullName: '',
+    firstName: '',
+    lastName: '',
     mobilePhone: '',
     mainPhone: '',
+    organization: '',
+    organization_website: '',
     status: false,
     role_ids: '5', // default user
     business_unit_id: null,
@@ -100,6 +103,7 @@ const NewUser: FC<{ onClose: () => void }> = ({ onClose }) => {
             finally {
                 setIsLoading(false);
                 setFormData(initialFormData); // Reset form data after successful save
+                setSelectedBusinessUnit(null);
                 setSelectedTeams([]); // Reset selected teams
             }
         }
@@ -125,7 +129,7 @@ const NewUser: FC<{ onClose: () => void }> = ({ onClose }) => {
                     <CardHeader title="New User"
                         action={
                             <>
-                                <Button variant="contained" color="primary" onClick={handleSave} disabled={editable ? false : true} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper} !important`, color: (theme) => `${theme.palette.primary.dark}` }}>
+                                <Button variant="contained" color="primary" onClick={handleSave} disabled={!editable?.create} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper} !important`, color: (theme) => `${theme.palette.primary.dark}` }}>
                                     Save
                                 </Button>
                                 <Button variant="outlined" color="secondary" onClick={onClose} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper} !important`, color: (theme) => `${theme.palette.primary.dark}` }}>
@@ -136,7 +140,7 @@ const NewUser: FC<{ onClose: () => void }> = ({ onClose }) => {
                     />
                     <Divider />
                     <CardContent>
-                        <Grid container spacing={2}>
+                        <Grid container spacing={2} alignItems={'center'}>
                             <Grid item xs={12}>
                                 <Typography variant="h6">Account Information</Typography>
                             </Grid>
@@ -156,9 +160,20 @@ const NewUser: FC<{ onClose: () => void }> = ({ onClose }) => {
                             <Grid item xs={12} md={6}>
                                 <TextField
                                     fullWidth
-                                    label="Full Name"
-                                    name="fullName"
-                                    value={formData.fullName || ''}
+                                    required
+                                    label="First Name"
+                                    name="firstName"
+                                    value={formData.firstName || ''}
+                                    onChange={handleInputChange}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    label="Last Name"
+                                    name="lastName"
+                                    value={formData.lastName || ''}
                                     onChange={handleInputChange}
                                 />
                             </Grid>
@@ -191,13 +206,31 @@ const NewUser: FC<{ onClose: () => void }> = ({ onClose }) => {
                                 />
                             </Grid>
                             <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Organization"
+                                    name="organization"
+                                    value={formData.organization || ''}
+                                    onChange={handleInputChange}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Organization Website"
+                                    name="organization_website"
+                                    value={formData.organization_website || ''}
+                                    onChange={handleInputChange}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
                                 <Autocomplete
                                     options={allBusinessUnits}
                                     getOptionLabel={(option) => option.name}
                                     value={selectedBusinessUnit}
                                     onChange={handleBusinessUnitChange}
                                     renderInput={(params) => (
-                                        <TextField {...params} label="Business Unit" fullWidth />
+                                        <TextField {...params} label="Organizational Unit" fullWidth />
                                     )}
                                 />
                             </Grid>
@@ -228,7 +261,7 @@ const NewUser: FC<{ onClose: () => void }> = ({ onClose }) => {
                                     )}
                                 />
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid item xs={12} md={6}>
                                 <FormControlLabel
                                     control={
                                         <Switch

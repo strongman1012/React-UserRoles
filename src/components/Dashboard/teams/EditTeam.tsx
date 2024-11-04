@@ -102,7 +102,7 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
     const validateForm = () => {
         let tempErrors: { [key: string]: string } = {};
         if (!formData?.name) tempErrors.name = "Team name is required";
-        if (!formData?.business_unit_id) tempErrors.business_unit_id = "Business unit is required";
+        if (!formData?.business_unit_id) tempErrors.business_unit_id = "Organizational unit is required";
         setErrors(tempErrors);
         return Object.keys(tempErrors).length === 0;
     };
@@ -160,6 +160,27 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
         setTabValue(newValue);
     };
 
+    const memorizedDataGrid = useMemo(() => (
+        <DataGrid
+            dataSource={selectedMembers}
+            key={defaultPageSize}
+            keyExpr="id"
+            columnAutoWidth={true}
+            showRowLines={true}
+            showBorders={true}
+            allowColumnResizing={true}
+            rowAlternationEnabled={true}
+        >
+            <FilterRow visible={true} />
+            <SearchPanel visible={true} />
+            <Paging defaultPageSize={defaultPageSize} />
+            <Pager showPageSizeSelector={true} allowedPageSizes={allowedPageSizes} />
+            <Column dataField="userName" caption="User Name" />
+            <Column dataField="fullName" caption="Full Name" />
+            <Column dataField="business_name" caption="Organizational Unit" />
+        </DataGrid>
+    ), [selectedMembers, defaultPageSize, allowedPageSizes]);
+
     if (!formData) {
         return <div>Loading...</div>;
     }
@@ -172,13 +193,13 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
                     <CardHeader title="Edit Team"
                         action={
                             <>
-                                <Button variant="contained" color="primary" onClick={handleSave} disabled={editable ? false : true} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper}`, color: (theme) => `${theme.palette.primary.dark}` }}>
+                                <Button variant="contained" color="primary" onClick={handleSave} disabled={!editable?.update} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper}`, color: (theme) => `${theme.palette.primary.dark}` }}>
                                     Save
                                 </Button>
                                 <Button variant="outlined" color="secondary" onClick={onClose} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper}`, color: (theme) => `${theme.palette.primary.dark}` }}>
                                     Cancel
                                 </Button>
-                                <Button variant="outlined" color="primary" onClick={handleManageRolesClick} disabled={editable ? false : true} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper}`, color: (theme) => `${theme.palette.primary.dark}` }}>
+                                <Button variant="outlined" color="primary" onClick={handleManageRolesClick} disabled={!editable?.update} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper}`, color: (theme) => `${theme.palette.primary.dark}` }}>
                                     Manage Roles
                                 </Button>
                             </>
@@ -213,7 +234,7 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
                                         value={allBusinessUnits.find(unit => unit.id === formData.business_unit_id) || null}
                                         onChange={(event, value) => handleAutocompleteChange(event, value, 'business_unit_id')}
                                         renderInput={(params) => (
-                                            <TextField {...params} label="Business Unit" fullWidth error={!!errors.business_unit_id} helperText={errors.business_unit_id} />
+                                            <TextField {...params} label="Organizational Unit" fullWidth error={!!errors.business_unit_id} helperText={errors.business_unit_id} />
                                         )}
                                     />
                                 </Grid>
@@ -275,24 +296,7 @@ const EditTeam: FC<EditTeamProps> = ({ teamId, onClose }) => {
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
-                                    {setting && defaultPageSize && allowedPageSizes && (<DataGrid
-                                        dataSource={selectedMembers}
-                                        key={defaultPageSize}
-                                        keyExpr="id"
-                                        columnAutoWidth={true}
-                                        showRowLines={true}
-                                        showBorders={true}
-                                        allowColumnResizing={true}
-                                        rowAlternationEnabled={true}
-                                    >
-                                        <FilterRow visible={true} />
-                                        <SearchPanel visible={true} />
-                                        <Paging defaultPageSize={defaultPageSize} />
-                                        <Pager showPageSizeSelector={true} allowedPageSizes={allowedPageSizes} />
-                                        <Column dataField="userName" caption="User Name" />
-                                        <Column dataField="fullName" caption="Full Name" />
-                                        <Column dataField="business_name" caption="Business Unit" />
-                                    </DataGrid>)}
+                                    {memorizedDataGrid}
                                 </Grid>
                             </Grid>
                         </TabPanel>

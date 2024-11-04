@@ -86,7 +86,7 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
         let tempErrors: { [key: string]: string } = {};
         if (!formData?.name) tempErrors.name = "Name is required";
         if (!formData?.email) tempErrors.email = "Email is required";
-        if (!formData?.parent_id) tempErrors.parent_id = "Parent Business is required";
+        if (!formData?.parent_id) tempErrors.parent_id = "Parent Organization is required";
         if (!formData?.admin_id) tempErrors.admin_id = "Administrator is required";
         setErrors(tempErrors);
         return Object.keys(tempErrors).length === 0;
@@ -139,6 +139,31 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
         return ids.map(id => teams.find(team => team.id === id)?.name).filter(name => name).join(', ');
     };
 
+    const memorizedDataGrid = useMemo(() => (
+        <DataGrid
+            dataSource={selectedMembers}
+            key={defaultPageSize}
+            keyExpr="id"
+            columnAutoWidth={true}
+            showRowLines={true}
+            showBorders={true}
+            allowColumnResizing={true}
+            rowAlternationEnabled={true}
+        >
+            <FilterRow visible={true} />
+            <SearchPanel visible={true} />
+            <Paging defaultPageSize={defaultPageSize} />
+            <Pager showPageSizeSelector={true} allowedPageSizes={allowedPageSizes} />
+            <Column dataField="userName" caption="User Name" />
+            <Column dataField="fullName" caption="Full Name" />
+            <Column
+                dataField='team_ids'
+                caption='Teams'
+                cellRender={(cellData) => getTeamNames(cellData.value)}
+            />
+        </DataGrid>
+    ), [selectedMembers, editable, defaultPageSize, allowedPageSizes]);
+
     if (!formData) {
         return <div>Loading...</div>;
     }
@@ -148,10 +173,10 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
             <LoadingScreen show={isLoading} />
             <Box sx={{ pt: 3 }}>
                 <Card variant="outlined">
-                    <CardHeader title="Edit Business Unit"
+                    <CardHeader title="Edit Organizational Unit"
                         action={
                             <>
-                                <Button variant="contained" color="primary" onClick={handleSave} disabled={editable ? false : true} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper}`, color: (theme) => `${theme.palette.primary.dark}` }}>
+                                <Button variant="contained" color="primary" onClick={handleSave} disabled={!editable?.update} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper}`, color: (theme) => `${theme.palette.primary.dark}` }}>
                                     Save
                                 </Button>
                                 <Button variant="outlined" color="secondary" onClick={onClose} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper}`, color: (theme) => `${theme.palette.primary.dark}` }}>
@@ -171,7 +196,7 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
                         <TabPanel value={tabValue} index={0}>
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>
-                                    <Typography variant="h6">Business Unit Information</Typography>
+                                    <Typography variant="h6">Organizational Unit Information</Typography>
                                 </Grid>
                                 <Grid item xs={12} md={6}>
                                     <Grid container spacing={2}>
@@ -194,7 +219,7 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
                                                 value={selectedParentBusinessUnit}
                                                 onChange={handleParentBusinessUnitChange}
                                                 renderInput={(params) => (
-                                                    <TextField {...params} label="Parent Business" fullWidth error={!!errors.parent_id} helperText={errors.parent_id} />
+                                                    <TextField {...params} label="Parent Organization" fullWidth error={!!errors.parent_id} helperText={errors.parent_id} />
                                                 )}
                                             />
                                         </Grid>
@@ -342,28 +367,7 @@ const EditBusinessUnit: FC<EditBusinessUnitProps> = ({ businessUnitId, onClose }
                         <TabPanel value={tabValue} index={1}>
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>
-                                    {setting && defaultPageSize && allowedPageSizes && (<DataGrid
-                                        dataSource={selectedMembers}
-                                        key={defaultPageSize}
-                                        keyExpr="id"
-                                        columnAutoWidth={true}
-                                        showRowLines={true}
-                                        showBorders={true}
-                                        allowColumnResizing={true}
-                                        rowAlternationEnabled={true}
-                                    >
-                                        <FilterRow visible={true} />
-                                        <SearchPanel visible={true} />
-                                        <Paging defaultPageSize={defaultPageSize} />
-                                        <Pager showPageSizeSelector={true} allowedPageSizes={allowedPageSizes} />
-                                        <Column dataField="userName" caption="User Name" />
-                                        <Column dataField="fullName" caption="Full Name" />
-                                        <Column
-                                            dataField='team_ids'
-                                            caption='Teams'
-                                            cellRender={(cellData) => getTeamNames(cellData.value)}
-                                        />
-                                    </DataGrid>)}
+                                    {memorizedDataGrid}
                                 </Grid>
                             </Grid>
                         </TabPanel>

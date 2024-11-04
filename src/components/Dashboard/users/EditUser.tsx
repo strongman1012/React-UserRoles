@@ -162,13 +162,13 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
                     <CardHeader title="Edit User"
                         action={
                             <>
-                                <Button variant="contained" color="primary" onClick={handleSave} disabled={editable ? false : true} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper} !important`, color: (theme) => `${theme.palette.primary.dark}` }}>
+                                <Button variant="contained" color="primary" onClick={handleSave} disabled={!editable?.update} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper} !important`, color: (theme) => `${theme.palette.primary.dark}` }}>
                                     Save
                                 </Button>
                                 <Button variant="outlined" color="secondary" onClick={onClose} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper} !important`, color: (theme) => `${theme.palette.primary.dark}` }}>
                                     Cancel
                                 </Button>
-                                <Button variant="outlined" color="primary" onClick={handleManageRolesClick} disabled={editable ? false : true} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper} !important`, color: (theme) => `${theme.palette.primary.dark}` }}>
+                                <Button variant="outlined" color="primary" onClick={handleManageRolesClick} disabled={!editable?.update} sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper} !important`, color: (theme) => `${theme.palette.primary.dark}` }}>
                                     Manage Roles
                                 </Button>
                             </>
@@ -176,7 +176,7 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
                     />
                     <Divider />
                     <CardContent>
-                        <Grid container spacing={2}>
+                        <Grid container spacing={2} alignItems={'center'}>
                             <Grid item xs={12}>
                                 <Typography variant="h6">Account Information</Typography>
                             </Grid>
@@ -197,9 +197,19 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
                                 <TextField
                                     fullWidth
                                     required
-                                    label="Full Name"
-                                    name="fullName"
-                                    value={formData.fullName || ''}
+                                    label="First Name"
+                                    name="firstName"
+                                    value={formData.firstName || ''}
+                                    onChange={handleInputChange}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    label="Last Name"
+                                    name="lastName"
+                                    value={formData.lastName || ''}
                                     onChange={handleInputChange}
                                 />
                             </Grid>
@@ -232,13 +242,31 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
                                 />
                             </Grid>
                             <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Organization"
+                                    name="organization"
+                                    value={formData.organization || ''}
+                                    onChange={handleInputChange}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Organization Website"
+                                    name="organization_website"
+                                    value={formData.organization_website || ''}
+                                    onChange={handleInputChange}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
                                 <Autocomplete
                                     options={allBusinessUnits}
                                     getOptionLabel={(option) => option.name || ''}
                                     value={selectedBusinessUnit}
                                     onChange={handleBusinessUnitChange}
                                     renderInput={(params) => (
-                                        <TextField {...params} label="Business Unit" fullWidth />
+                                        <TextField {...params} label="Organizational Unit" fullWidth />
                                     )}
                                 />
                             </Grid>
@@ -269,7 +297,7 @@ const EditUser: FC<EditUserProps> = ({ userId, onClose }) => {
                                     )}
                                 />
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid item xs={12} md={6}>
                                 <FormControlLabel
                                     control={
                                         <Switch

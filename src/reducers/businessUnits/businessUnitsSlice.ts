@@ -6,7 +6,7 @@ interface BusinessUnitState {
     allBusinessUnits: BusinessUnit[];
     businessUnitsList: BusinessUnit[];
     currentBusinessUnit?: BusinessUnit;
-    editable?: boolean;
+    editable?: { read: boolean, create: boolean, update: boolean, delete: boolean };
 }
 
 const initialState: BusinessUnitState = {
@@ -21,7 +21,7 @@ const businessUnitsSlice = createSlice({
         resetBusinessUnits: (state) => {
             state.allBusinessUnits = [];
             state.currentBusinessUnit = undefined;
-            state.editable = false;
+            state.editable = { read: false, create: false, update: false, delete: false };
         },
         setBusinessUnitsList: (state, action: PayloadAction<BusinessUnit[]>) => {
             state.businessUnitsList = action.payload;

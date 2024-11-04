@@ -74,7 +74,7 @@ const routes: RouteObject[] = [
                 element: <Users />,
             },
             {
-                path: 'business-units',
+                path: 'organizational-units',
                 element: <BusinessUnits />,
             },
             {

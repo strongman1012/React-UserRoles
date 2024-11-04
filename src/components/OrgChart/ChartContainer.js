@@ -26,7 +26,8 @@ const propTypes = {
   collapsible: PropTypes.bool,
   multipleSelect: PropTypes.bool,
   onClickNode: PropTypes.func,
-  onClickChart: PropTypes.func
+  onClickChart: PropTypes.func,
+  onHoverNode: PropTypes.func,
 };
 
 const defaultProps = {
@@ -38,7 +39,8 @@ const defaultProps = {
   chartClass: "",
   draggable: false,
   collapsible: true,
-  multipleSelect: false
+  multipleSelect: false,
+  onHoverNode: null
 };
 
 const ChartContainer = forwardRef(
@@ -56,7 +58,8 @@ const ChartContainer = forwardRef(
       collapsible,
       multipleSelect,
       onClickNode,
-      onClickChart
+      onClickChart,
+      onHoverNode
     },
     ref
   ) => {
@@ -66,7 +69,7 @@ const ChartContainer = forwardRef(
 
     const [startX, setStartX] = useState(0);
     const [startY, setStartY] = useState(0);
-    const [transform, setTransform] = useState("matrix(1.5, 0, 0, 1.5, 0, 70)");
+    const [transform, setTransform] = useState("matrix(1.2, 0, 0, 1.2, 0, 40)");
     const [panning, setPanning] = useState(false);
     const [cursor, setCursor] = useState("default");
     const [exporting, setExporting] = useState(false);
@@ -318,6 +321,7 @@ const ChartContainer = forwardRef(
               multipleSelect={multipleSelect}
               changeHierarchy={changeHierarchy}
               onClickNode={onClickNode}
+              onHoverNode={onHoverNode}
             />
           </ul>
         </div>

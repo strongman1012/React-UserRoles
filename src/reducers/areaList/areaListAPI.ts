@@ -46,7 +46,7 @@ export const getAreaListsAPI = async (roleId: number): Promise<any> => {
     return response.data;
 };
 
-export const saveAreaListAPI = async (roleId: number, areaList: { area_id: number; permission?: boolean; data_access_id?: number }): Promise<ApplicationAreaList[]> => {
+export const saveAreaListAPI = async (roleId: number, areaList: { area_id: number; permission?: boolean, data_access_id?: number, read?: boolean, create?: boolean, update?: boolean, delete?: boolean }): Promise<ApplicationAreaList[]> => {
     const response = await apiClient.post<ApplicationAreaList[]>(`/areaList/save`, { role_id: roleId, ...areaList });
     return response.data;
 };

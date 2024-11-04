@@ -5,7 +5,7 @@ import { fetchDataAccessesAPI, fetchDataAccessByIdAPI, createDataAccessAPI, upda
 interface DataAccessState {
     allDataAccesses: DataAccess[];
     currentDataAccess?: DataAccess;
-    editable?: boolean;
+    editable?: { read: boolean, create: boolean, update: boolean, delete: boolean };
 }
 
 const initialState: DataAccessState = {
@@ -19,7 +19,7 @@ const dataAccessesSlice = createSlice({
         resetDataAccesses: (state) => {
             state.allDataAccesses = [];
             state.currentDataAccess = undefined;
-            state.editable = false;
+            state.editable = { read: false, create: false, update: false, delete: false };
         },
         setDataAccesses: (state, action: PayloadAction<any>) => {
             state.allDataAccesses = action.payload.result;

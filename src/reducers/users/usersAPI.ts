@@ -15,6 +15,10 @@ export interface User {
     business_unit_id?: number | null;
     team_ids?: string | null;
     business_name?: string;
+    organization?: string;
+    organization_website?: string;
+    firstName?: string;
+    lastName?: string;
 }
 
 // Fetch users list

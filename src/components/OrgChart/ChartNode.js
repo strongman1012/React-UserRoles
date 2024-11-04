@@ -10,13 +10,15 @@ const propTypes = {
   collapsible: PropTypes.bool,
   multipleSelect: PropTypes.bool,
   changeHierarchy: PropTypes.func,
-  onClickNode: PropTypes.func
+  onClickNode: PropTypes.func,
+  onHoverNode: PropTypes.func
 };
 
 const defaultProps = {
   draggable: false,
   collapsible: true,
-  multipleSelect: false
+  multipleSelect: false,
+  onHoverNode: null
 };
 
 const ChartNode = ({
@@ -26,7 +28,8 @@ const ChartNode = ({
   collapsible,
   multipleSelect,
   changeHierarchy,
-  onClickNode
+  onClickNode,
+  onHoverNode
 }) => {
   const node = useRef();
 
@@ -40,6 +43,7 @@ const ChartNode = ({
 
   const nodeClass = [
     "oc-node",
+    datasource.className || "",
     isChildrenCollapsed ? "isChildrenCollapsed" : "",
     allowedDrop ? "allowedDrop" : "",
     selected ? "selected" : ""
@@ -85,29 +89,29 @@ const ChartNode = ({
     };
   }, [multipleSelect, datasource]);
 
-  const addArrows = e => {
-    const node = e.target.closest("li");
-    const parent = node.parentNode.closest("li");
-    const isAncestorsCollapsed =
-      node && parent
-        ? parent.firstChild.classList.contains("hidden")
-        : undefined;
-    const isSiblingsCollapsed = Array.from(
-      node.parentNode.children
-    ).some(item => item.classList.contains("hidden"));
+  // const addArrows = e => {
+  //   const node = e.target.closest("li");
+  //   const parent = node.parentNode.closest("li");
+  //   const isAncestorsCollapsed =
+  //     node && parent
+  //       ? parent.firstChild.classList.contains("hidden")
+  //       : undefined;
+  //   const isSiblingsCollapsed = Array.from(
+  //     node.parentNode.children
+  //   ).some(item => item.classList.contains("hidden"));
 
-    setTopEdgeExpanded(!isAncestorsCollapsed);
-    setRightEdgeExpanded(!isSiblingsCollapsed);
-    setLeftEdgeExpanded(!isSiblingsCollapsed);
-    setBottomEdgeExpanded(!isChildrenCollapsed);
-  };
+  //   setTopEdgeExpanded(!isAncestorsCollapsed);
+  //   setRightEdgeExpanded(!isSiblingsCollapsed);
+  //   setLeftEdgeExpanded(!isSiblingsCollapsed);
+  //   setBottomEdgeExpanded(!isChildrenCollapsed);
+  // };
 
-  const removeArrows = () => {
-    setTopEdgeExpanded(undefined);
-    setRightEdgeExpanded(undefined);
-    setBottomEdgeExpanded(undefined);
-    setLeftEdgeExpanded(undefined);
-  };
+  // const removeArrows = () => {
+  //   setTopEdgeExpanded(undefined);
+  //   setRightEdgeExpanded(undefined);
+  //   setBottomEdgeExpanded(undefined);
+  //   setLeftEdgeExpanded(undefined);
+  // };
 
   const toggleAncestors = actionNode => {
     let node = actionNode.parentNode.closest("li");
@@ -235,6 +239,19 @@ const ChartNode = ({
     );
   };
 
+  // Update for hover events
+  const handleMouseEnter = () => {
+    if (onHoverNode) {
+      onHoverNode(datasource); // Trigger the onHoverNode event
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (onHoverNode) {
+      onHoverNode(null); // Clear the hover event
+    }
+  };
+
   return (
     <li className="oc-hierarchy">
       <div
@@ -247,8 +264,8 @@ const ChartNode = ({
         onDragOver={dragoverHandler}
         onDragEnd={dragendHandler}
         onDrop={dropHandler}
-        onMouseEnter={addArrows}
-        onMouseLeave={removeArrows}
+        onMouseEnter={handleMouseEnter} // Handle hover start
+        onMouseLeave={handleMouseLeave} // Handle hover end
       >
         {NodeTemplate ? (
           <NodeTemplate nodeData={datasource} />
@@ -269,10 +286,10 @@ const ChartNode = ({
           datasource.relationship.charAt(0) === "1" && (
             <i
               className={`oc-edge verticalEdge topEdge oci ${topEdgeExpanded === undefined
-                  ? ""
-                  : topEdgeExpanded
-                    ? "oci-chevron-down"
-                    : "oci-chevron-up"
+                ? ""
+                : topEdgeExpanded
+                  ? "oci-chevron-down"
+                  : "oci-chevron-up"
                 }`}
               onClick={topEdgeClickHandler}
             />
@@ -283,19 +300,19 @@ const ChartNode = ({
             <>
               <i
                 className={`oc-edge horizontalEdge rightEdge oci ${rightEdgeExpanded === undefined
-                    ? ""
-                    : rightEdgeExpanded
-                      ? "oci-chevron-left"
-                      : "oci-chevron-right"
+                  ? ""
+                  : rightEdgeExpanded
+                    ? "oci-chevron-left"
+                    : "oci-chevron-right"
                   }`}
                 onClick={hEdgeClickHandler}
               />
               <i
                 className={`oc-edge horizontalEdge leftEdge oci ${leftEdgeExpanded === undefined
-                    ? ""
-                    : leftEdgeExpanded
-                      ? "oci-chevron-right"
-                      : "oci-chevron-left"
+                  ? ""
+                  : leftEdgeExpanded
+                    ? "oci-chevron-right"
+                    : "oci-chevron-left"
                   }`}
                 onClick={hEdgeClickHandler}
               />
@@ -306,10 +323,10 @@ const ChartNode = ({
           datasource.relationship.charAt(2) === "1" && (
             <i
               className={`oc-edge verticalEdge bottomEdge oci ${bottomEdgeExpanded === undefined
-                  ? ""
-                  : bottomEdgeExpanded
-                    ? "oci-chevron-up"
-                    : "oci-chevron-down"
+                ? ""
+                : bottomEdgeExpanded
+                  ? "oci-chevron-up"
+                  : "oci-chevron-down"
                 }`}
               onClick={bottomEdgeClickHandler}
             />
@@ -328,6 +345,7 @@ const ChartNode = ({
               multipleSelect={multipleSelect}
               changeHierarchy={changeHierarchy}
               onClickNode={onClickNode}
+              onHoverNode={onHoverNode}
             />
           ))}
         </ul>

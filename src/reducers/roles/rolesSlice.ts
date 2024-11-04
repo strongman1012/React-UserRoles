@@ -5,7 +5,7 @@ import { fetchRolesAPI, fetchRoleByIdAPI, createRoleAPI, updateRoleAPI, deleteRo
 interface RoleState {
     allRoles: Role[];
     currentRole?: Role;
-    editable?: boolean;
+    editable?: { read: boolean, create: boolean, update: boolean, delete: boolean };
 }
 
 const initialState: RoleState = {
@@ -19,7 +19,7 @@ const rolesSlice = createSlice({
         resetRoles: (state) => {
             state.allRoles = [];
             state.currentRole = undefined;
-            state.editable = false;
+            state.editable = { read: false, create: false, update: false, delete: false };
         },
         setRoles: (state, action: PayloadAction<any>) => {
             state.allRoles = action.payload.result;

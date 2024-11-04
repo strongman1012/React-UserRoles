@@ -35,6 +35,26 @@ const lightTheme: ThemeOptions = {
                 },
                 '.orgchart-container': {
                     background: '#f7f7f7',
+                },
+                '.react-tel-input .special-label': {
+                    background: '#f0f1f3',
+                    fontSize: '11px'
+                },
+                '.dx-export-menu-button rect': {
+                    stroke: COSMOS_RED
+                },
+                '.dx-export-menu-button path': {
+                    fill: COSMOS_RED
+                },
+                '.dx-export-menu-list rect': {
+                    filter: 'none',
+                    stroke: COSMOS_RED,
+                    fill: '#f0f1f3',
+                    rx: 2,
+                    ry: 2
+                },
+                '.dx-export-menu-list path': {
+                    stroke: COSMOS_RED
                 }
             },
         },
@@ -50,7 +70,7 @@ const lightTheme: ThemeOptions = {
         MuiCard: {
             styleOverrides: {
                 root: {
-                    border: `2px solid ${COSMOS_RED}`,
+                    border: `2px solid ${COSMOS_RED} !important`,
                     borderRadius: '8px 8px 0px 0px'
                 },
             }
@@ -282,6 +302,39 @@ const darkTheme: ThemeOptions = {
                 },
                 '.orgchart-container': {
                     background: '#2d2d2d',
+                },
+                '.react-tel-input .special-label': {
+                    background: '#2d2d2d',
+                    fontSize: '11px'
+                },
+                '.dx-export-menu-button rect': {
+                    stroke: COSMOS_RED,
+                    fill: '#323232'
+                },
+                '.dx-export-menu-button path': {
+                    fill: COSMOS_RED
+                },
+                '.dx-export-menu-list rect': {
+                    filter: 'none',
+                    stroke: COSMOS_RED,
+                    fill: '#323232',
+                    rx: 2,
+                    ry: 2
+                },
+                '.dx-export-menu-list text': {
+                    fill: '#f7f7f7 !important'
+                },
+                '.dx-export-menu-list path': {
+                    stroke: COSMOS_RED
+                },
+                '.dx-row.dx-freespace-row': {
+                    background: '#232323'
+                },
+                '.dx-datagrid .dx-empty': {
+                    background: '#232323'
+                },
+                '.dx-datagrid .dx-empty .dx-datagrid-nodata': {
+                    color: '#f7f7f7'
                 }
             },
         },
@@ -302,7 +355,7 @@ const darkTheme: ThemeOptions = {
         MuiCard: {
             styleOverrides: {
                 root: {
-                    border: `2px solid ${COSMOS_RED}`,
+                    border: `2px solid ${COSMOS_RED} !important`,
                     borderRadius: '8px 8px 0px 0px'
                 },
             }
@@ -483,7 +536,7 @@ const darkTheme: ThemeOptions = {
             dark: LIGHT_COSMOS_RED
         },
         background: {
-            default: '#232323',
+            default: '#1a1a1a',
             paper: '#232323'
         },
         text: {

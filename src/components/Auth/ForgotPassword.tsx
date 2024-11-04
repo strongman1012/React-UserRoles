@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
-import { TextField, Button, Container, Typography, Card, CardHeader, CardContent, Divider } from '@mui/material';
+import { TextField, Button, Container, Typography, Card, CardHeader, CardContent, Divider, Link as MuiLink } from '@mui/material';
 import { Link } from 'react-router-dom';
 import LoadingScreen from '../Basic/LoadingScreen';
 import AlertModal from '../Basic/Alert';
@@ -89,7 +89,14 @@ const ForgotPassword: React.FC = () => {
                             </Button>
                         </form>
                         <Typography align="center" sx={{ mt: 2, fontStyle: 'oblique', color: (theme) => `${theme.palette.primary.main}` }}>
-                            Back to <Link to="/login" style={{ textDecoration: 'none', color: '#e34747' }}>Login</Link>
+                            Back to <MuiLink to="/login" component={Link}
+                                sx={{
+                                    textDecoration: 'none',
+                                    color: (theme) => `${theme.palette.primary.main}`,
+                                    '&:hover': {
+                                        textDecoration: 'underline',
+                                    }
+                                }}>Login</MuiLink>
                         </Typography>
                     </CardContent>
                 </Card>

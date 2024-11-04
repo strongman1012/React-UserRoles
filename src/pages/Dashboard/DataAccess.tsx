@@ -93,6 +93,58 @@ const DataAccess: FC = () => {
             dispatch(deleteDataAccessesById(selectedDataAccessId))
     }
 
+    const memorizedDataGrid = useMemo(() => (
+        <DataGrid
+            id="dataAccesses"
+            key={defaultPageSize}
+            dataSource={dataAccesses}
+            keyExpr="id"
+            columnAutoWidth={true}
+            showRowLines={true}
+            showBorders={true}
+            allowColumnResizing={true}
+            rowAlternationEnabled={true}
+            onExporting={onExporting}
+        >
+            <FilterRow visible={true} />
+            <SearchPanel
+                visible={true}
+                width={240}
+                placeholder="Search..." />
+            <Export enabled={true} />
+            <Paging defaultPageSize={defaultPageSize} />
+            <Pager
+                showPageSizeSelector={true}
+                allowedPageSizes={allowedPageSizes}
+                showInfo={true} />
+            <Column dataField='id' caption='Data Access ID' allowHiding={false} alignment='left' />
+            <Column dataField='name' caption='Data Access Name' allowHiding={false} />
+            <Column dataField='level' caption='Access Level' alignment='left' allowHiding={false} />
+            <Column caption="Actions" type="buttons" alignment="center" allowHiding={false}>
+                <GridButton icon="edit" text="Edit" onClick={handleEdit} cssClass="text-secondary" disabled={!editable?.update} />
+                <GridButton icon="trash" text="Delete" onClick={handleDelete} cssClass="text-secondary" disabled={!editable?.delete} />
+            </Column>
+
+            <ColumnChooser
+                height='340px'
+                enabled={true}
+                mode="select"
+            >
+                <Position
+                    my="right top"
+                    at="right bottom"
+                    of=".dx-datagrid-column-chooser-button"
+                />
+                <ColumnChooserSearch
+                    enabled={true}
+                    editorOptions={searchEditorOptions} />
+                <ColumnChooserSelection
+                    allowSelectAll={true}
+                    selectByClick={true}
+                    recursive={true} />
+            </ColumnChooser>
+        </DataGrid>
+    ), [dataAccesses, editable, defaultPageSize, allowedPageSizes]);
 
     return (
         <Container maxWidth={false}>
@@ -102,63 +154,14 @@ const DataAccess: FC = () => {
                     <CardHeader title="Data Accesses"
                         action={
                             <Button startIcon={<AddIcon />} variant="contained" color="primary" sx={{ mr: 2, background: (theme) => `${theme.palette.background.paper} !important`, color: (theme) => `${theme.palette.primary.dark}` }}
-                                onClick={handleCreate} disabled={editable ? false : true}>
+                                onClick={handleCreate} disabled={!editable?.create}>
                                 New
                             </Button>
                         }
                     />
                     <Divider />
                     <CardContent>
-                        {setting && defaultPageSize && allowedPageSizes && (<DataGrid
-                            id="dataAccesses"
-                            key={defaultPageSize}
-                            dataSource={dataAccesses}
-                            keyExpr="id"
-                            columnAutoWidth={true}
-                            showRowLines={true}
-                            showBorders={true}
-                            allowColumnResizing={true}
-                            rowAlternationEnabled={true}
-                            onExporting={onExporting}
-                        >
-                            <FilterRow visible={true} />
-                            <SearchPanel
-                                visible={true}
-                                width={240}
-                                placeholder="Search..." />
-                            <Export enabled={true} />
-                            <Paging defaultPageSize={defaultPageSize} />
-                            <Pager
-                                showPageSizeSelector={true}
-                                allowedPageSizes={allowedPageSizes}
-                                showInfo={true} />
-                            <Column dataField='id' caption='Data Access ID' allowHiding={false} alignment='left' />
-                            <Column dataField='name' caption='Data Access Name' allowHiding={false} />
-                            <Column dataField='level' caption='Access Level' alignment='left' allowHiding={false} />
-                            <Column caption="Actions" type="buttons" alignment="center" allowHiding={false}>
-                                <GridButton icon="edit" text="Edit" onClick={handleEdit} cssClass="text-secondary" disabled={editable ? false : true} />
-                                <GridButton icon="trash" text="Delete" onClick={handleDelete} cssClass="text-secondary" disabled={editable ? false : true} />
-                            </Column>
-
-                            <ColumnChooser
-                                height='340px'
-                                enabled={true}
-                                mode="select"
-                            >
-                                <Position
-                                    my="right top"
-                                    at="right bottom"
-                                    of=".dx-datagrid-column-chooser-button"
-                                />
-                                <ColumnChooserSearch
-                                    enabled={true}
-                                    editorOptions={searchEditorOptions} />
-                                <ColumnChooserSelection
-                                    allowSelectAll={true}
-                                    selectByClick={true}
-                                    recursive={true} />
-                            </ColumnChooser>
-                        </DataGrid>)}
+                        {memorizedDataGrid}
                     </CardContent>
                 </Card>
             </Box>

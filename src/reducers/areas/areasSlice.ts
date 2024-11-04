@@ -5,7 +5,7 @@ import { fetchAreasAPI, fetchAreaByIdAPI, createAreaAPI, updateAreaAPI, deleteAr
 interface AreaState {
     allAreas: Area[];
     currentArea?: Area;
-    editable?: boolean;
+    editable?: { read: boolean, create: boolean, update: boolean, delete: boolean };
 }
 
 const initialState: AreaState = {
@@ -19,7 +19,7 @@ const areasSlice = createSlice({
         resetAreas: (state) => {
             state.allAreas = [];
             state.currentArea = undefined;
-            state.editable = false;
+            state.editable = { read: false, create: false, update: false, delete: false };
         },
         setAreas: (state, action: PayloadAction<any>) => {
             state.allAreas = action.payload.result;

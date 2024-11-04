@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
-import { TextField, Button, Container, Typography, Card, CardHeader, CardContent, Divider } from '@mui/material';
+import { TextField, Button, Container, Typography, Card, CardHeader, CardContent, Divider, Link as MuiLink } from '@mui/material';
 import { Link } from 'react-router-dom';
 import * as Yup from 'yup';
 import LoadingScreen from '../Basic/LoadingScreen';
 import AlertModal from '../Basic/Alert';
-import { login } from '../../reducers/auth/authSlice';
+import { login, loginSuccess } from '../../reducers/auth/authSlice';
 import { useAppDispatch } from '../../store/hooks';
+import { PublicClientApplication } from '@azure/msal-browser';
+import { msalConfig, loginRequest } from 'src/utills/config';
+import { LOCAL_SERVER_URL } from 'src/utills/config';
 
 const Login: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -15,10 +18,12 @@ const Login: React.FC = () => {
     const [confirmTitle, setConfirmTitle] = useState<string>('');
     const [confirmDescription, setConfirmDescription] = useState<string>('');
 
+    const msalInstance = new PublicClientApplication(msalConfig);
+
     // Validation schema
     const validationSchema = Yup.object({
-        email: Yup.string().email('Invalid email address').required('Required'),
-        password: Yup.string().required('Required'),
+        email: Yup.string().email('Invalid email address').required('Email is Required'),
+        password: Yup.string().required('Password is Required'),
     });
 
     const formik = useFormik({
@@ -45,6 +50,44 @@ const Login: React.FC = () => {
             }
         },
     });
+
+    // Handle SSO login
+    const handleSSOLogin = async () => {
+        setIsLoading(true);
+        try {
+            // Trigger MSAL login with popup
+            await msalInstance.initialize();
+            const loginResponse = await msalInstance.loginPopup(loginRequest);
+            const token = loginResponse.idToken; // Get ID token from Azure
+            const application = 1;
+
+            const response = await fetch(`${LOCAL_SERVER_URL}/api/v0/loginWithSSO`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ application })
+            });
+            const message = await response.json();
+            if (response.ok) {
+                dispatch(loginSuccess({ token: message.token }));
+                setConfirmTitle(message.message);
+                setConfirmDescription('');
+                setConfirmModalOpen(true);
+            } else {
+                setConfirmTitle('SSO Login Failed');
+                setConfirmDescription(message.message);
+                setConfirmModalOpen(true);
+            }
+        } catch (error: any) {
+            setConfirmTitle('SSO Login Failed');
+            setConfirmDescription(error.message);
+            setConfirmModalOpen(true);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <>
@@ -102,12 +145,35 @@ const Login: React.FC = () => {
                             >
                                 Login
                             </Button>
+                            <Button
+                                color="primary"
+                                variant="contained"
+                                fullWidth
+                                onClick={handleSSOLogin}
+                                sx={{ mt: 2, '&:hover': { background: (theme) => `${theme.palette.secondary.dark}` } }}
+                            >
+                                Login with Azure SSO
+                            </Button>
                         </form>
                         <Typography align="center" sx={{ mt: 2, fontStyle: 'oblique' }}>
-                            <Link to="/forgot-password" style={{ textDecoration: 'none', color: '#e34747' }}>Forgot password?</Link>
+                            <MuiLink component={Link} to="/forgot-password"
+                                sx={{
+                                    textDecoration: 'none',
+                                    color: (theme) => `${theme.palette.primary.main}`,
+                                    '&:hover': {
+                                        textDecoration: 'underline',
+                                    }
+                                }}>Forgot password?</MuiLink>
                         </Typography>
                         <Typography align="center" sx={{ mt: 1, fontStyle: 'oblique', color: (theme) => `${theme.palette.primary.main}` }}>
-                            Don't have an account? <Link to="/register" style={{ textDecoration: 'none', color: '#e34747' }}>Register</Link>
+                            Don't have an account? <MuiLink component={Link} to="/register"
+                                sx={{
+                                    textDecoration: 'none',
+                                    color: (theme) => `${theme.palette.primary.main}`,
+                                    '&:hover': {
+                                        textDecoration: 'underline',
+                                    }
+                                }}>Register</MuiLink>
                         </Typography>
                     </CardContent>
                 </Card>

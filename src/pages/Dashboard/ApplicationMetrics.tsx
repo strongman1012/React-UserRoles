@@ -42,6 +42,7 @@ const ApplicationMetrics: FC = () => {
     const [metricsPerDayNumber, setMetricsPerDayNumber] = useState<MetricsData[]>([]); // Chart bottom-left
     const [metricsTotalPercent, setMetricsTotalPercent] = useState<MetricsData[]>([]); // Chart top-right
     const [metricsCategory, setMetricsCategory] = useState<MetricsData[]>([]); // Chart bottom-right
+    const customColors = ['#118DFF', '#12239E', '#E66C37', '#6B007B', '#E044A7', '#744EC2', '#D9B300', '#D64550', '#197278', '#1AAB40', '#15C6F4', '#4092FF'];
 
     useEffect(() => {
         dispatch(fetchApplications());
@@ -90,7 +91,7 @@ const ApplicationMetrics: FC = () => {
                 return result;
             });
 
-            const temp_totalPercent = temp_applications.map(app => {
+            const temp_totalPercent = temp_applications.map((app) => {
                 return { application: app.name, percent: totalPercent.filter(row => row.application_id === app.id).map(row => row.usage_percent)[0] };
             });
 
@@ -130,17 +131,16 @@ const ApplicationMetrics: FC = () => {
                                         title={{
                                             text: 'Application Usage Time (Min/Day)',
                                             font: {
-                                                weight: 500,
-                                                family: "sans-serif",
+                                                weight: 700,
                                                 size: 20,
-                                                color: '#206c91'
+                                                color: '#e34747'
                                             },
                                             horizontalAlignment: 'center'
                                         }}
                                     >
                                         <CommonSeriesSettings argumentField="date" type="line" />
-                                        {applicationNames.map((item) => (
-                                            <Series key={item.value} valueField={item.value} name={item.name} />
+                                        {applicationNames.map((item, index) => (
+                                            <Series key={item.value} valueField={item.value} name={item.name} color={customColors[index]} />
                                         ))}
                                         <ValueAxis title="Time" />
                                         <ArgumentAxis title="Date">
@@ -167,14 +167,17 @@ const ApplicationMetrics: FC = () => {
                                         title={{
                                             text: 'Total Application Usage Time (T%)',
                                             font: {
-                                                weight: 500,
-                                                family: "sans-serif",
+                                                weight: 700,
                                                 size: 20,
-                                                color: '#206c91'
+                                                color: '#e34747'
                                             },
                                             horizontalAlignment: 'center'
                                         }}
                                         dataSource={metricsTotalPercent}
+                                        customizePoint={(pointInfo) => {
+                                            const colorIndex = pointInfo.index % customColors.length;
+                                            return { color: customColors[colorIndex] };
+                                        }}
                                     >
                                         <Series argumentField="application" valueField="percent">
                                             <Label visible={true}>
@@ -193,17 +196,16 @@ const ApplicationMetrics: FC = () => {
                                         title={{
                                             text: 'Total Users Per Day',
                                             font: {
-                                                weight: 500,
-                                                family: "sans-serif",
+                                                weight: 700,
                                                 size: 20,
-                                                color: '#206c91'
+                                                color: '#e34747'
                                             },
                                             horizontalAlignment: 'center'
                                         }}
                                     >
                                         <CommonSeriesSettings argumentField="date" type="stackedbar" />
-                                        {applicationNames.map((item) => (
-                                            <Series key={item.value} valueField={item.value} name={item.name} />
+                                        {applicationNames.map((item, index) => (
+                                            <Series key={item.value} valueField={item.value} name={item.name} color={customColors[index]} />
                                         ))}
                                         <ValueAxis title="Users" />
                                         <ArgumentAxis title="Date">
@@ -229,17 +231,16 @@ const ApplicationMetrics: FC = () => {
                                         title={{
                                             text: 'Roles Login Per Application',
                                             font: {
-                                                weight: 500,
-                                                family: "sans-serif",
+                                                weight: 700,
                                                 size: 20,
-                                                color: '#206c91'
+                                                color: '#e34747'
                                             },
                                             horizontalAlignment: 'center'
                                         }}
                                     >
                                         <CommonSeriesSettings argumentField="application" type="stackedbar" />
-                                        {roleNames.map((item) => (
-                                            <Series key={item.value} valueField={item.value} name={item.name} />
+                                        {roleNames.map((item, index) => (
+                                            <Series key={item.value} valueField={item.value} name={item.name} color={customColors[index]} />
                                         ))}
                                         <ValueAxis title="Users" />
                                         <ArgumentAxis title="Application">

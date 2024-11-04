@@ -6,7 +6,7 @@ interface TeamState {
     allTeams: Team[];
     teamsList: Team[];
     currentTeam?: Team;
-    editable?: boolean;
+    editable?: { read: boolean, create: boolean, update: boolean, delete: boolean };
 }
 
 const initialState: TeamState = {
@@ -21,7 +21,7 @@ const teamsSlice = createSlice({
         resetTeams: (state) => {
             state.allTeams = [];
             state.currentTeam = undefined;
-            state.editable = false;
+            state.editable = { read: false, create: false, update: false, delete: false };
         },
         setTeamsList: (state, action: PayloadAction<Team[]>) => {
             state.teamsList = action.payload;
@@ -95,7 +95,7 @@ export const createTeam = (team: Omit<Team, 'id'>) => async (dispatch: AppDispat
 
 export const updateTeamById = (id: number, team: Partial<Team>) => async (dispatch: AppDispatch) => {
     try {
-        const response = await updateTeamAPI(id, team); console.log(response, 'response')
+        const response = await updateTeamAPI(id, team);
         dispatch(updateTeam(response.team));
         return response.message;
     } catch (error: any) {
